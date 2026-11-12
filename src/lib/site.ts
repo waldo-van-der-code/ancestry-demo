@@ -6,7 +6,11 @@ export type Lang = "nl" | "en";
 export const LANGS: Lang[] = ["nl", "en"];
 // Public copy of the code and fictional data, linked from the banner.
 export const DEMO_REPO = "https://github.com/waldo-van-der-code/ancestry-demo";
-export const DEMO_BANNER = "Demo with a fictional family";
+// Banner on every page: what this is, and a plain link to the public code you can copy.
+export const DEMO_BANNER = {
+  nl: { text: "Demo met een verzonnen familie.", link: "Kopieer deze site: de code staat publiek op GitHub" },
+  en: { text: "Demo with a fictional family.", link: "Copy this site: the code is public on GitHub" },
+} as const;
 // Set DEMO_BASE=/some/folder to host the build in a subfolder.
 const BASE_PATH = demoBase(process.env.DEMO_BASE);
 export const sitePath = (value: string) => {

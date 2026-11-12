@@ -3,6 +3,10 @@ import { test, expect } from '@playwright/test';
 import { demoBase } from '../../scripts/demo-base.mjs';
 import { DEMO_CSP } from '../demo-csp.mjs';
 const banner = 'Demo with a fictional family';
+const REPO = 'https://github.com/waldo-van-der-code/ancestry-demo';
+// The banner link must say plainly that it leads to a public GitHub repo you can copy.
+const repoLink = (page: import('@playwright/test').Page, lang: 'en' | 'nl') =>
+  page.getByRole('link', { name: lang === 'en' ? 'Copy this site: the code is public on GitHub' : 'Kopieer deze site: de code staat publiek op GitHub' });
 const base = demoBase(process.env.DEMO_BASE);
 const at = (path: string) => base + path;
 
@@ -108,6 +112,7 @@ test('tree expands, opens a person, and switches language', async ({ page }, inf
   page.on('request', r => { if (/\/api\/|analytics/i.test(r.url())) forbidden.push(r.url()); });
   await page.goto(at('/en/'));
   await expect(page.getByText(banner)).toBeVisible();
+  await expect(repoLink(page, 'en')).toHaveAttribute('href', REPO);
   await expect(page.locator('.tree svg .n').first()).toBeVisible();
   const initial = await page.locator('.tree svg .n').count();
   await page.getByRole('button', { name: 'Expand all', exact: true }).click();
@@ -117,7 +122,8 @@ test('tree expands, opens a person, and switches language', async ({ page }, inf
   await expect(page.locator('h1')).toContainText('Jan Van Aliquam');
   await page.getByRole('link', { name: 'NL', exact: true }).click();
   await expect(page).toHaveURL(/\/nl\/persoon\/jan-van-aliquam\//);
-  await expect(page.getByText(banner)).toBeVisible();
+  await expect(page.getByText('Demo met een verzonnen familie')).toBeVisible();
+  await expect(repoLink(page, 'nl')).toHaveAttribute('href', REPO);
   expect(forbidden).toEqual([]);
 });
 
@@ -178,7 +184,7 @@ test('fun facts render all views and story and sources are reachable', async ({ 
 test('all main pages fit a narrow viewport', async ({ page }) => {
   for (const url of ['/en/', '/en/person/jan-van-aliquam/', '/en/people/', '/en/story/', '/en/map/', '/en/fun-facts/', '/en/sources/']) {
     await page.goto(at(url));
-    await expect(page.getByText(banner)).toBeVisible();
+    await expect(repoLink(page, 'en')).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), url).toBe(true);
   }
 });

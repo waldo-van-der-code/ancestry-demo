@@ -11,5 +11,5 @@ import { DEMO_BANNER, DEMO_REPO, url } from "../lib/site";
       location.replace((navigator.language || "nl").toLowerCase().startsWith("nl") ? nl : en);
     </script>
   </head>
-  <body><p><a href={DEMO_REPO}>{DEMO_BANNER}</a></p><a href={url("nl")}>Nederlands</a> · <a href={url("en")}>English</a></body>
+  <body><p>{DEMO_BANNER.en.text} <a href={DEMO_REPO}>{DEMO_BANNER.en.link}</a></p><a href={url("nl")}>Nederlands</a> · <a href={url("en")}>English</a></body>
 </html>
