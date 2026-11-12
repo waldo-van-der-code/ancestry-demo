@@ -1,0 +1,234 @@
+---
+import Name from "../../../components/Name.astro";
+import Base from "../../../layouts/Base.astro";
+import PersonCard from "../../../components/PersonCard.astro";
+import { LANGS, SEG, T, data, docName, fmtDate, fullName, inTree, lifespan, md, person, personUrl, relation, siblings, sitePath, treeUrl, url, type Lang } from "../../../lib/site";
+
+export function getStaticPaths() {
+  return LANGS.flatMap((lang) => data().people.map((p) => ({ params: { lang, kind: SEG.person[lang], id: p.id } })));
+}
+const lang = Astro.params.lang as Lang;
+const t = T[lang];
+const p = person(Astro.params.id)!;
+const other = lang === "nl" ? "en" : "nl";
+const father = person(p.father);
+const mother = person(p.mother);
+const sibs = siblings(p);
+const spouses = p.spouses.map((s) => ({ ...s, p: person(s.id) }));
+const kids = p.children.map((c) => person(c)!);
+const kidsWith = (sid: string | null) => kids.filter((k) => k.father === sid || k.mother === sid);
+const unpaired = kids.filter((k) => !spouses.some((s) => k.father === s.id || k.mother === s.id));
+const place = (s?: string | null) => (s ? (lang === "nl" ? ` te ${s}` : ` in ${s}`) : "");
+const story = lang === "en" ? p.story_en || p.story : p.story;
+const storyIsNl = lang === "en" && !p.story_en && p.story;
+// Pedigree: parents, grandparents, great-grandparents
+const g1 = [father, mother];
+const g2 = g1.flatMap((x) => [person(x?.father), person(x?.mother)]);
+const g3 = g2.flatMap((x) => [person(x?.father), person(x?.mother)]);
+const hasPedigree = g1.some(Boolean);
+const rel = relation(p.id, lang);
+const RECORD_KIND = { birth: { nl: "Geboorteakte", en: "Birth record" }, death: { nl: "Overlijden", en: "Death record" }, marriage: { nl: "Huwelijksakte", en: "Marriage record" } };
+const DIFF_FIELD = {
+  "birth.date": { nl: "Geboortedatum", en: "Birth date" }, "birth.place": { nl: "Geboorteplaats", en: "Birthplace" },
+  "death.date": { nl: "Overlijdensdatum", en: "Death date" }, "death.place": { nl: "Plaats van overlijden", en: "Place of death" },
+  "marriage.date": { nl: "Huwelijksdatum", en: "Marriage date" }, "marriage.place": { nl: "Plaats van huwelijk", en: "Place of marriage" },
+  father: { nl: "Vader", en: "Father" }, mother: { nl: "Moeder", en: "Mother" },
+};
+const fmtVal = (v: string | null) => (v && /^\d{4}(-\d{2}){0,2}$/.test(v) ? fmtDate(v, lang) : v);
+---
+<Base lang={lang} title={fullName(p)} alt={personUrl(other, p.id)} active="people">
+  <p class="crumb"><a href={url(lang, "people")}>{t.people}</a></p>
+  <h1><Name p={p} lang={lang} /></h1>
+  {rel && <p class="rel">{rel}</p>}
+  <p class="sub">
+    <span>{lifespan(p, lang)}</span>
+    {p.confidence && p.confidence !== "documented" && <span class="chip">{(t.confidence as any)[p.confidence]}</span>}
+  </p>
+  {inTree(p.id) && <p class="totree"><a href={treeUrl(lang, p.id)}>{lang === "nl" ? "Bekijk in de stamboom →" : "See in the family tree →"}</a></p>}
+  {p.aka && p.aka.filter((a) => !a.startsWith("nr ")).length > 0 && (
+    <p class="muted aka">{p.aka.filter((a) => !a.startsWith("nr ")).join(" · ")}</p>
+  )}
+
+  {(
+    <dl class="facts">
+      {(p.birth?.date || p.birth?.place) && (<><dt>{t.born}</dt><dd>{fmtDate(p.birth?.date, lang) || t.unknown}{place(p.birth?.place)}</dd></>)}
+      {(p.death?.date || p.death?.place || p.death?.circumstance) && (
+        <><dt>{t.died}</dt><dd>{fmtDate(p.death?.date, lang)}{place(p.death?.place)}{p.death?.circumstance && <span class="muted"> ({p.death.circumstance})</span>}</dd></>
+      )}
+      {spouses.map((s) => (
+        <><dt>{s.divorced ? t.divorced : t.married}</dt><dd><a href={personUrl(lang, s.id)}>{s.p ? fullName(s.p) : s.id}</a>{s.marriage?.date && `, ${fmtDate(s.marriage.date, lang)}`}{place(s.marriage?.place)}{s.divorceDate && ` (${t.divorcedOn} ${fmtDate(s.divorceDate, lang)})`}</dd></>
+      ))}
+      {p.occupation && (<><dt>{t.occupation}</dt><dd>{p.occupation}</dd></>)}
+      {p.residences && p.residences.length > 0 && (
+        <><dt>{t.residences}</dt><dd>{p.residences.map((r) => `${r.place}${r.period ? ` (${r.period})` : ""}`).join("; ")}</dd></>
+      )}
+    </dl>
+  )}
+
+  {story && (
+    <section class="story">
+      {storyIsNl && <p class="muted small">{t.storyOnlyNl}</p>}
+      <div lang={storyIsNl ? "nl" : lang} set:html={md(story)} />
+    </section>
+  )}
+
+  {p.media && p.media.length > 0 && (
+    <section class="gallery">
+      <h2>{t.photos}</h2>
+      <div class="grid">
+        {p.media.map((m) => (
+          <figure>
+            <a href={sitePath(`/media/${m.file}`)} data-full={sitePath(`/media/${m.file}`)} data-caption={m.caption[lang]}>
+              <img src={sitePath(`/media/thumb/${m.file}`)} alt={m.caption[lang]} loading="lazy" />
+            </a>
+            <figcaption>{m.caption[lang]}{m.inferred && <span class="muted"> ({t.photoInferred})</span>}{m.credit && <span class="credit">{t.photoSource}: {m.credit.url ? <a href={m.credit.url} rel="noopener">{m.credit.text}</a> : m.credit.text}{m.credit.licence && `, ${m.credit.licence}`}</span>}</figcaption>
+          </figure>
+        ))}
+      </div>
+      <dialog class="lightbox">
+        <form method="dialog"><button aria-label={t.close}>×</button></form>
+        <img alt="" />
+        <p></p>
+      </dialog>
+    </section>
+  )}
+
+  {p.press && p.press.length > 0 && (
+    <section class="press">
+      <h2>{lang === "nl" ? "In de krant" : "In the newspapers"}</h2>
+      <ul>
+        {p.press.map((n) => (
+          <li class={n.rating}>
+            <span class="when">{fmtDate(n.date, lang)}</span>
+            <p>{n.text[lang]}{n.probable && <span class="muted"> ({lang === "nl" ? "waarschijnlijk deze persoon, niet bewezen" : "probably this person, not proven"})</span>}</p>
+            <span class="muted papers">{n.links.map((l, i) => <>{i > 0 && " · "}<a href={l.url} rel="noreferrer">{l.paper}</a></>)}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <h2>{lang === "nl" ? "Familie" : "Family"}</h2>
+  <div class="fam">
+    <div><h3>{t.parents}</h3><div class="row"><PersonCard p={father} lang={lang} small /><PersonCard p={mother} lang={lang} small /></div></div>
+    {spouses.map((s) => (
+      <div>
+        <h3>{s.divorced ? t.divorced : t.married} <a href={personUrl(lang, s.id)}>{s.p ? fullName(s.p) : ""}</a></h3>
+        {kidsWith(s.id).length > 0 && (<>
+          <p class="kids">{t.children}</p>
+          <div class="row">{kidsWith(s.id).map((k) => <PersonCard p={k} lang={lang} small />)}</div>
+        </>)}
+      </div>
+    ))}
+    {unpaired.length > 0 && (<div><h3>{t.children}</h3><div class="row">{unpaired.map((k) => <PersonCard p={k} lang={lang} small />)}</div></div>)}
+    {sibs.length > 0 && (<div><h3>{t.siblings}</h3><div class="row">{sibs.map((k) => <PersonCard p={k} lang={lang} small />)}</div></div>)}
+  </div>
+
+  {hasPedigree && (
+    <>
+      <h2>{t.ancestors}</h2>
+      <div class="ped" role="group" aria-label={t.ancestors}>
+        <div class="col"><PersonCard p={p} lang={lang} small /></div>
+        <div class="col">{g1.map((x) => <PersonCard p={x} lang={lang} small />)}</div>
+        <div class="col">{g2.map((x) => <PersonCard p={x} lang={lang} small />)}</div>
+        <div class="col">{g3.map((x) => <PersonCard p={x} lang={lang} small />)}</div>
+      </div>
+    </>
+  )}
+
+  {p.sources && p.sources.length > 0 && (
+    <section class="src">
+      <h2>{t.sourceList}</h2>
+      <ul>
+        {p.sources.map((s) => (
+          <li>
+            {s.url ? <a href={s.url} rel="noreferrer">{docName(s.doc, lang)}</a> : docName(s.doc, lang)}
+            {s.ref && <span class="muted">, {s.ref}</span>}
+            {s.pages?.length > 0 && <span class="muted">, {s.pages.length > 1 ? t.pages : t.page} {s.pages.join(", ")}</span>}
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+  {p.records && p.records.length > 0 && (
+    <section class="src records">
+      <h2>{lang === "nl" ? "Nagekeken in de originele akten" : "Checked against original records"}</h2>
+      <ul>
+        {p.records.map((r) => (
+          <li>
+            <a href={r.url} rel="noreferrer">{(RECORD_KIND as any)[r.kind][lang]}{r.with && person(r.with) ? ` ${lang === "nl" ? "met" : "with"} ${fullName(person(r.with)!)}` : ""}</a>
+            <span class="muted"> · {[fmtDate(r.date, lang), r.place].filter(Boolean).join(", ")} · {r.archive}</span>
+            {r.diffs.length > 0 && (
+              <ul class="diffs">
+                {r.diffs.map((d) => (
+                  <li>{(DIFF_FIELD as any)[d.field]?.[lang] ?? d.field}: {d.field === "father" || d.field === "mother"
+                    ? <>{lang === "nl" ? "akte" : "record"} {d.record}, {lang === "nl" ? "boek" : "book"} {d.book}</>
+                    : d.book
+                      ? <>{fmtVal(d.record)} {lang === "nl" ? "volgens de akte (hierboven gebruikt); het boek zegt" : "according to the record (used above); the book says"} {fmtVal(d.book)}</>
+                      : <>{fmtVal(d.record)} {lang === "nl" ? "volgens de akte; staat niet in het boek" : "according to the record; not in the book"}</>}</li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+</Base>
+<style>
+  .crumb { margin: 0; font-size: 0.9rem; }
+  .rel { margin: -4px 0 6px; font-size: 1.05rem; color: var(--accent); font-style: italic; }
+  .totree { margin: 4px 0 0; font-size: 0.95rem; }
+  .sub { color: var(--muted); font-size: 1.15rem; margin: 0 0 4px; display: flex; gap: 12px; align-items: center; }
+  .aka { font-size: 0.9rem; margin-top: 0; }
+  .facts { display: grid; grid-template-columns: max-content 1fr; gap: 6px 20px; margin: 24px 0; }
+  .facts dt { color: var(--muted); font-size: 0.9rem; padding-top: 2px; }
+  .facts dd { margin: 0; }
+  .small { font-size: 0.85rem; margin-bottom: 0; }
+  .fam { display: grid; gap: 8px; }
+  .fam h3 { font-size: 1rem; margin: 12px 0 6px; color: var(--muted); font-family: var(--serif); }
+  .fam .kids { margin: 0 0 6px; font-size: .85rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .row { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+  /* Oldest generation on the left, the person on the right. RTL column flow keeps the person first for
+     screen readers and makes a narrow screen start scrolled to the person instead of the great-grandparents. */
+  .ped { display: grid; grid-template-columns: repeat(4, minmax(150px, 1fr)); gap: 8px; overflow-x: auto; padding-bottom: 8px; direction: rtl; }
+  .ped .col { direction: ltr; display: flex; flex-direction: column; justify-content: space-around; gap: 6px; }
+  @media (max-width: 640px) {
+    .facts { grid-template-columns: 1fr; gap: 0 0; }
+    .facts dd { margin-bottom: 8px; }
+    .ped { grid-template-columns: repeat(4, 160px); }
+  }
+  .gallery .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .gallery figure { margin: 0; }
+  .gallery img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); display: block; background: var(--card); }
+  .gallery figcaption { font-size: 0.82rem; line-height: 1.35; margin-top: 4px; color: var(--muted); }
+  .gallery .credit { display: block; font-size: 0.75rem; margin-top: 2px; overflow-wrap: anywhere; }
+  .lightbox { border: 0; padding: 0; max-width: min(96vw, 1100px); background: var(--card); color: var(--ink); border-radius: 8px; }
+  .lightbox::backdrop { background: rgb(0 0 0 / 0.75); }
+  .lightbox img { display: block; max-width: 100%; max-height: 80vh; margin: 0 auto; object-fit: contain; }
+  .lightbox p { margin: 8px 16px 14px; font-size: 0.95rem; }
+  .lightbox form { position: absolute; right: 6px; top: 6px; }
+  .lightbox button { font: 600 1.4rem/1 var(--serif); width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--card); color: var(--ink); cursor: pointer; opacity: 0.9; }
+  .press ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  .press li { border-left: 3px solid var(--line); padding: 2px 0 2px 12px; }
+  .press li.striking { border-left-color: var(--accent); }
+  .press .when { font-size: 0.85rem; color: var(--muted); }
+  .press p { margin: 2px 0; }
+  .press .papers { font-size: 0.85rem; }
+  .src ul { padding-left: 1.2em; }
+  .records .diffs { margin: 2px 0 6px; font-size: 0.9rem; color: var(--accent); }
+</style>
+<script>
+  // Open a photo large in the page instead of navigating to the bare image.
+  for (const g of document.querySelectorAll<HTMLElement>(".gallery")) {
+    const dlg = g.querySelector<HTMLDialogElement>("dialog")!;
+    g.querySelectorAll<HTMLAnchorElement>("a[data-full]").forEach((a) => a.addEventListener("click", (e) => {
+      e.preventDefault();
+      dlg.querySelector("img")!.src = a.dataset.full!;
+      dlg.querySelector("img")!.alt = a.dataset.caption || "";
+      dlg.querySelector("p")!.textContent = a.dataset.caption || "";
+      dlg.showModal();
+    }));
+    dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+  }
+</script>

@@ -1,0 +1,62 @@
+---
+// Home page: the family tree first, then the parts of the site and where to start.
+import Base from "../../layouts/Base.astro";
+import PersonCard from "../../components/PersonCard.astro";
+import Tree from "../../components/Tree.astro";
+import { LANGS, T, data, fam, isAncestor, md, person, relation, url, type Lang, type Section } from "../../lib/site";
+
+export function getStaticPaths() {
+  return LANGS.map((lang) => ({ params: { lang } }));
+}
+const lang = Astro.params.lang as Lang;
+const t = T[lang];
+const f = fam();
+const d = data();
+// "Begin hier": the site's own picks, the oldest known direct ancestor, and someone with photos.
+const oldest = [...d.people].filter((p) => isAncestor(p.id) && p.estBirth != null).sort((a, b) => a.estBirth! - b.estBirth!)[0];
+const picks = [...(f.start as readonly string[]).map((id) => person(id)), oldest].filter(Boolean);
+const withPhotos = [...d.people].filter((p) => p.media?.length && !picks.some((x) => x!.id === p.id)).sort((a, b) => b.media!.length - a.media!.length)[0];
+const starts = [...picks, withPhotos].filter((p, i, a) => p && a.findIndex((x) => x?.id === p.id) === i).slice(0, 4);
+const blurbs: Record<string, { nl: string; en: string }> = {
+  people: { nl: "Iedereen in de stamboom, met ouders, kinderen en bronnen.", en: "Everyone in the tree, with parents, children and sources." },
+  story: { nl: "Het verhaal van de familie, van de oudste bekende voorouders tot nu.", en: "The family's story, from the oldest known ancestors to today." },
+  map: { nl: "Waar de familie geboren werd, woonde en stierf.", en: "Where the family was born, lived and died." },
+  sources: { nl: "Waar elk gegeven vandaan komt, en wat nog onzeker is.", en: "Where every fact comes from, and what is still uncertain." },
+};
+const parts = [...(f.sections as readonly Section[]).filter((s) => s !== "sources"), "map", "sources"] as Section[];
+---
+<Base lang={lang} title={f.name[lang]} alt={url(lang === "nl" ? "en" : "nl")} active="home" wide>
+  <h1>{f.name[lang]}</h1>
+  <p class="lede">{f.tagline[lang]}</p>
+  {d.intro[lang] && <div class="intro" set:html={md(d.intro[lang])} />}
+  <p class="muted">{t.stats(d.stats)}</p>
+  <Tree lang={lang} />
+  <div class="grid">
+    {parts.map((s) => (
+      <a class="card sec" href={url(lang, s)}>
+        <strong>{t[s]}</strong>
+        <span>{blurbs[s][lang]}</span>
+      </a>
+    ))}
+  </div>
+  {starts.length > 0 && (
+    <>
+      <h2>{lang === "nl" ? "Begin hier" : "Start here"}</h2>
+      <div class="start">{starts.map((p) => (
+        <div class="pick">
+          <PersonCard p={p!} lang={lang} />
+          {relation(p!.id, lang) && <span class="muted rel">{relation(p!.id, lang)}</span>}
+        </div>
+      ))}</div>
+    </>
+  )}
+</Base>
+<style>
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin: 24px 0 32px; }
+  .sec { display: flex; flex-direction: column; gap: 6px; text-decoration: none; color: var(--ink); }
+  .sec strong { font-family: var(--display); font-size: 1.25rem; color: var(--accent); }
+  .intro { max-width: 720px; }
+  .start { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  .pick { display: flex; flex-direction: column; gap: 4px; }
+  .rel { font-size: 0.85rem; font-style: italic; }
+</style>

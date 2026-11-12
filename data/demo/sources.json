@@ -1,0 +1,30 @@
+{
+  "demo-bs-sluis": {
+    "nl": "Burgerlijke stand Sluis (fictief)",
+    "en": "Civil registers of Sluis (fictional)"
+  },
+  "demo-bs-gent": {
+    "nl": "Burgerlijke stand Gent (fictief)",
+    "en": "Civil registers of Gent (fictional)"
+  },
+  "demo-bs-eeklo": {
+    "nl": "Burgerlijke stand Eeklo (fictief)",
+    "en": "Civil registers of Eeklo (fictional)"
+  },
+  "demo-bs-schoten": {
+    "nl": "Burgerlijke stand Schoten (fictief)",
+    "en": "Civil registers of Schoten (fictional)"
+  },
+  "demo-parochie-sluis": {
+    "nl": "Parochieregister Sluis, 1789-1832 (fictief)",
+    "en": "Parish register Sluis, 1789-1832 (fictional)"
+  },
+  "demo-familieboek": {
+    "nl": "Familieboek Van Aliquam, editie 1972 met latere aanvullingen (fictief)",
+    "en": "Van Aliquam family book, 1972 edition with later additions (fictional)"
+  },
+  "demo-verhaal-griet": {
+    "nl": "Herinneringen van Griet De Loremans, 1970 (fictief)",
+    "en": "Recollections of Griet De Loremans, 1970 (fictional)"
+  }
+}

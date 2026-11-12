@@ -1,0 +1,52 @@
+{
+ "override": {
+  "Sluis": {
+   "lat": 51.3312,
+   "lon": 3.489,
+   "name": "Sluis, Zeeland, Nederland"
+  },
+  "Detroit (Michigan)": {
+   "lat": 42.3314,
+   "lon": -83.0458,
+   "name": "Detroit, Michigan, United States",
+   "src": "familysearch"
+  }
+ },
+ "found": {
+  "Gent": {
+   "lat": 51.0538,
+   "lon": 3.725,
+   "name": "Gent, Oost-Vlaanderen, Vlaanderen"
+  },
+  "Brugge": {
+   "lat": 51.2086,
+   "lon": 3.2268,
+   "name": "Brugge, West-Vlaanderen, Vlaanderen"
+  },
+  "Eeklo": {
+   "lat": 51.1845,
+   "lon": 3.5666,
+   "name": "Eeklo, Oost-Vlaanderen, Vlaanderen"
+  },
+  "Antwerpen": {
+   "lat": 51.2211,
+   "lon": 4.3997,
+   "name": "Antwerpen, Vlaanderen, België"
+  },
+  "Middelburg": {
+   "lat": 51.4997,
+   "lon": 3.6137,
+   "name": "Middelburg, Zeeland, Nederland"
+  },
+  "Schoten": {
+   "lat": 51.2526,
+   "lon": 4.5036,
+   "name": "Schoten, Antwerpen, België"
+  },
+  "Kortrijk": {
+   "lat": 50.8279,
+   "lon": 3.2649,
+   "name": "Kortrijk, West-Vlaanderen, Vlaanderen"
+  }
+ }
+}

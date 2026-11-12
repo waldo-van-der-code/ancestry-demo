@@ -1,0 +1,203 @@
+---
+// Lifelines / Levenslijnen: every life with a known birth year as a bar on one shared year axis.
+// Fully client-rendered from #facts-data. Rule for missing death years: a dead person
+// without a (usable) death year gets a faded dashed 10-year stub, so they stay visible but clearly unknown.
+import type { Lang } from "../../lib/site";
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const nl = lang === "nl";
+---
+<div class="ll" data-lang={lang}>
+  <div class="ll-tools">
+    <input type="search" class="ll-q" placeholder={nl ? "Zoek een naam…" : "Search a name…"} aria-label={nl ? "Zoek een naam" : "Search a name"} />
+    <label class="ll-lab">{nl ? "Sorteer op" : "Sort by"}
+      <select class="ll-sort">
+        <option value="birth">{nl ? "Geboortejaar" : "Birth year"}</option>
+        <option value="name">{nl ? "Familienaam" : "Family name"}</option>
+      </select>
+    </label>
+    <label class="ll-lab ll-famlab" hidden>{nl ? "Familie" : "Family"}
+      <select class="ll-fam"></select>
+    </label>
+  </div>
+  <p class="ll-count muted" aria-live="polite"></p>
+  <div class="ll-box" tabindex="0" role="region" aria-label={nl ? "Levenslijnen" : "Lifelines"}>
+    <div class="ll-axis"><span class="ll-nc"></span><span class="ll-ax"></span></div>
+    <div class="ll-body"><div class="ll-bands"></div><div class="ll-rows"></div></div>
+  </div>
+  <p class="ll-legend muted">
+    <span class="ll-key"><i class="ll-bar"></i>{nl ? "leven" : "life"}</span>
+    <span class="ll-key"><i class="ll-bar ll-live"></i>{nl ? "levend (loopt tot nu)" : "living (runs to today)"}</span>
+    <span class="ll-key"><i class="ll-bar ll-unk"></i>{nl ? "overlijdensjaar onbekend (stukje van 10 jaar)" : "death year unknown (10-year stub)"}</span>
+    <span class="ll-key"><i class="ll-band ll-b1830"></i>1830 {nl ? "Belgische Revolutie" : "Belgian Revolution"}</span>
+    <span class="ll-key"><i class="ll-band"></i>{nl ? "WO I (1914-1918), WO II (1940-1945)" : "WWI (1914-1918), WWII (1940-1945)"}</span>
+  </p>
+  <div class="ll-tip" role="tooltip" hidden></div>
+</div>
+<style is:global>
+  :root { --ll-band: rgba(108, 99, 87, 0.16); --ll-band-ink: #6c6357; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ll-band: rgba(168, 157, 141, 0.2); --ll-band-ink: #a89d8d; } }
+  :root[data-theme="dark"] { --ll-band: rgba(168, 157, 141, 0.2); --ll-band-ink: #a89d8d; }
+  .ll { font-family: system-ui, sans-serif; --nc: 112px; min-width: 0; position: relative; }
+  .ll-tools { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+  .ll-tools .ll-q { width: auto; flex: 1 1 180px; min-width: 0; }
+  .ll-lab { font-size: 0.85rem; color: var(--muted); display: inline-flex; gap: 6px; align-items: center; }
+  .ll-lab select { font: inherit; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); color: var(--ink); }
+  .ll-count { margin: 6px 0; font-size: 0.85rem; }
+  .ll-box { max-height: 70vh; overflow-y: auto; overflow-x: hidden; border: 1px solid var(--line); border-radius: 8px; background: var(--card); position: relative; }
+  .ll-axis { position: sticky; top: 0; z-index: 3; display: flex; height: 44px; background: var(--card); border-bottom: 1px solid var(--line); }
+  .ll-nc { flex: 0 0 var(--nc); }
+  .ll-ax { position: relative; flex: 1 1 auto; min-width: 0; }
+  .ll-tick { position: absolute; bottom: 0; height: 9px; border-left: 1px solid var(--muted); font-size: 10px; color: var(--muted); line-height: 1; }
+  .ll-tick span[hidden] { display: none; }
+  .ll-tick span { position: absolute; bottom: 11px; left: 0; transform: translateX(-50%); white-space: nowrap; }
+  .ll-tick.first span { transform: none; }
+  .ll-tick.last span { transform: translateX(-100%); }
+  .ll-blab { position: absolute; top: 3px; font-size: 10px; font-weight: 600; color: var(--ll-band-ink); white-space: nowrap; line-height: 1.1; }
+  .ll-blab.r { transform: translateX(-100%); }
+  .ll-blab[hidden] { display: none; }
+  .ll-body { position: relative; }
+  .ll-bands { position: absolute; top: 0; bottom: 0; left: var(--nc); right: 0; pointer-events: none; z-index: 0; }
+  .ll-band { position: absolute; top: 0; bottom: 0; background: var(--ll-band); }
+  .ll-legend i.ll-band { position: static; display: inline-block; width: 14px; height: 10px; vertical-align: middle; margin-right: 6px; }
+  .ll-rows { position: relative; z-index: 1; }
+  .ll-row { display: flex; align-items: center; height: 17px; text-decoration: none; color: var(--ink); font-size: 11px; }
+  .ll-row:hover, .ll-row:focus-visible { background: var(--accent-soft); outline: none; }
+  .ll-row .ll-name { flex: 0 0 var(--nc); padding: 0 6px 0 8px; box-sizing: border-box; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .ll-row .ll-track { flex: 1 1 auto; position: relative; height: 100%; min-width: 0; }
+  .ll-bar { position: absolute; top: 5px; height: 7px; border-radius: 2px; background: var(--accent); min-width: 2px; }
+  .ll-legend i.ll-bar { position: static; display: inline-block; width: 22px; vertical-align: middle; margin-right: 6px; }
+  .ll-bar.ll-live { background: linear-gradient(to right, var(--accent) 60%, transparent); }
+  .ll-bar.ll-unk { background: repeating-linear-gradient(to right, var(--accent) 0 3px, transparent 3px 5px); opacity: 0.6; }
+  .ll-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.8rem; margin: 8px 0 0; }
+  .ll-key { white-space: nowrap; }
+  .ll-tip { position: fixed; z-index: 20; pointer-events: none; background: var(--ink); color: var(--card); padding: 6px 9px; border-radius: 6px; font-size: 0.8rem; line-height: 1.35; max-width: 240px; }
+  .ll-tip[hidden] { display: none; }
+  .ll-tip b { display: block; }
+  @media (max-width: 700px) { .ll { --nc: 92px; } }
+</style>
+<script>
+  const data = JSON.parse(document.getElementById("facts-data")!.textContent!);
+  const root = document.querySelector<HTMLElement>(".ll")!;
+  const nl = data.lang === "nl";
+  const NOW = new Date().getFullYear();
+  const STUB = 10;
+  const $ = <T extends HTMLElement>(s: string) => root.querySelector<T>(s)!;
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]!));
+
+  interface Row { id: string; n: string; sn: string; by: number; ey: number; kind: "life" | "live" | "unk"; fam: string; age: number | null; hay: string }
+  const rows: Row[] = [];
+  for (const p of data.people) {
+    if (!p.by) continue;
+    let kind: Row["kind"] = "life", ey = p.dy, age: number | null = null;
+    if (p.dy != null && p.dy >= p.by && p.dy - p.by <= 110) age = p.dy - p.by;
+    else if (p.l) { kind = "live"; ey = NOW; age = Math.max(0, NOW - p.by); }
+    else { kind = "unk"; ey = Math.min(p.by + STUB, NOW); }
+    if (kind === "life" && age == null) { kind = "unk"; ey = Math.min(p.by + STUB, NOW); }
+    const sn = p.sn || p.n.split(" ").slice(-1)[0] || "";
+    rows.push({ id: p.id, n: p.n, sn, by: p.by, ey, kind, fam: p.fam, age, hay: (p.n + " " + sn).toLowerCase() });
+  }
+  // Axis: from the earliest birth (rounded down to 25) to today.
+  const y0 = Math.floor(Math.min(...rows.map((r) => r.by)) / 25) * 25;
+  const y1 = NOW + 2;
+  const span = y1 - y0;
+  const pct = (y: number) => ((y - y0) / span) * 100;
+
+  const BANDS = [
+    { a: 1830, b: 1831, label: "1830", side: "l" },
+    { a: 1914, b: 1919, label: nl ? "WO I" : "WWI", side: "r" },
+    { a: 1940, b: 1946, label: nl ? "WO II" : "WWII", side: "l" },
+  ];
+  $(".ll-bands").innerHTML = BANDS.map((b) => `<div class="ll-band" data-band="${b.label}" style="left:${pct(b.a)}%;width:${Math.max(pct(b.b) - pct(b.a), 0.3)}%"></div>`).join("");
+  // Axis: tick step from the plot width (100 years when narrow); a tick label within 28px of the previous shown one is
+  // hidden (its tick stays); band labels sit on their own row above the tick labels.
+  const axEl = $(".ll-ax");
+  function drawAxis() {
+    const w = axEl.clientWidth || root.clientWidth - 112;
+    const step = w < 500 ? 100 : span > 300 ? 50 : 25;
+    const ticks: number[] = [];
+    for (let y = Math.ceil(y0 / step) * step; y <= NOW; y += step) ticks.push(y);
+    let ax = "";
+    let lastPx = -1e9;
+    ticks.forEach((y, i) => {
+      const px = (pct(y) / 100) * w;
+      const showLab = px - lastPx >= 28;
+      if (showLab) lastPx = px;
+      ax += `<span class="ll-tick${i === 0 ? " first" : ""}${i === ticks.length - 1 ? " last" : ""}" style="left:${pct(y)}%"><span${showLab ? "" : " hidden"}>${y}</span></span>`;
+    });
+    ax += BANDS.map((b) => `<span class="ll-blab ${b.side}" data-band-label="${b.label}" style="left:${b.side === "r" ? pct(b.b) : pct(b.a)}%">${b.label}</span>`).join("");
+    axEl.innerHTML = ax;
+    // with lives back to the 1500s a phone axis is too short for every band label. The wars go first; a
+    // label that would touch one already shown is hidden (its shaded band stays).
+    const shown: DOMRect[] = [];
+    for (const label of [BANDS[1], BANDS[2], BANDS[0]].map((b) => b.label)) {
+      const el = axEl.querySelector<HTMLElement>(`[data-band-label="${label}"]`);
+      if (!el) continue;
+      const r = el.getBoundingClientRect();
+      if (shown.some((o) => r.left < o.right + 4 && o.left < r.right + 4)) el.hidden = true;
+      else shown.push(r);
+    }
+  }
+  drawAxis();
+  let lastW = axEl.clientWidth;
+  new ResizeObserver(() => { if (axEl.clientWidth !== lastW) { lastW = axEl.clientWidth; drawAxis(); } }).observe(axEl);
+  const famSel = $<HTMLSelectElement>(".ll-fam");
+  const fams = [...new Set(rows.map((r) => r.fam))].sort();
+  if (fams.length > 1) {
+    famSel.innerHTML = `<option value="">${nl ? "Alle families" : "All families"}</option>` + fams.map((f) => `<option value="${esc(f)}">${esc(f)}</option>`).join("");
+    $(".ll-famlab").hidden = false;
+  }
+
+  const ARIA = (r: Row) => `${r.n}, ${r.by}${r.kind === "life" ? "-" + r.ey : r.kind === "live" ? "-" : "-?"}`;
+  const personPath: string = data.personPath;
+  const rowsEl = $(".ll-rows");
+  const countEl = $(".ll-count");
+  function render() {
+    const q = $<HTMLInputElement>(".ll-q").value.trim().toLowerCase();
+    const sort = $<HTMLSelectElement>(".ll-sort").value;
+    const fam = famSel.value;
+    const list = rows.filter((r) => (!q || r.hay.includes(q)) && (!fam || r.fam === fam));
+    if (sort === "name") list.sort((a, b) => a.sn.localeCompare(b.sn, data.lang) || a.n.localeCompare(b.n, data.lang) || a.by - b.by);
+    else list.sort((a, b) => a.by - b.by || a.n.localeCompare(b.n, data.lang));
+    rowsEl.innerHTML = list.map((r) => {
+      const left = pct(r.by), w = Math.max(pct(r.ey) - left, 0.25);
+      const cls = "ll-bar" + (r.kind === "live" ? " ll-live" : r.kind === "unk" ? " ll-unk" : "");
+      return `<a class="ll-row" href="${personPath}${r.id}/" data-id="${esc(r.id)}" aria-label="${esc(ARIA(r))}"><span class="ll-name">${esc(r.n)}</span><span class="ll-track"><i class="${cls}" style="left:${left}%;width:${w}%"></i></span></a>`;
+    }).join("");
+    countEl.textContent = nl
+      ? `${list.length} van ${rows.length} mensen met een bekend geboortejaar.`
+      : `${list.length} of ${rows.length} people with a known birth year.`;
+    $(".ll-box").scrollTop = 0;
+    root.dataset.rows = String(list.length);
+  }
+  render();
+  let tq: number | undefined;
+  $(".ll-q").addEventListener("input", () => { render(); clearTimeout(tq); tq = window.setTimeout(() => (window as any).track?.("facts_lifelines", { action: "filter" }), 800); });
+  $(".ll-sort").addEventListener("change", () => { render(); (window as any).track?.("facts_lifelines", { action: "sort", by: $<HTMLSelectElement>(".ll-sort").value }); });
+  famSel.addEventListener("change", () => { render(); (window as any).track?.("facts_lifelines", { action: "family", family: famSel.value }); });
+
+  // Tooltip (one shared element): name, years, age.
+  const tip = $(".ll-tip");
+  function show(a: HTMLElement, x?: number, y?: number) {
+    const r = rows.find((q) => q.id === a.dataset.id);
+    if (!r) return;
+    const years = r.kind === "life" ? `${r.by} – ${r.ey}` : r.kind === "live" ? `${r.by} –` : `${r.by} – ?`;
+    const age = r.kind === "unk" ? (nl ? "overlijdensjaar onbekend" : "death year unknown")
+      : r.kind === "live" ? (nl ? `levend, ca. ${r.age} jaar` : `living, c. ${r.age} years`)
+      : (nl ? `ca. ${r.age} jaar oud` : `c. ${r.age} years old`);
+    tip.innerHTML = `<b>${esc(r.n)}</b>${years}<br>${age}`;
+    tip.hidden = false;
+    const box = a.getBoundingClientRect();
+    const px = x ?? box.left + box.width / 2, py = y ?? box.bottom;
+    const tw = tip.offsetWidth, th = tip.offsetHeight;
+    const left = Math.min(Math.max(8, px - tw / 2), window.innerWidth - tw - 8);
+    const top = py + 14 + th > window.innerHeight ? Math.max(8, (y ?? box.top) - th - 10) : py + 14;
+    tip.style.left = left + "px"; tip.style.top = top + "px";
+  }
+  const rowOf = (e: Event) => (e.target as HTMLElement).closest<HTMLElement>(".ll-row");
+  rowsEl.addEventListener("mousemove", (e) => { const a = rowOf(e); if (a) show(a, (e as MouseEvent).clientX, (e as MouseEvent).clientY); else tip.hidden = true; });
+  rowsEl.addEventListener("mouseleave", () => (tip.hidden = true));
+  rowsEl.addEventListener("focusin", (e) => { const a = rowOf(e); if (a) show(a); });
+  rowsEl.addEventListener("focusout", () => (tip.hidden = true));
+  $(".ll-box").addEventListener("scroll", () => (tip.hidden = true), { passive: true });
+</script>

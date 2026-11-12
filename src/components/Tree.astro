@@ -1,0 +1,334 @@
+---
+// Pedigree of the root person on the home page (data: src/generated/tree.demo.json). Links stay on this site.
+// Laid out in the browser so each line can be unfolded; zoom and drag like a map.
+import fs from "node:fs";
+import path from "node:path";
+import { T, url, type Lang } from "../lib/site";
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const file = path.resolve(`src/generated/tree.demo.json`);
+const tree = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : null;
+const fams = tree ? new Set(Object.values(tree.people).map((p: any) => p.fam)) : new Set();
+const config = tree && {
+  ...tree,
+  familyClasses: Object.fromEntries([...fams].map(f => [f, "f"])),
+  personPath: url(lang, "person"),
+  living: lang === "nl" ? "levend" : "living",
+  guess: T[lang].guess,
+  show: lang === "nl" ? "Voorouders tonen" : "Show ancestors",
+  hide: lang === "nl" ? "Voorouders verbergen" : "Hide ancestors",
+};
+---
+{tree && (
+  <section class="tree" aria-label={lang === "nl" ? "Stamboom" : "Family tree"}>
+    <div class="tools">
+      <button type="button" data-act="in" aria-label={lang === "nl" ? "Inzoomen" : "Zoom in"}>+</button>
+      <button type="button" data-act="out" aria-label={lang === "nl" ? "Uitzoomen" : "Zoom out"}>−</button>
+      <button type="button" data-act="fit">{lang === "nl" ? "Passend" : "Fit"}</button>
+      <button type="button" data-act="all">{lang === "nl" ? "Alles open" : "Expand all"}</button>
+      <button type="button" data-act="reset">{lang === "nl" ? "Begin" : "Start"}</button>
+    </div>
+    <div class="stage">
+      <svg role="group" aria-label={lang === "nl" ? "Stamboom van Jade" : "Jade's family tree"}></svg>
+    </div>
+    <p class="hint muted">{lang === "nl"
+      ? <>Klik op <b>+</b> boven een naam om verder terug te gaan. Sleep om te verschuiven, scroll of knijp om te zoomen.</>
+      : <>Click <b>+</b> above a name to go further back. Drag to move, scroll or pinch to zoom.</>}</p>
+    <script type="application/json" class="tree-data" set:html={JSON.stringify(config).replace(/</g, "\\u003c")} />
+  </section>
+)}
+<style>
+  .tree { margin: 24px 0 8px; }
+  .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .tools button { font: inherit; font-size: 0.95rem; min-width: 40px; height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); color: var(--ink); cursor: pointer; }
+  .tools button:hover { border-color: var(--accent); }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 0.85rem; color: var(--muted); margin-left: auto; }
+  .sw { display: inline-block; width: 16px; height: 16px; border-radius: 3px; vertical-align: -3px; border: 1.5px solid var(--muted); }
+  .stage { height: min(72vh, 680px); border: 1px solid var(--line); border-radius: 8px; background: var(--card); overflow: hidden; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
+  .stage.drag { cursor: grabbing; }
+  .stage svg { width: 100%; height: 100%; display: block; }
+  .stage :global(.edges path) { fill: none; stroke: var(--muted); stroke-width: 1.5; opacity: 0.6; }
+  .stage :global(.n rect) { stroke: var(--line); stroke-width: 1; }
+  .stage :global(.n.focus rect:first-of-type) { stroke: var(--accent); stroke-width: 3; }
+  .stage :global(.n.f rect) { fill: var(--tree-f); }
+  .stage :global(.n text) { fill: var(--ink); font-family: var(--serif); font-size: 14px; pointer-events: none; }
+  .stage :global(.n text.s) { font-weight: 600; }
+  .stage :global(.n tspan.q) { fill: var(--accent); font-weight: 700; }
+  .stage :global(.n text.y) { fill: var(--muted); font-size: 12.5px; }
+  .stage :global(.n.l text.y) { font-style: italic; }
+  .stage :global(.n:hover rect:first-of-type), .stage :global(.n:focus-visible rect:first-of-type) { stroke: var(--accent); stroke-width: 2.5; }
+  .stage :global(.n:focus) { outline: none; }
+  .stage :global(.exp) { cursor: pointer; }
+  .stage :global(.exp rect) { fill: var(--accent); }
+  .stage :global(.exp.open rect) { fill: var(--card); stroke: var(--muted); }
+  .stage :global(.exp text) { fill: #fff; font: 600 15px var(--serif); pointer-events: none; }
+  .stage :global(.exp.open text) { fill: var(--muted); }
+  .stage :global(.exp:focus-visible rect) { stroke: var(--ink); stroke-width: 2; }
+  .stage :global(.exp:focus) { outline: none; }
+  .hint { font-size: 0.85rem; margin: 6px 0 0; }
+  :global(:root) { --tree-f: #e6eef0; }
+  @media (prefers-color-scheme: dark) { :global(:root:not([data-theme="light"])) { --tree-f: #26333a; } }
+  :global(:root[data-theme="dark"]) { --tree-f: #26333a; }
+</style>
+<script>
+  type P = { fam: string; given: string; surname: string; guess?: boolean; years: string; living: boolean; father: string | null; mother: string | null };
+  type Data = { familyClasses: Record<string, string>; root: string; people: Record<string, P>; siblings: Record<string, string[]>; personPath: string; living: string; guess: string; show: string; hide: string };
+  const W = 172, H = 66, GX = 14, GY = 64, SLOT = W + GX, ROW = H + GY, START_GENS = 3;
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+  const clip = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1).trimEnd() + "…" : s);
+
+  for (const section of document.querySelectorAll<HTMLElement>(".tree")) {
+    const D: Data = JSON.parse(section.querySelector(".tree-data")!.textContent!);
+    const stage = section.querySelector<HTMLElement>(".stage")!;
+    const svg = stage.querySelector("svg")!;
+    const parentsOf = (id: string) => [D.people[id]?.father, D.people[id]?.mother].filter((x): x is string => !!x && !!D.people[x]);
+    const ancestorCount = (id: string, seen = new Set<string>()): number => {
+      for (const p of parentsOf(id)) if (!seen.has(p)) { seen.add(p); ancestorCount(p, seen); }
+      return seen.size;
+    };
+    const open = new Set<string>();
+    const openTo = (id: string, gen: number, max: number) => {
+      if (gen >= max) return;
+      open.add(id);
+      for (const p of parentsOf(id)) openTo(p, gen + 1, max);
+    };
+
+    // Compact layout: each subtree keeps a left/right contour per generation; the mother's
+    // side is pushed right only as far as needed to clear the father's.
+    type Item = { id: string; gen: number; dx: number; parents: Item[]; sib?: boolean };
+    type Sub = { items: Item[]; left: number[]; right: number[]; root: Item };
+    // Siblings go to the outer side of the whole tree (UX review #2): the side is fixed at the first couple
+    // where both partners have known parents (father left, mother right) and inherited by every line above it,
+    // so the siblings go to the outside. At the root's own parents only the mother's line is fixed to the right;
+    // the father's line still splits at the first couple whose parents are both known.
+    const layout = (id: string, gen: number, path: Set<string>, side = 0, couple = -1): Sub => {
+      const self: Item = { id, gen, dx: 0, parents: [] };
+      const ps = open.has(id) ? parentsOf(id).filter((p) => !path.has(p)) : [];
+      const split = side === 0 && ps.length === 2 && ps.every((p) => parentsOf(p).length > 0);
+      const sideOf = (k: number) => (!split ? side : k === 1 ? 1 : gen === 0 ? 0 : -1);
+      const subs = ps.map((p, k) => layout(p, gen + 1, new Set(path).add(p), sideOf(k), ps.length === 2 && k === 1 ? 1 : -1));
+      const sub = place(self, subs);
+      // Brothers and sisters stand beside the person, on the outer side, oldest first, once the parents are shown.
+      const sibs = subs.length ? (D.siblings[id] || []).filter((s) => !path.has(s)) : [];
+      if (!sibs.length) return sub;
+      const extra = sibs.map((s, k): Item => ({ id: s, gen, dx: (side || couple) < 0 ? -(sibs.length - k) * SLOT : (k + 1) * SLOT, parents: self.parents, sib: true }));
+      sub.items.push(...extra);
+      sub.left[0] = Math.min(sub.left[0], ...extra.map((e) => e.dx));
+      sub.right[0] = Math.max(sub.right[0], ...extra.map((e) => e.dx));
+      return sub;
+    };
+    const place = (self: Item, subs: Sub[]): Sub => {
+      const gen = self.gen;
+      if (subs.length === 2) {
+        const [f, m] = subs;
+        let shift = SLOT;
+        for (let d = 0; d < Math.min(f.right.length, m.left.length); d++) shift = Math.max(shift, f.right[d] - m.left[d] + SLOT);
+        for (const it of f.items) it.dx -= shift / 2;
+        for (const it of m.items) it.dx += shift / 2;
+        // Contours from the moved items (simple and exact).
+        const L: number[] = [], R: number[] = [];
+        self.parents = [f.root, m.root];
+        const items = [self, ...f.items, ...m.items];
+        for (const it of items) { const d = it.gen - gen; L[d] = Math.min(L[d] ?? Infinity, it.dx); R[d] = Math.max(R[d] ?? -Infinity, it.dx); }
+        return { items, left: L, right: R, root: self };
+      }
+      if (subs.length === 1) {
+        self.parents = [subs[0].root];
+        return { items: [self, ...subs[0].items], left: [0, ...subs[0].left], right: [0, ...subs[0].right], root: self };
+      }
+      return { items: [self], left: [0], right: [0], root: self };
+    };
+
+    // ?p=<id> (from a person page or a family menu): open the lines down to that person and centre on them.
+    const focusId = (() => { const q = new URLSearchParams(location.search).get("p"); return q && D.people[q] ? q : null; })();
+    const pathTo = (target: string): string[] | null => { // ids from the root up to the target's child (or sibling)
+      const prev = new Map<string, string | null>([[D.root, null]]), q = [D.root];
+      while (q.length) {
+        const x = q.shift()!;
+        for (const p of [...parentsOf(x), ...(D.siblings[x] || [])]) if (!prev.has(p)) { prev.set(p, x); q.push(p); }
+      }
+      if (!prev.has(target)) return null;
+      const out: string[] = [];
+      for (let x = prev.get(target); x; x = prev.get(x)!) out.unshift(x);
+      return out;
+    };
+
+    let pos = new Map<string, { x: number; y: number }>(); // first occurrence of each id
+    let TW = 0, TH = 0;
+    const TGH = stage.clientWidth < 700 ? 36 : 28; // toggle height: at least 24 px on screen at the start zoom
+    const render = () => {
+      const t = layout(D.root, 0, new Set([D.root]));
+      const items = [...t.items];
+      const edges: { child: Item; parents: Item[] }[] = items.filter((i) => i.parents.length).map((i) => ({ child: i, parents: i.parents }));
+      const minX = Math.min(...items.map((i) => i.dx));
+      const maxGen = Math.max(...items.map((i) => i.gen));
+      const X = (i: Item) => i.dx - minX + 20;
+      const Y = (i: Item) => (maxGen - i.gen) * ROW + 40;
+      TW = Math.max(...items.map((i) => X(i))) + W + 20;
+      TH = (maxGen + 1) * ROW + 40;
+      pos = new Map();
+      let html = '<g class="edges">';
+      for (const e of edges) {
+        const cx = X(e.child) + W / 2, cy = Y(e.child), py = Y(e.parents[0]) + H, mid = py + (cy - py) / 2;
+        const xs = e.parents.map((p) => X(p) + W / 2);
+        let d = `M${cx},${cy}V${mid}M${Math.min(...xs, cx)},${mid}H${Math.max(...xs, cx)}`;
+        for (const x of xs) d += `M${x},${mid}V${py}`;
+        html += `<path d="${d}"/>`;
+      }
+      html += '</g><g class="nodes">';
+      for (const i of items) {
+        const p = D.people[i.id], x = X(i), y = Y(i);
+        if (!pos.has(i.id)) pos.set(i.id, { x, y });
+        const cls = `n ${D.familyClasses[p.fam]}${p.living ? " l" : ""}${i.id === focusId ? " focus" : ""}`;
+        const href = `${D.personPath}${i.id}/`;
+        const given = clip(p.given.split(" ").slice(0, 2).join(" "), 19);
+        html += `<a href="${esc(href)}" class="${cls}" data-id="${esc(i.id)}" draggable="false"><title>${esc(`${p.given} ${p.surname}${p.guess ? " ?" : ""}${p.years ? ` (${p.years})` : ""}${p.guess ? `\n${D.guess}` : ""}`)}</title>`
+          + `<rect x="${x}" y="${y}" width="${W}" height="${H}" rx="6"/>`
+          + `<text x="${x + 10}" y="${y + 21}" class="g">${esc(given)}</text>`
+          + `<text x="${x + 10}" y="${y + 39}" class="s">${esc(clip(p.surname, p.guess ? 17 : 19))}${p.guess ? '<tspan class="q"> ?</tspan>' : ""}</text>`
+          + `<text x="${x + 10}" y="${y + 56}" class="y">${esc(p.years || D.living)}</text></a>`;
+        const hidden = !i.sib && parentsOf(i.id).length > 0 && !open.has(i.id);
+        const isOpen = open.has(i.id) && i.parents.length > 0 && i.gen > 0;
+        if (hidden || isOpen) {
+          const label = hidden ? `+${ancestorCount(i.id)}` : "−";
+          const bw = hidden ? 54 : 36, bx = x + W / 2 - bw / 2, by = y - TGH - 5;
+          const aria = `${hidden ? D.show : D.hide}: ${p.given} ${p.surname}`;
+          html += `<g class="exp${hidden ? "" : " open"}" data-toggle="${esc(i.id)}" role="button" tabindex="0" aria-label="${esc(aria)}">`
+            + `<rect x="${bx}" y="${by}" width="${bw}" height="${TGH}" rx="${TGH / 2}"/>`
+            + `<text x="${x + W / 2}" y="${by + TGH / 2 + 5}" text-anchor="middle">${label}</text></g>`;
+        }
+      }
+      svg.innerHTML = html + "</g>";
+    };
+
+    let vb = { x: 0, y: 0, w: 1000, h: 600 };
+    const apply = () => svg.setAttribute("viewBox", `${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+    const aspect = () => stage.clientWidth / Math.max(1, stage.clientHeight);
+    const maxW = () => Math.max(TW, TH * aspect()) * 1.2;
+    const view = (cx: number, cy: number, w: number) => {
+      w = Math.min(Math.max(w, 300), Math.max(maxW(), 600));
+      vb = { w, h: w / aspect(), x: cx - w / 2, y: cy - w / aspect() / 2 };
+      apply();
+    };
+    const fit = () => view(TW / 2, TH / 2, Math.max(TW, TH * aspect()) * 1.02);
+    const zoomAt = (f: number, px: number, py: number) => {
+      const nw = Math.min(Math.max(vb.w * f, 300), Math.max(maxW(), 600));
+      const k = nw / vb.w;
+      vb = { x: px - (px - vb.x) * k, y: py - (py - vb.y) * k, w: nw, h: nw / aspect() };
+      apply();
+    };
+    const toUser = (cx: number, cy: number) => {
+      const r = stage.getBoundingClientRect();
+      return [vb.x + ((cx - r.left) / r.width) * vb.w, vb.y + ((cy - r.top) / r.height) * vb.h];
+    };
+    // Re-render while keeping `anchor` at the same spot on screen.
+    const rerender = (anchor: string) => {
+      const before = pos.get(anchor);
+      render();
+      const after = pos.get(anchor);
+      if (before && after) { vb.x += after.x - before.x; vb.y += after.y - before.y; }
+      apply();
+    };
+    // Start at a readable size (UX review #1: fitting everything made names ~8 px) and let people pan.
+    // Boxes are drawn at about their real size; the root person sits near the bottom, the grandparents in view.
+    const start = (useFocus = false) => {
+      open.clear();
+      const narrow = stage.clientWidth < 700;
+      openTo(D.root, 0, START_GENS);
+      // The mother's line starts folded ("+2"): opened, her parents must clear her own brothers and sisters,
+      // which pushes her far from the root person's father and out of the start view.
+      const ma = parentsOf(D.root)[1];
+      if (ma) open.delete(ma); // a ?p= route through her opens it again
+      const route = useFocus && focusId ? pathTo(focusId) : null;
+      if (route) for (const id of route) open.add(id);
+      render();
+      const sw = stage.clientWidth;
+      if (route) { // centre on the chosen person at real size
+        const f = pos.get(focusId!)!;
+        view(f.x + W / 2, f.y + H / 2, Math.max(sw / 1.0, 360));
+        return;
+      }
+      const r = pos.get(D.root)!;
+      // Phones: the root person up to the grandparents. Wider screens: one more generation above.
+      const core = [D.root, ...parentsOf(D.root), ...parentsOf(D.root).flatMap(parentsOf)].map((id) => pos.get(id)!).filter(Boolean);
+      const lo = Math.min(...core.map((c) => c.x)), hi = Math.max(...core.map((c) => c.x)) + W;
+      const w = narrow ? Math.min(Math.max(hi - lo + 24, sw / 0.85), sw / 0.62) : Math.max(sw, hi - lo + 48, 600);
+      const cx = narrow && hi - lo + 24 > w ? pos.get(parentsOf(D.root)[0])!.x + W / 2 : (lo + hi) / 2;
+      // The root person near the bottom; when everything fits in height, centre it instead of leaving the top empty.
+      const bottom = r.y + H + 24, h = w / aspect();
+      view(cx, bottom - h < 0 ? bottom / 2 : bottom - h / 2, w);
+    };
+    const track = (e: string, props: object) => (window as any).track?.(e, props);
+    const toggle = (id: string) => {
+      if (open.has(id)) open.delete(id); else open.add(id);
+      track("tree_toggle", { open: open.has(id) });
+      rerender(id);
+      const again = svg.querySelector<SVGElement>(`[data-toggle="${CSS.escape(id)}"]`) || svg.querySelector<SVGElement>(`a.n[data-id="${CSS.escape(id)}"]`);
+      again?.focus();
+    };
+
+    stage.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const [ux, uy] = toUser(e.clientX, e.clientY);
+      zoomAt(Math.exp(e.deltaY * (e.ctrlKey ? 0.01 : 0.0015)), ux, uy);
+    }, { passive: false });
+    stage.addEventListener("dragstart", (e) => e.preventDefault());
+    const pts = new Map<number, { x: number; y: number }>();
+    let moved = 0, pinch = 0;
+    stage.addEventListener("pointerdown", (e) => {
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      moved = 0;
+      if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = Math.hypot(a.x - b.x, a.y - b.y); }
+    });
+    stage.addEventListener("pointermove", (e) => {
+      const prev = pts.get(e.pointerId);
+      if (!prev) return;
+      const cur = { x: e.clientX, y: e.clientY };
+      if (pts.size === 1) {
+        const k = vb.w / stage.clientWidth;
+        vb.x -= (cur.x - prev.x) * k; vb.y -= (cur.y - prev.y) * k;
+        moved += Math.abs(cur.x - prev.x) + Math.abs(cur.y - prev.y);
+        if (moved > 6) { stage.classList.add("drag"); if (!stage.hasPointerCapture(e.pointerId)) stage.setPointerCapture(e.pointerId); }
+        apply();
+      }
+      pts.set(e.pointerId, cur);
+      if (pts.size === 2) {
+        const [a, b] = [...pts.values()];
+        const d = Math.hypot(a.x - b.x, a.y - b.y);
+        if (pinch) { const [ux, uy] = toUser((a.x + b.x) / 2, (a.y + b.y) / 2); zoomAt(pinch / d, ux, uy); }
+        pinch = d; moved = 99;
+      }
+    });
+    const up = (e: PointerEvent) => {
+      pts.delete(e.pointerId);
+      if (pts.size < 2) pinch = 0;
+      if (!pts.size) stage.classList.remove("drag");
+      // A click only follows pointerup on the same spot; clear a stale drag flag otherwise.
+      if (!pts.size) setTimeout(() => { moved = 0; }, 400);
+    };
+    stage.addEventListener("pointerup", up);
+    stage.addEventListener("pointercancel", up);
+    // A drag must not also follow a link or toggle a line.
+    stage.addEventListener("click", (e) => { if (moved > 6) { e.preventDefault(); e.stopPropagation(); } moved = 0; }, true);
+    stage.addEventListener("click", (e) => {
+      const t = (e.target as Element).closest("[data-toggle]");
+      if (t) { e.preventDefault(); toggle(t.getAttribute("data-toggle")!); }
+    });
+    stage.addEventListener("keydown", (e) => {
+      const t = (e.target as Element).closest("[data-toggle]");
+      if (t && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); toggle(t.getAttribute("data-toggle")!); }
+    });
+    section.querySelectorAll<HTMLButtonElement>("[data-act]").forEach((b) => b.addEventListener("click", () => {
+      const a = b.dataset.act;
+      track("tree_tool", { act: a });
+      if (a === "fit") fit();
+      else if (a === "reset") start(false);
+      else if (a === "all") { for (const id of Object.keys(D.people)) open.add(id); render(); fit(); }
+      else zoomAt(a === "in" ? 0.7 : 1 / 0.7, vb.x + vb.w / 2, vb.y + vb.h / 2);
+    }));
+    new ResizeObserver(() => view(vb.x + vb.w / 2, vb.y + vb.h / 2, vb.w)).observe(stage);
+    start(true);
+    stage.dataset.ready = "1";
+  }
+</script>

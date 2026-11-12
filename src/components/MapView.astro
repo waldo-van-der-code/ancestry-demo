@@ -1,0 +1,270 @@
+---
+// Map of where the family was born, lived and died (data: src/generated/map.demo.json).
+import fs from "node:fs";
+import path from "node:path";
+import { sitePath, url, type Lang } from "../lib/site";
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const file = path.resolve("src/generated/map.demo.json");
+const all = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : null;
+const map = all;
+const config = map && {
+  ...map,
+  familyOrder: ["demo"],
+  fams: [...new Set(map.points.map((p: any) => p.f))],
+  personPath: url(lang, "person"),
+  labels: lang === "nl"
+    ? { born: "geboren", lived: "woonde", died: "overleden" }
+    : { born: "born", lived: "lived", died: "died" },
+  living: lang === "nl" ? "levend" : "living",
+  one: lang === "nl" ? "persoon" : "person", many: lang === "nl" ? "personen" : "people", more: lang === "nl" ? "meer" : "more",
+  // Play-mode notes: {n} = name or "12 people", {p} = place. Plural forms are used when several people share one note.
+  notes: lang === "nl"
+    ? { born: ["{n} werd geboren in {p}", "{n} werden geboren in {p}"], lived: ["{n} verhuisde naar {p}", "{n} verhuisden naar {p}"], died: ["{n} overleed in {p}", "{n} overleden in {p}"] }
+    : { born: ["{n} was born in {p}", "{n} were born in {p}"], lived: ["{n} moved to {p}", "{n} moved to {p}"], died: ["{n} died in {p}", "{n} died in {p}"] },
+  play: lang === "nl" ? "Afspelen" : "Play", pause: lang === "nl" ? "Pauze" : "Pause",
+  // Historical maps, laid over the normal map. WMS in Web Mercator.
+  hist: [
+    { id: "ferraris", url: "https://geo.api.vlaanderen.be/HISTCART/wms", layers: "ferraris", name: lang === "nl" ? "Ferrariskaart (1771-1778, België)" : "Ferraris map (1771-1778, Belgium)", attr: 'Ferrariskaart &copy; KBR en <a href="https://www.vlaanderen.be/digitaal-vlaanderen/onze-oplossingen/geografische-webdiensten/gebruiksrecht-en-privacyverklaring-geografische-webdiensten">Digitaal Vlaanderen</a>' },
+    { id: "popp", url: "https://geo.api.vlaanderen.be/HISTCART/wms", layers: "popp", name: lang === "nl" ? "Poppkaart (1842-1879, Vlaanderen)" : "Popp map (1842-1879, Flanders)", attr: 'Poppkaart via <a href="https://www.vlaanderen.be/digitaal-vlaanderen/onze-oplossingen/geografische-webdiensten/gebruiksrecht-en-privacyverklaring-geografische-webdiensten">Digitaal Vlaanderen</a>' },
+    { id: "tmk1850", url: "https://geoserver-bigdata.nieuwland.nl/RCE/wms", layers: "rce_tmk1850_pyramide", name: lang === "nl" ? "Topografisch-Militaire Kaart (1850, Nederland)" : "Topographic-Military Map (1850, Netherlands)", attr: 'TMK 1850 &copy; <a href="https://www.cultureelerfgoed.nl/">Rijksdienst voor het Cultureel Erfgoed</a>' },
+  ],
+  layersTitle: lang === "nl" ? "Historische kaarten" : "Historical maps",
+};
+const years = map ? map.points.map((p: any) => p.y).filter((y: any) => y) : [];
+const minY = years.length ? Math.floor(Math.min(...years) / 10) * 10 : 1600;
+const maxY = years.length ? Math.max(...years) : 2020; // the last real year, not a rounded-up 2030 (UX review #7)
+const L = lang === "nl" ? {
+  tree: "Stamboom", title: "Waar ze woonden", family: "Familie", what: "Wat", born: "geboren", lived: "woonde", died: "overleden", upTo: "Toon tot en met", onlyLiving: "Alleen levenden",
+  lede: "Elke stip is een plaats waar iemand uit de familie geboren werd, woonde of stierf. Hoe groter de stip, hoe meer mensen. Klik op een stip voor de namen.",
+  count: (e: number, p: number, l: number, u: number) => `${e} gebeurtenissen op ${p} plaatsen, ook van ${l} levende personen${u ? `; ${u} zonder gekende plaats` : ""}.`,
+} : {
+  tree: "Family tree", title: "Where they lived", family: "Family", what: "What", born: "born", lived: "lived", died: "died", upTo: "Show up to and including", onlyLiving: "Only living people",
+  lede: "Each dot is a place where someone in the family was born, lived or died. Bigger dots mean more people. Click a dot for the names.",
+  count: (e: number, p: number, l: number, u: number) => `${e} events in ${p} places, including ${l} living people${u ? `; ${u} without a known place` : ""}.`,
+};
+---
+{map && (
+  <>
+    <link rel="stylesheet" href={sitePath("/vendor/leaflet/leaflet.css")} crossorigin="anonymous" />
+    <p class="crumb"><a href={url(lang)}>← {L.tree}</a></p>
+    <h1>{L.title}</h1>
+    <p class="lede">{L.lede}</p>
+    <div class="filters">
+      <input type="checkbox" name="f" value="demo" checked hidden />
+      <fieldset>
+        <legend>{L.what}</legend>
+        <label><input type="checkbox" name="t" value="born" checked /> {L.born}</label>
+        <label><input type="checkbox" name="t" value="lived" checked /> {L.lived}</label>
+        <label><input type="checkbox" name="t" value="died" checked /> {L.died}</label>
+      </fieldset>
+      <label class="only-living"><input type="checkbox" name="l" value="1" /> {L.onlyLiving}</label>
+      <label class="year">{L.upTo} <output>{maxY}</output>
+        <input type="range" name="y" min={minY} max={maxY} step="1" value={maxY} />
+      </label>
+      <button type="button" class="play" aria-pressed="false"><span aria-hidden="true">▶</span> <span class="lbl">{config.play}</span></button>
+    </div>
+    <div class="map-wrap">
+      <div id="map" class="map" style="height: min(70vh, 640px)" role="application" aria-label={L.title}></div>
+      <div class="map-year" aria-hidden="true" hidden></div>
+      <ol class="map-notes" aria-live="polite"></ol>
+    </div>
+    <p class="muted small">{L.count(map.points.length, new Set(map.points.map((p: any) => p.p)).size, new Set(map.points.filter((p: any) => p.l).map((p: any) => p.id)).size, 0)}</p>
+    <script type="application/json" id="map-data" set:html={JSON.stringify(config).replace(/</g, "\\u003c")} />
+    <script is:inline src={sitePath("/vendor/leaflet/leaflet.js")} crossorigin="anonymous"></script>
+    <script is:inline>
+      (() => {
+        const D = JSON.parse(document.getElementById("map-data").textContent);
+        const LABEL = D.labels;
+        const ORDER = ["born", "lived", "died"];
+        const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+        // Fixed colour: CSS variables may not be applied yet when this inline script runs.
+        const fill = "#4f7f8f";
+        const map = L.map("map", { scrollWheelZoom: true, worldCopyJump: true }).setView([51.6, 4.5], 6);
+        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 18,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        }).addTo(map);
+        // Historical maps: checkboxes over the normal map, in their own pane so the tile filter below skips them.
+        map.createPane("hist").style.zIndex = 250;
+        const overlays = {};
+        for (const h of D.hist) overlays[h.name] = L.tileLayer.wms(h.url, { layers: h.layers, format: "image/png", transparent: true, version: "1.3.0", pane: "hist", opacity: 0.85, attribution: h.attr, maxZoom: 18 });
+        const ctl = L.control.layers(null, overlays, { collapsed: true }).addTo(map).getContainer();
+        ctl.querySelector(".leaflet-control-layers-list").dataset.title = D.layersTitle;
+        ctl.querySelector(".leaflet-control-layers-toggle").title = D.layersTitle;
+        const layer = L.layerGroup().addTo(map);
+        const form = document.querySelector(".filters");
+        // A family query starts with only that family.
+        const only = new URLSearchParams(location.search).get("f");
+        if (only && D.fams.includes(only)) form.querySelectorAll('input[name="f"]').forEach((i) => { i.checked = i.value === only; });
+        const slider = form.querySelector('input[name="y"]');
+        const checked = (name) => new Set([...form.querySelectorAll(`input[name="${name}"]:checked`)].map((i) => i.value));
+        // hl: the year being played; places with an event in that year get a ring.
+        const draw = (fit, hl) => {
+          const fams = checked("f");
+          const types = checked("t");
+          const upTo = +slider.value;
+          const onlyLiving = checked("l").size > 0;
+          form.querySelector("output").textContent = upTo;
+          const groups = new Map();
+          for (const pt of D.points) {
+            if (!pt.fs.some((f) => fams.has(f)) || !types.has(pt.t) || (onlyLiving && !pt.l) || (pt.y && pt.y > upTo)) continue;
+            // While playing, undated events wait for the end instead of showing up in 1700.
+            if (hl && !pt.y) continue;
+            (groups.get(pt.p) || groups.set(pt.p, []).get(pt.p)).push(pt);
+          }
+          layer.clearLayers();
+          const bounds = [];
+          // Big dots first, so smaller ones on top stay clickable.
+          const sorted = [...groups].sort((a, b) => b[1].length - a[1].length);
+          for (const [key, pts] of sorted) {
+            const pl = D.places[key];
+            const people = new Set(pts.map((p) => p.id)).size;
+            const now = hl && pts.some((p) => p.y === hl);
+            const m = L.circleMarker([pl.lat, pl.lon], { radius: Math.min(4 + Math.sqrt(people) * 2.2, 30), color: now ? "#e8b04a" : "#fff", weight: now ? 3 : 1, fillColor: fill, fillOpacity: 0.85 });
+            m.bindPopup(() => {
+              let h = `<strong>${esc(pl.name)}</strong> <span class="pm">(${people} ${people === 1 ? D.one : D.many})</span>`;
+              for (const t of ORDER) {
+                const list = pts.filter((p) => p.t === t).sort((a, b) => (a.y || 0) - (b.y || 0));
+                if (!list.length) continue;
+                h += `<div class="pt">${LABEL[t]}</div><ul>`;
+                for (const p of list.slice(0, 30)) h += `<li><a href="${D.personPath}${esc(p.id)}/">${esc(p.n)}</a>${p.y ? ` <span class="pm">${p.y}</span>` : ""}${p.l ? ` <span class="pm">· ${D.living}</span>` : ""}</li>`;
+                if (list.length > 30) h += `<li class="pm">+ ${list.length - 30} ${D.more}</li>`;
+                h += "</ul>";
+              }
+              return h;
+            }, { maxWidth: 300, maxHeight: 320 });
+            m.addTo(layer);
+            bounds.push([pl.lat, pl.lon]);
+          }
+          // Open on Europe; the emigrants overseas are one drag away.
+          const eu = bounds.filter(([lat, lon]) => lat > 35 && lat < 62 && lon > -12 && lon < 32);
+          if (fit && (eu.length || bounds.length)) map.fitBounds(eu.length ? eu : bounds, { padding: [20, 20], maxZoom: 9 });
+          document.getElementById("map").dataset.markers = String(groups.size);
+        };
+        // Play mode: step the year slider forward, ring the places of that year and show short notes.
+        const btn = form.querySelector(".play");
+        const notes = document.querySelector(".map-notes");
+        const yearBox = document.querySelector(".map-year");
+        let timer = null, lastNote = 0;
+        const PRIO = { lived: 0, born: 1, died: 2 };
+        const note = (pts, t) => {
+          const one = pts.length === 1;
+          const who = one ? `<a href="${D.personPath}${esc(pts[0].id)}/">${esc(pts[0].n)}</a>` : `${pts.length} ${D.many}`;
+          const place = esc(D.places[pts[0].p].name.split(",")[0]);
+          const li = document.createElement("li");
+          li.className = `n-${t}`;
+          li.innerHTML = D.notes[t][one ? 0 : 1].replace("{n}", who).replace("{p}", place);
+          notes.prepend(li);
+          while (notes.children.length > 4) notes.lastElementChild.remove();
+          setTimeout(() => li.classList.add("out"), 3800);
+          setTimeout(() => li.remove(), 4400);
+        };
+        const stop = () => {
+          clearTimeout(timer); timer = null;
+          btn.setAttribute("aria-pressed", "false");
+          btn.querySelector("span").textContent = "▶";
+          btn.querySelector(".lbl").textContent = D.play;
+          yearBox.hidden = true;
+          draw(false);
+        };
+        const step = () => {
+          const y = +slider.value;
+          const fams = checked("f"), types = checked("t");
+          const groups = new Map();
+          for (const pt of D.points) {
+            if (pt.y !== y || !pt.fs.some((f) => fams.has(f)) || !types.has(pt.t)) continue;
+            const k = `${pt.t}|${pt.p}`;
+            (groups.get(k) || groups.set(k, []).get(k)).push(pt);
+          }
+          draw(false, y);
+          yearBox.textContent = y;
+          // About one note a second, so they stay readable: moves first, then the biggest group.
+          const top = [...groups].sort((a, b) => PRIO[a[0].split("|")[0]] - PRIO[b[0].split("|")[0]] || b[1].length - a[1].length);
+          for (const [k, pts] of top.slice(0, 2)) {
+            const t = k.split("|")[0];
+            if (lastNote && Date.now() - lastNote < 1000) break;
+            note(pts, t);
+            lastNote = Date.now();
+          }
+          if (y >= +slider.max) { timer = setTimeout(stop, 2500); return; }
+          // Quiet years fly by; ~260 years with events take about a minute and a half.
+          timer = setTimeout(() => { slider.value = y + 1; step(); }, groups.size ? 340 : 30);
+        };
+        btn.addEventListener("click", () => {
+          if (timer) return stop();
+          if (+slider.value >= +slider.max) {
+            const ys = D.points.map((p) => p.y).filter(Boolean);
+            slider.value = Math.min(...ys);
+          }
+          notes.replaceChildren();
+          btn.setAttribute("aria-pressed", "true");
+          btn.querySelector("span").textContent = "❚❚";
+          btn.querySelector(".lbl").textContent = D.pause;
+          yearBox.hidden = false;
+          document.querySelector(".map-wrap").scrollIntoView({ block: "nearest", behavior: "smooth" });
+          lastNote = 0;
+          timer = -1; // "playing" before the first tick
+          step();
+        });
+        form.addEventListener("input", (e) => {
+          // Dragging the slider takes over from play mode.
+          if (timer && e.target === slider) { clearTimeout(timer); timer = null; stop(); return; }
+          draw(false, timer ? +slider.value : undefined);
+        });
+        draw(true);
+        // The page stylesheet can arrive after this script: re-measure and re-fit once it has.
+        addEventListener("load", () => { map.invalidateSize(); draw(true); });
+        document.getElementById("map").dataset.ready = "1";
+      })();
+    </script>
+    <style is:global>
+      :root { --map-f: #4f7f8f; }
+      .crumb { margin: 0; font-size: 0.9rem; }
+      .filters { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: flex-end; margin: 16px 0 10px; font-size: 0.92rem; }
+      .filters fieldset { border: 1px solid var(--line); border-radius: 6px; padding: 4px 12px 8px; margin: 0; display: flex; flex-wrap: wrap; gap: 4px 14px; }
+      .filters legend { color: var(--muted); font-size: 0.8rem; padding: 0 4px; }
+      .filters label { display: inline-flex; align-items: center; gap: 5px; }
+      .filters .year { flex-direction: column; align-items: flex-start; gap: 2px; min-width: 200px; }
+      .filters .year input { width: 100%; }
+      .filters .year output { font-weight: 600; color: var(--ink); }
+      .filters input { accent-color: var(--accent); }
+      .filters input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      .sw { display: inline-block; width: 12px; height: 12px; border-radius: 50%; }
+      .map { height: min(70vh, 640px); border: 1px solid var(--line); border-radius: 8px; z-index: 0; }
+      .map .leaflet-tile-pane { filter: saturate(0.55) sepia(0.15); }
+      .map .leaflet-control-layers-list::before { content: attr(data-title); display: block; font-weight: 600; margin-bottom: 4px; }
+      .map .leaflet-control-layers-expanded { max-width: calc(100vw - 50px); }
+      .filters .play { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper, #fff); color: var(--ink); font: inherit; cursor: pointer; }
+      .filters .play[aria-pressed="true"] { border-color: var(--accent); }
+      .filters .play:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      .map-wrap { position: relative; }
+      .map-year { position: absolute; top: 10px; right: 12px; z-index: 1000; pointer-events: none; font-family: var(--serif); font-size: clamp(2rem, 6vw, 3.4rem); font-weight: 700; color: #3a3530; text-shadow: 0 0 6px #fff, 0 0 12px #fff; }
+      .map-notes { position: absolute; left: 56px; top: 10px; z-index: 1000; margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; max-width: min(340px, calc(100% - 150px)); }
+      .map-notes li { background: rgba(255, 252, 245, 0.95); color: #3a3530; border-left: 4px solid var(--map-f); border-radius: 6px; padding: 6px 10px; font-family: var(--serif); font-size: 14px; line-height: 1.35; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18); animation: note-in 0.35s ease-out; transition: opacity 0.6s; }
+      .map-notes li.out { opacity: 0; }
+      .map-notes li.n-born { border-left-color: #6f9a5a; }
+      .map-notes li.n-lived { border-left-color: var(--map-f); }
+      .map-notes li.n-died { border-left-color: #8a8178; }
+      .map-notes a { color: inherit; font-weight: 600; }
+      @keyframes note-in { from { opacity: 0; transform: translateY(8px); } }
+      @media (prefers-reduced-motion: reduce) { .map-notes li { animation: none; } }
+      .small { font-size: 0.85rem; }
+      /* Phones: tighter filters so the map starts higher up; the year slider and Play share a row. */
+      @media (max-width: 700px) {
+        .filters { gap: 8px; font-size: 0.88rem; margin-top: 8px; }
+        .filters fieldset { padding: 2px 10px 6px; gap: 2px 12px; width: 100%; }
+        .filters label { min-height: 32px; }
+        .filters .year { flex: 1; min-width: 0; }
+        .map { height: 62vh !important; }
+        .map-year { font-size: 1.8rem; }
+        .map-notes { left: 52px; max-width: calc(100% - 120px); }
+        .map-notes li { font-size: 13px; padding: 4px 8px; }
+      }
+      .leaflet-popup-content { font-family: var(--serif); font-size: 14px; line-height: 1.4; }
+      .leaflet-popup-content ul { margin: 2px 0 6px; padding-left: 1.1em; }
+      .leaflet-popup-content .pt { margin-top: 6px; font-weight: 600; color: #6c6357; }
+      .leaflet-popup-content .pm { color: #6c6357; font-size: 12px; }
+    </style>
+  </>
+)}

@@ -1,0 +1,20 @@
+{
+  "name": "ancestry-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A fictional family-history website (tree, people, story, map, fun facts) built with Astro.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-data.mjs && astro build --outDir dist --silent",
+    "serve": "node scripts/serve-demo.mjs",
+    "test": "node --test evals/*.test.mjs",
+    "test:browser": "playwright test --config playwright.demo.config.ts"
+  },
+  "dependencies": {
+    "astro": "^7.3.5"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1"
+  }
+}

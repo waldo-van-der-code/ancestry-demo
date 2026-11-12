@@ -1,0 +1,2970 @@
+[
+  {
+    "id": "joannes-van-aliquam",
+    "given": "Joannes",
+    "surname": "Van Aliquam",
+    "sex": "m",
+    "birth": {
+      "date": "1789-04-12",
+      "place": "Sluis"
+    },
+    "death": {
+      "date": "1863-01-30",
+      "place": "Sluis",
+      "circumstance": null
+    },
+    "father": null,
+    "mother": null,
+    "spouses": [
+      {
+        "id": "catharina-de-loremans",
+        "order": 1,
+        "marriage": {
+          "date": "1815-05-20",
+          "place": "Sluis"
+        }
+      }
+    ],
+    "occupation": "landbouwer",
+    "residences": [
+      {
+        "place": "Sluis",
+        "period": "1789-1863"
+      }
+    ],
+    "story": "Boer op een polderhof net buiten Sluis, aan de grens met Zeeuws-Vlaanderen. Zijn doop staat in het parochieregister van Sluis; over zijn ouders zwijgt alles. In 1815 trouwde hij met Catharina De Loremans uit Eeklo, die hij kende van de markt. Ze kregen drie kinderen; Cornelis stierf als baby.",
+    "story_en": "A farmer near Sluis. In 1815 he married Catharina De Loremans from Eeklo. They had three children; Cornelis died in infancy. The fictional parish register gives his birth but no parents.",
+    "sources": [
+      {
+        "doc": "demo-parochie-sluis",
+        "ref": "doop 12 april 1789, nr. 18",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          3,
+          7
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "pieter-van-aliquam",
+      "margaretha-van-aliquam",
+      "cornelis-van-aliquam"
+    ]
+  },
+  {
+    "id": "catharina-de-loremans",
+    "given": "Catharina",
+    "surname": "De Loremans",
+    "sex": "f",
+    "birth": {
+      "date": "1793-08-03",
+      "place": "Eeklo"
+    },
+    "death": {
+      "date": "1867-03-17",
+      "place": "Sluis",
+      "circumstance": null
+    },
+    "father": null,
+    "mother": null,
+    "spouses": [
+      {
+        "id": "joannes-van-aliquam",
+        "order": 1,
+        "marriage": {
+          "date": "1815-05-20",
+          "place": "Sluis"
+        }
+      }
+    ],
+    "occupation": null,
+    "residences": [
+      {
+        "place": "Eeklo",
+        "period": "1793-1815"
+      },
+      {
+        "place": "Sluis",
+        "period": "1815-1867"
+      }
+    ],
+    "story": "Kwam in 1815 vanuit Eeklo naar Sluis en hield de boekhouding van het polderhof bij. Na de dood van haar man woonde ze bij haar zoon Pieter in. Of ze familie was van de schoolmeesters De Loremans uit Eeklo is nooit uitgezocht.",
+    "story_en": "Came from Eeklo to Sluis in 1815 and kept the farm's accounts. After her husband's death she lived with her son Pieter. Whether she was related to the De Loremans schoolmasters of Eeklo was never worked out.",
+    "sources": [
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          3,
+          7
+        ]
+      },
+      {
+        "doc": "demo-bs-eeklo",
+        "ref": "overlijdensakte 1867, nr. 41",
+        "url": "https://example.org/akten/eeklo-1867-41",
+        "pages": []
+      }
+    ],
+    "confidence": "probable",
+    "children": [
+      "pieter-van-aliquam",
+      "margaretha-van-aliquam",
+      "cornelis-van-aliquam"
+    ]
+  },
+  {
+    "id": "pieter-van-aliquam",
+    "given": "Pieter",
+    "surname": "Van Aliquam",
+    "sex": "m",
+    "birth": {
+      "date": "1824-02-20",
+      "place": "Sluis"
+    },
+    "death": {
+      "date": "1879-11-05",
+      "place": "Sluis",
+      "circumstance": null
+    },
+    "father": "joannes-van-aliquam",
+    "mother": "catharina-de-loremans",
+    "spouses": [
+      {
+        "id": "johanna-verdolor",
+        "order": 1,
+        "marriage": {
+          "date": "1853-04-16",
+          "place": "Sluis"
+        }
+      }
+    ],
+    "occupation": "landbouwer",
+    "residences": [
+      {
+        "place": "Sluis",
+        "period": "1824-1879"
+      }
+    ],
+    "story": "Nam het polderhof van zijn vader over en breidde het uit met een stuk weiland langs de Zwinresten. Trouwde in 1853 met Johanna Verdolor, de dochter van de Sluisse dorpsbakker. Kreeg vijf kinderen, onder wie de tweeling Maaike en Marie.",
+    "story_en": "Took over his father's polder farm and extended it with a tract of pasture along the Zwin remnants. Married Johanna Verdolor, daughter of the Sluis village baker, in 1853. Had five children, among them the twins Maaike and Marie.",
+    "sources": [
+      {
+        "doc": "demo-bs-sluis",
+        "ref": "geboorteakte 1824, nr. 14",
+        "url": "https://example.org/akten/sluis-1824-14",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          7,
+          8
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "jan-van-aliquam",
+      "maaike-van-aliquam",
+      "marie-van-aliquam",
+      "ida-van-aliquam"
+    ]
+  },
+  {
+    "id": "johanna-verdolor",
+    "given": "Johanna",
+    "surname": "Verdolor",
+    "sex": "f",
+    "birth": {
+      "date": "1829-06-30",
+      "place": "Sluis"
+    },
+    "death": {
+      "date": "1901-04-02",
+      "place": "Sluis",
+      "circumstance": null
+    },
+    "father": "wouter-verdolor",
+    "mother": "nele-amets",
+    "spouses": [
+      {
+        "id": "pieter-van-aliquam",
+        "order": 1,
+        "marriage": {
+          "date": "1853-04-16",
+          "place": "Sluis"
+        }
+      }
+    ],
+    "occupation": null,
+    "residences": [
+      {
+        "place": "Sluis",
+        "period": "1829-1901"
+      }
+    ],
+    "story": "Dochter van de dorpsbakker; naar verluidt kende zij als enige in Sluis het oude familierecept voor kruidenbier uit het hoofd. Stuurde haar tweelingdochters naar de naaischool in Eeklo.",
+    "story_en": "The village baker's daughter; by all accounts she was the only one in Sluis who knew the old family spiced-beer recipe by heart. Sent her twin daughters to the sewing school in Eeklo.",
+    "sources": [
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          8,
+          12
+        ]
+      },
+      {
+        "doc": "demo-verhaal-griet",
+        "pages": []
+      }
+    ],
+    "confidence": "family-story",
+    "children": [
+      "jan-van-aliquam",
+      "maaike-van-aliquam",
+      "marie-van-aliquam",
+      "ida-van-aliquam"
+    ]
+  },
+  {
+    "id": "margaretha-van-aliquam",
+    "given": "Margaretha",
+    "surname": "Van Aliquam",
+    "sex": "f",
+    "birth": {
+      "date": "1827-05-11",
+      "place": "Sluis"
+    },
+    "death": {
+      "date": "1898-12-01",
+      "place": "Gent",
+      "circumstance": null
+    },
+    "father": "joannes-van-aliquam",
+    "mother": "catharina-de-loremans",
+    "spouses": [
+      {
+        "id": "lodewijk-dolorsit",
+        "order": 1,
+        "marriage": {
+          "date": "1855-09-27",
+          "place": "Gent"
+        }
+      }
+    ],
+    "occupation": "naaister",
+    "residences": [
+      {
+        "place": "Sluis",
+        "period": "1827-1855"
+      },
+      {
+        "place": "Gent",
+        "period": "1855-1898"
+      }
+    ],
+    "story": "De oudste dochter, die in 1855 met de Gentse wever Lodewijk Dolorsit trouwde en naar Gent verhuisde. Naaide voor de Gentse burgerij. Hield haar hele leven contact met Sluis; haar laatste brief aan haar broer Pieter, uit 1897, ligt in het familieboek afgedrukt.",
+    "story_en": "The eldest daughter, who married the Ghent weaver Lodewijk Dolorsit in 1855 and moved to Ghent. Sewed for the Ghent middle class. She kept in touch with Sluis all her life; her last letter to her brother Pieter, from 1897, is printed in the family book.",
+    "sources": [
+      {
+        "doc": "demo-bs-sluis",
+        "ref": "geboorteakte 1827, nr. 22",
+        "url": "https://example.org/akten/sluis-1827-22",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          9
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "louise-dolorsit",
+      "willem-dolorsit"
+    ]
+  },
+  {
+    "id": "cornelis-van-aliquam",
+    "given": "Cornelis",
+    "surname": "Van Aliquam",
+    "sex": "m",
+    "birth": {
+      "date": "1831-09-09",
+      "place": "Sluis"
+    },
+    "death": {
+      "date": "1832-05-01",
+      "place": "Sluis",
+      "circumstance": null
+    },
+    "father": "joannes-van-aliquam",
+    "mother": "catharina-de-loremans",
+    "spouses": [],
+    "occupation": null,
+    "residences": [],
+    "story": "Stierf als baby, in het voorjaar van 1832. Zijn begrafeniskerke staat nog in het parochieregister.",
+    "story_en": "Died as a baby in the spring of 1832. His funeral entry is still in the parish register.",
+    "sources": [
+      {
+        "doc": "demo-parochie-sluis",
+        "ref": "begrafenis 1 mei 1832, fol. 61v",
+        "pages": []
+      }
+    ],
+    "confidence": "documented",
+    "children": []
+  },
+  {
+    "id": "jan-van-aliquam",
+    "given": "Jan",
+    "surname": "Van Aliquam",
+    "sex": "m",
+    "birth": {
+      "date": "1854-03-12",
+      "place": "Sluis"
+    },
+    "death": {
+      "date": "1902-05-19",
+      "place": "Schoten",
+      "circumstance": null
+    },
+    "father": "pieter-van-aliquam",
+    "mother": "johanna-verdolor",
+    "spouses": [
+      {
+        "id": "sophie-ipsenbeke",
+        "order": 1,
+        "marriage": {
+          "date": "1881-10-11",
+          "place": "Schoten"
+        }
+      }
+    ],
+    "occupation": "werkman",
+    "residences": [
+      {
+        "place": "Sluis",
+        "period": "1854-1878"
+      },
+      {
+        "place": "Schoten",
+        "period": "1878-1902"
+      }
+    ],
+    "story": "De oudste zoon, die het boerenbedrijf liet varen en in 1878 naar Schoten trok, naar het Kempens kanaal (Dessel-Schoten). Werkte er als losse werkman aan de kaden en trouwde er in 1881 met Sophie Ipsenbeke, de dochter van de sluiswachter. Thuis in Sluis hield men vol dat hij op 12 maart 1854 geboren was; de geboorteakte noemt 14 maart; die datum volgt de site.",
+    "story_en": "The eldest son, who left farming and moved to Schoten in 1878, to the Kempen canal (Dessel-Schoten). He worked there as a casual labourer on the quays and in 1881 married Sophie Ipsenbeke, the lock keeper's daughter. Back home in Sluis the family kept to 12 March 1854 as his birthday; the birth record says 14 March; this site follows the record.",
+    "sources": [
+      {
+        "doc": "demo-bs-sluis",
+        "ref": "geboorteakte 1854, nr. 27",
+        "url": "https://example.org/akten/sluis-1854-27",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          12,
+          13
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "lodewijk-van-aliquam",
+      "gustaaf-van-aliquam",
+      "gerarda-van-aliquam"
+    ]
+  },
+  {
+    "id": "sophie-ipsenbeke",
+    "given": "Sophie",
+    "surname": "Ipsenbeke",
+    "sex": "f",
+    "birth": {
+      "date": "1858-01-25",
+      "place": "Schoten"
+    },
+    "death": {
+      "date": "1930-10-03",
+      "place": "Schoten",
+      "circumstance": null
+    },
+    "father": "albert-ipsenbeke",
+    "mother": "maria-de-loremans-2",
+    "spouses": [
+      {
+        "id": "jan-van-aliquam",
+        "order": 1,
+        "marriage": {
+          "date": "1881-10-11",
+          "place": "Schoten"
+        }
+      }
+    ],
+    "occupation": null,
+    "residences": [
+      {
+        "place": "Schoten",
+        "period": "1858-1930"
+      }
+    ],
+    "story": "Groeide op in het sluishuis aan het kanaal. Haar vader leerde haar de sluisdeuren bedienen voordat ze kon lezen. Na de dood van Jan bleef ze bij haar zoon Lodewijk in het sluishuis wonen.",
+    "story_en": "Grew up in the lock house on the canal. Her father taught her to work the lock gates before she could read. After Jan's death she stayed on in the lock house with her son Lodewijk.",
+    "sources": [
+      {
+        "doc": "demo-bs-schoten",
+        "ref": "geboorteakte 1858, nr. 3",
+        "url": "https://example.org/akten/schoten-1858-3",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          13
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "lodewijk-van-aliquam",
+      "gustaaf-van-aliquam",
+      "gerarda-van-aliquam"
+    ]
+  },
+  {
+    "id": "lodewijk-van-aliquam",
+    "given": "Lodewijk",
+    "surname": "Van Aliquam",
+    "sex": "m",
+    "birth": {
+      "date": "1884-04-02",
+      "place": "Schoten"
+    },
+    "death": {
+      "date": "1974-01-11",
+      "place": "Schoten",
+      "circumstance": null
+    },
+    "father": "jan-van-aliquam",
+    "mother": "sophie-ipsenbeke",
+    "spouses": [
+      {
+        "id": "emma-de-loremans",
+        "order": 1,
+        "marriage": {
+          "date": "1911-06-10",
+          "place": "Schoten"
+        }
+      }
+    ],
+    "occupation": "sluiswachter",
+    "residences": [
+      {
+        "place": "Schoten",
+        "period": "1884-1974"
+      }
+    ],
+    "story": "Sluiswachter op het Kempens kanaal (Dessel-Schoten), bij de sluis van Schoten. Hij trouwde in 1911 met Emma De Loremans; hun huwelijk duurde meer dan tweeënzestig jaar. Hun kinderen waren de tweeling Lieve en Leen, Henri en Karel.",
+    "story_en": "A lock keeper on the Kempen canal (Dessel-Schoten), at the lock in Schoten. He married Emma De Loremans in 1911; their marriage lasted more than sixty-two years. Their children were the twins Lieve and Leen, Henri and Karel.",
+    "sources": [
+      {
+        "doc": "demo-bs-schoten",
+        "ref": "geboorteakte 1884, nr. 19",
+        "url": "https://example.org/akten/schoten-1884-19",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          15,
+          16,
+          21
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "lieve-van-aliquam",
+      "leen-van-aliquam",
+      "henri-van-aliquam",
+      "karel-van-aliquam"
+    ]
+  },
+  {
+    "id": "emma-de-loremans",
+    "given": "Emma",
+    "surname": "De Loremans",
+    "sex": "f",
+    "birth": {
+      "date": "1891-03-18",
+      "place": "Eeklo"
+    },
+    "death": {
+      "date": "1977-06-30",
+      "place": "Schoten",
+      "circumstance": null
+    },
+    "father": "hendrik-de-loremans",
+    "mother": "maaike-van-aliquam",
+    "spouses": [
+      {
+        "id": "lodewijk-van-aliquam",
+        "order": 1,
+        "marriage": {
+          "date": "1911-06-10",
+          "place": "Schoten"
+        }
+      }
+    ],
+    "occupation": "onderwijzeres",
+    "residences": [
+      {
+        "place": "Eeklo",
+        "period": "1891-1911"
+      },
+      {
+        "place": "Schoten",
+        "period": "1911-1977"
+      }
+    ],
+    "story": "Onderwijzeres uit een geslacht van schoolmeesters; gaf veertig jaar les in de jongensschool van Schoten. Ze reisde elke maand naar Eeklo en later naar Sluis om haar moeder te helpen, tot die in 1938 stierf. Na haar dood in 1977 liet ze een geschreven kroniek na die het familieboek mede mogelijk maakte.",
+    "story_en": "A schoolteacher from a line of schoolmasters; she taught for forty years at the boys' school in Schoten. She travelled every month to Eeklo and later to Sluis to help her mother until the latter's death in 1938. After her own death in 1977 she left a written chronicle that helped make the family book possible.",
+    "sources": [
+      {
+        "doc": "demo-bs-eeklo",
+        "ref": "geboorteakte 1891, nr. 55",
+        "url": "https://example.org/akten/eeklo-1891-55",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          16,
+          21
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "lieve-van-aliquam",
+      "leen-van-aliquam",
+      "henri-van-aliquam",
+      "karel-van-aliquam"
+    ]
+  },
+  {
+    "id": "henri-van-aliquam",
+    "given": "Henri",
+    "surname": "Van Aliquam",
+    "sex": "m",
+    "birth": {
+      "date": "1916-10-05",
+      "place": "Schoten"
+    },
+    "death": {
+      "date": "1978-03-29",
+      "place": "Sluis",
+      "circumstance": null
+    },
+    "father": "lodewijk-van-aliquam",
+    "mother": "emma-de-loremans",
+    "spouses": [
+      {
+        "id": "maria-ipsenbeke",
+        "order": 1,
+        "marriage": {
+          "date": "1946-09-12",
+          "place": "Sluis"
+        }
+      }
+    ],
+    "occupation": "brouwer",
+    "residences": [
+      {
+        "place": "Schoten",
+        "period": "1916-1935"
+      },
+      {
+        "place": "Sluis",
+        "period": "1935-1978"
+      }
+    ],
+    "story": "De zoon van de sluiswachter werd brouwer in Sluis. Een verzonnen krant meldt dat zijn zelfgemaakte limonade in 1927 een prijs won, toen hij tien was. Hij nam de brouwerij over in 1935 en trouwde in 1946 met Maria Ipsenbeke.",
+    "story_en": "The lock keeper's son became a brewer in Sluis. An invented newspaper reports that his homemade lemonade won a prize in 1927, when he was ten. He took over the brewery in 1935 and married Maria Ipsenbeke in 1946.",
+    "sources": [
+      {
+        "doc": "demo-bs-schoten",
+        "ref": "geboorteakte 1916, nr. 88",
+        "url": "https://example.org/akten/schoten-1916-88",
+        "pages": []
+      },
+      {
+        "doc": "demo-bs-sluis",
+        "ref": "overlijdensakte 1978, nr. 12",
+        "url": "https://example.org/akten/sluis-1978-12",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          21,
+          22
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": []
+  },
+  {
+    "id": "maria-ipsenbeke",
+    "given": "Maria",
+    "surname": "Ipsenbeke",
+    "sex": "f",
+    "birth": {
+      "date": "1920-07-21",
+      "place": "Schoten"
+    },
+    "death": {
+      "date": "1996-11-04",
+      "place": "Sluis",
+      "circumstance": null
+    },
+    "father": "henri-ipsenbeke",
+    "mother": "helena-verdolor",
+    "spouses": [
+      {
+        "id": "henri-van-aliquam",
+        "order": 1,
+        "marriage": {
+          "date": "1946-09-12",
+          "place": "Sluis"
+        }
+      }
+    ],
+    "occupation": null,
+    "residences": [
+      {
+        "place": "Schoten",
+        "period": "1920-1946"
+      },
+      {
+        "place": "Sluis",
+        "period": "1946-1996"
+      }
+    ],
+    "story": "Dochter van een sluiswachter, vrouw van een brouwer: heel haar leven tussen kanaal en brouwketel. Dreef het proeflokaal van de brouwerij en stond om vijf uur op om de eerste leveringen aan te nemen.",
+    "story_en": "A lock keeper's daughter and a brewer's wife: all her life between canal and brew kettle. She ran the brewery's tasting room and got up at five to receive the first deliveries.",
+    "sources": [
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          22
+        ]
+      },
+      {
+        "doc": "demo-verhaal-griet",
+        "pages": []
+      }
+    ],
+    "confidence": "family-story",
+    "children": []
+  },
+  {
+    "id": "karel-van-aliquam",
+    "given": "Karel",
+    "surname": "Van Aliquam",
+    "sex": "m",
+    "birth": {
+      "date": "1936-08-11",
+      "place": "Schoten"
+    },
+    "death": {
+      "date": "2020-04-03",
+      "place": "Brugge",
+      "circumstance": null
+    },
+    "father": "lodewijk-van-aliquam",
+    "mother": "emma-de-loremans",
+    "spouses": [
+      {
+        "id": "juliana-de-loremans",
+        "order": 1,
+        "marriage": {
+          "date": "1975-06-14",
+          "place": "Eeklo"
+        }
+      }
+    ],
+    "occupation": "onderwijzer",
+    "residences": [
+      {
+        "place": "Schoten",
+        "period": "1936-1975"
+      },
+      {
+        "place": "Eeklo",
+        "period": "1975-1990"
+      },
+      {
+        "place": "Brugge",
+        "period": "1990-2020"
+      }
+    ],
+    "story": "De jongste zoon van Lodewijk en Emma koos het onderwijs, net als zijn moeder. Hij trouwde in 1975 met collega Juliana De Loremans. Hun kinderen zijn Jade en Midas.",
+    "story_en": "The youngest son of Lodewijk and Emma chose teaching, like his mother. He married his colleague Juliana De Loremans in 1975. Their children are Jade and Midas.",
+    "sources": [
+      {
+        "doc": "demo-bs-schoten",
+        "ref": "geboorteakte 1936, nr. 61",
+        "url": "https://example.org/akten/schoten-1936-61",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          23
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "jade-van-aliquam",
+      "midas-van-aliquam"
+    ]
+  },
+  {
+    "id": "juliana-de-loremans",
+    "given": "Juliana",
+    "surname": "De Loremans",
+    "sex": "f",
+    "birth": {
+      "date": "1951-02-08",
+      "place": "Eeklo"
+    },
+    "death": {
+      "date": "2023-12-19",
+      "place": "Brugge",
+      "circumstance": null
+    },
+    "father": null,
+    "mother": null,
+    "spouses": [
+      {
+        "id": "karel-van-aliquam",
+        "order": 1,
+        "marriage": {
+          "date": "1975-06-14",
+          "place": "Eeklo"
+        }
+      }
+    ],
+    "occupation": "onderwijzeres",
+    "residences": [
+      {
+        "place": "Eeklo",
+        "period": "1951-1980"
+      },
+      {
+        "place": "Brugge",
+        "period": "1980-2023"
+      }
+    ],
+    "story": "Onderwijzeres in Eeklo en later in Brugge. Haar De Loremans-lijn uit Eeklo is nooit gekoppeld aan de schoolmeesterslijn van Gregorius De Loremans; twee keer dezelfde naam in één streek, zonder bewezen verwantschap. Zelf vond ze dat prachtig.",
+    "story_en": "A schoolteacher in Eeklo and later in Bruges. Her De Loremans line from Eeklo has never been tied to the schoolmasters' line of Gregorius De Loremans; the same name twice in one region, with no proven kinship. She herself found that delightful.",
+    "sources": [
+      {
+        "doc": "demo-bs-eeklo",
+        "ref": "geboorteakte 1951, nr. 33",
+        "url": "https://example.org/akten/eeklo-1951-33",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          23
+        ]
+      }
+    ],
+    "confidence": "probable",
+    "children": [
+      "jade-van-aliquam",
+      "midas-van-aliquam"
+    ]
+  },
+  {
+    "id": "jade-van-aliquam",
+    "given": "Jade",
+    "surname": "Van Aliquam",
+    "sex": "f",
+    "birth": {
+      "date": "1976-03-30",
+      "place": "Sluis"
+    },
+    "death": {
+      "date": null,
+      "place": null,
+      "circumstance": null
+    },
+    "father": "karel-van-aliquam",
+    "mother": "juliana-de-loremans",
+    "spouses": [],
+    "occupation": null,
+    "residences": [],
+    "story": null,
+    "story_en": null,
+    "sources": [
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          24
+        ]
+      }
+    ],
+    "confidence": "probable",
+    "children": []
+  },
+  {
+    "id": "midas-van-aliquam",
+    "given": "Midas",
+    "surname": "Van Aliquam",
+    "sex": "m",
+    "birth": {
+      "date": "1979-11-02",
+      "place": "Eeklo"
+    },
+    "death": {
+      "date": null,
+      "place": null,
+      "circumstance": null
+    },
+    "father": "karel-van-aliquam",
+    "mother": "juliana-de-loremans",
+    "spouses": [],
+    "occupation": null,
+    "residences": [],
+    "story": null,
+    "story_en": null,
+    "sources": [
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          24
+        ]
+      }
+    ],
+    "confidence": "probable",
+    "children": []
+  },
+  {
+    "id": "gustaaf-van-aliquam",
+    "given": "Gustaaf",
+    "surname": "Van Aliquam",
+    "sex": "m",
+    "birth": {
+      "date": "1887-06-01",
+      "place": "Schoten"
+    },
+    "death": {
+      "date": "1888-02-11",
+      "place": "Schoten",
+      "circumstance": null
+    },
+    "father": "jan-van-aliquam",
+    "mother": "sophie-ipsenbeke",
+    "spouses": [],
+    "occupation": null,
+    "residences": [],
+    "story": "Stierf als baby, in de winter van 1888.",
+    "story_en": "Died as a baby in the winter of 1888.",
+    "sources": [
+      {
+        "doc": "demo-bs-schoten",
+        "ref": "overlijdensakte 1888, nr. 7",
+        "url": "https://example.org/akten/schoten-1888-7",
+        "pages": []
+      }
+    ],
+    "confidence": "documented",
+    "children": []
+  },
+  {
+    "id": "gerarda-van-aliquam",
+    "given": "Gerarda",
+    "surname": "Van Aliquam",
+    "sex": "f",
+    "birth": {
+      "date": "1890-09-15",
+      "place": "Schoten"
+    },
+    "death": {
+      "date": "1975-04-28",
+      "place": "Schoten",
+      "circumstance": null
+    },
+    "father": "jan-van-aliquam",
+    "mother": "sophie-ipsenbeke",
+    "spouses": [],
+    "occupation": "naaister",
+    "residences": [
+      {
+        "place": "Schoten",
+        "period": "1890-1975"
+      }
+    ],
+    "story": "Bleef ongehuwd en naaide voor gezinnen langs het kanaal. Ze woonde bij haar broer Lodewijk in het sluishuis en bleef daar tot haar overlijden.",
+    "story_en": "Stayed unmarried and sewed all her life for the families along the canal. She lived in the lock house with her brother Lodewijk and stayed on in the same lock house until her death.",
+    "sources": [
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          17
+        ]
+      },
+      {
+        "doc": "demo-verhaal-griet",
+        "pages": []
+      }
+    ],
+    "confidence": "family-story",
+    "children": []
+  },
+  {
+    "id": "lieve-van-aliquam",
+    "given": "Lieve",
+    "surname": "Van Aliquam",
+    "sex": "f",
+    "birth": {
+      "date": "1912-03-21",
+      "place": "Schoten"
+    },
+    "death": {
+      "date": "2001-08-19",
+      "place": "Kortrijk",
+      "circumstance": null
+    },
+    "father": "lodewijk-van-aliquam",
+    "mother": "emma-de-loremans",
+    "spouses": [],
+    "occupation": "onderwijzeres",
+    "residences": [
+      {
+        "place": "Schoten",
+        "period": "1912-1969"
+      },
+      {
+        "place": "Kortrijk",
+        "period": "1969-2001"
+      }
+    ],
+    "story": "Het ene deel van de tweeling van 1912; haar tweelingzus is Leen. Beheerde na haar vaders pensioen de administratie van de sluis, als een van de eerste vrouwen in dienst van het kanaalbestuur. Ging in 1969 naar Kortrijk, waar ze als onderwijzeres aan de slag ging.",
+    "story_en": "One of the twin sisters born in 1912; her twin is Leen. After her father's retirement she ran the lock's paperwork, one of the first women employed by the canal board. In 1969 she moved to Kortrijk, where she became a schoolteacher.",
+    "sources": [
+      {
+        "doc": "demo-bs-schoten",
+        "ref": "geboorteakte 1912, nr. 44",
+        "url": "https://example.org/akten/schoten-1912-44",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          18
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": []
+  },
+  {
+    "id": "leen-van-aliquam",
+    "given": "Leen",
+    "surname": "Van Aliquam",
+    "sex": "f",
+    "birth": {
+      "date": "1912-03-21",
+      "place": "Schoten"
+    },
+    "death": {
+      "date": "1994-11-06",
+      "place": "Schoten",
+      "circumstance": null
+    },
+    "father": "lodewijk-van-aliquam",
+    "mother": "emma-de-loremans",
+    "spouses": [],
+    "occupation": "naaister",
+    "residences": [
+      {
+        "place": "Schoten",
+        "period": "1912-1994"
+      }
+    ],
+    "story": "De andere helft van de tweeling van 1912; bleef in Schoten en naaide, net als haar tante Gerarda, voor gezinnen langs het kanaal. Haar naam viel in de familie altijd samen met die van haar zus, vertelde tante Griet.",
+    "story_en": "The other half of the 1912 twins; she stayed in Schoten and sewed for the families along the canal, like her aunt Gerarda. Her name always came up together with her sister's in the family, aunt Griet told.",
+    "sources": [
+      {
+        "doc": "demo-bs-schoten",
+        "ref": "geboorteakte 1912, nr. 45",
+        "url": "https://example.org/akten/schoten-1912-45",
+        "pages": []
+      },
+      {
+        "doc": "demo-verhaal-griet"
+      }
+    ],
+    "confidence": "documented",
+    "children": []
+  },
+  {
+    "id": "maaike-van-aliquam",
+    "given": "Maaike",
+    "surname": "Van Aliquam",
+    "sex": "f",
+    "birth": {
+      "date": "1859-06-12",
+      "place": "Sluis"
+    },
+    "death": {
+      "date": "1938-08-30",
+      "place": "Sluis"
+    },
+    "father": "pieter-van-aliquam",
+    "mother": "johanna-verdolor",
+    "spouses": [
+      {
+        "id": "hendrik-de-loremans",
+        "order": 1,
+        "marriage": {
+          "date": "1887-04-06",
+          "place": "Eeklo"
+        }
+      }
+    ],
+    "occupation": null,
+    "residences": [
+      {
+        "place": "Sluis",
+        "period": "1859-1887"
+      },
+      {
+        "place": "Eeklo",
+        "period": "1887-1935"
+      },
+      {
+        "place": "Sluis",
+        "period": "1935-1938"
+      }
+    ],
+    "story": "Eén van de tweeling van 1859; haar geboorte stond tweemaal op één dag in het register, met dezelfde ouders. Trouwde in 1887 met de Eeklose onderwijzer Hendrik De Loremans en verhuisde naar Eeklo. In 1935 keerde ze terug naar Sluis, bij haar tweelingzus Marie, waar ze in 1938 overleed. Hun dochter Emma werd zelf onderwijzeres en huwde naar Schoten, aan het Kempens kanaal.",
+    "story_en": "One of the 1859 twins; her birth was entered twice on the same day in the register, with the same parents. In 1887 she married the Eeklo teacher Hendrik De Loremans and moved to Eeklo. In 1935 she returned to Sluis, to her twin sister Marie, and died there in 1938. Their daughter Emma became a teacher herself and married towards Schoten, on the Kempen canal.",
+    "sources": [
+      {
+        "doc": "demo-parochie-sluis",
+        "ref": "doop 12 juni 1859, nr. 49 (tweeling)",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          11
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "emma-de-loremans",
+      "griet-de-loremans"
+    ]
+  },
+  {
+    "id": "marie-van-aliquam",
+    "given": "Marie",
+    "surname": "Van Aliquam",
+    "sex": "f",
+    "birth": {
+      "date": "1859-06-12",
+      "place": "Sluis"
+    },
+    "death": {
+      "date": "1941-02-14",
+      "place": "Sluis",
+      "circumstance": null
+    },
+    "father": "pieter-van-aliquam",
+    "mother": "johanna-verdolor",
+    "spouses": [
+      {
+        "id": "jacob-verdolor",
+        "order": 1,
+        "marriage": {
+          "date": "1882-09-21",
+          "place": "Sluis"
+        }
+      }
+    ],
+    "occupation": null,
+    "residences": [
+      {
+        "place": "Sluis",
+        "period": "1859-1941"
+      }
+    ],
+    "story": "De andere helft van de tweeling van juni 1859. Ze huwde in 1882 brouwer Jacob Verdolor en bleef in Sluis. Volgens het familieboek gaf ze het recept van het familiebier door. Ze werd 81 en overleefde haar tweelingzus.",
+    "story_en": "The other half of the June 1859 twins. She married Jacob Verdolor in 1882 and stayed in Sluis. The family book credits her with passing on the family beer recipe. She lived to 81 and outlived her twin sister.",
+    "sources": [
+      {
+        "doc": "demo-parochie-sluis",
+        "ref": "doop 12 juni 1859, nr. 49 (tweeling)",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          11,
+          12
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "wouter-verdolor-2",
+      "anna-verdolor"
+    ]
+  },
+  {
+    "id": "ida-van-aliquam",
+    "given": "Ida",
+    "surname": "Van Aliquam",
+    "sex": "f",
+    "birth": {
+      "date": "1863-03-08",
+      "place": "Sluis"
+    },
+    "death": {
+      "date": "1950-01-27",
+      "place": "Sluis",
+      "circumstance": null
+    },
+    "father": "pieter-van-aliquam",
+    "mother": "johanna-verdolor",
+    "spouses": [
+      {
+        "id": "pieter-van-nemo",
+        "order": 1,
+        "marriage": {
+          "date": "1886-05-11",
+          "place": "Sluis"
+        }
+      }
+    ],
+    "occupation": null,
+    "residences": [
+      {
+        "place": "Sluis",
+        "period": "1863-1950"
+      }
+    ],
+    "story": "De jongste van het gezin; trouwde in 1886 met Pieter Van Nemo. Hun zoon Georges emigreerde in 1912 naar Detroit; de enige tak van de familie buiten de Lage Landen. Ida zag in 1947 een foto van haar kleinkinderen in Detroit, vertelde tante Griet, en hing die boven de haard.",
+    "story_en": "The youngest of the family; she married Pieter Van Nemo in 1886. Their son Georges emigrated to Detroit in 1912; the only branch of the family outside the Low Countries. Aunt Griet told that in 1947 Ida saw a photograph of her grandchildren in Detroit and hung it above the hearth.",
+    "sources": [
+      {
+        "doc": "demo-bs-sluis",
+        "ref": "geboorteakte 1863, nr. 9",
+        "url": "https://example.org/akten/sluis-1863-9",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          11,
+          19
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "georges-van-nemo",
+      "antje-van-nemo"
+    ]
+  },
+  {
+    "id": "wouter-verdolor",
+    "given": "Wouter",
+    "surname": "Verdolor",
+    "sex": "m",
+    "birth": {
+      "date": "1791-01-19",
+      "place": "Sluis"
+    },
+    "death": {
+      "date": "1862-12-03",
+      "place": "Sluis",
+      "circumstance": null
+    },
+    "father": null,
+    "mother": null,
+    "spouses": [
+      {
+        "id": "nele-amets",
+        "order": 1,
+        "marriage": {
+          "date": "1818-10-30",
+          "place": "Sluis"
+        }
+      }
+    ],
+    "occupation": "broodbakker",
+    "residences": [
+      {
+        "place": "Sluis",
+        "period": "1791-1862"
+      }
+    ],
+    "story": "Dorpsbakker van Sluis; zijn oven stak bij hoogwater boven het polderwater uit, zei men.",
+    "story_en": "The village baker of Sluis; his oven, people said, stood above the polder water at high tide.",
+    "sources": [
+      {
+        "doc": "demo-parochie-sluis",
+        "ref": "doop 19 januari 1791, nr. 4",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          10
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "johanna-verdolor"
+    ]
+  },
+  {
+    "id": "nele-amets",
+    "given": "Nele",
+    "surname": "Amets",
+    "sex": "f",
+    "birth": {
+      "date": "1796-05-23",
+      "place": "Sluis"
+    },
+    "death": {
+      "date": "1869-07-09",
+      "place": "Sluis",
+      "circumstance": null
+    },
+    "father": null,
+    "mother": null,
+    "spouses": [
+      {
+        "id": "wouter-verdolor",
+        "order": 1,
+        "marriage": {
+          "date": "1818-10-30",
+          "place": "Sluis"
+        }
+      }
+    ],
+    "occupation": null,
+    "residences": [
+      {
+        "place": "Sluis",
+        "period": "1796-1869"
+      }
+    ],
+    "story": "De vrouw van de dorpsbakker; verkocht op marktdagen eieren en boter in Eeklo en Aardenburg. Over haar jeugd is niets bekend; haar naam duikt pas op in haar huwelijksakte van 1818.",
+    "story_en": "The village baker's wife; on market days she sold eggs and butter in Eeklo and Aardenburg. Nothing is known about her youth; her name first appears in her 1818 marriage record.",
+    "sources": [
+      {
+        "doc": "demo-parochie-sluis",
+        "ref": "huwelijk 30 oktober 1818, nr. 12",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          10
+        ]
+      }
+    ],
+    "confidence": "probable",
+    "children": [
+      "johanna-verdolor"
+    ]
+  },
+  {
+    "id": "jacob-verdolor",
+    "given": "Jacob",
+    "surname": "Verdolor",
+    "sex": "m",
+    "birth": {
+      "date": "1831-11-07",
+      "place": "Sluis"
+    },
+    "death": {
+      "date": "1899-05-17",
+      "place": "Sluis",
+      "circumstance": null
+    },
+    "father": null,
+    "mother": null,
+    "spouses": [
+      {
+        "id": "marie-van-aliquam",
+        "order": 1,
+        "marriage": {
+          "date": "1882-09-21",
+          "place": "Sluis"
+        }
+      }
+    ],
+    "occupation": "brouwer",
+    "residences": [
+      {
+        "place": "Sluis",
+        "period": "1831-1899"
+      }
+    ],
+    "story": "Brouwer in Sluis. Zijn ouders staan niet in het verzonnen familieboek. Hij trouwde met Marie Van Aliquam; hun kinderen waren Wouter en Anna.",
+    "story_en": "A brewer in Sluis. His parents are not named in the fictional family book. He married Marie Van Aliquam; their children were Wouter and Anna.",
+    "sources": [
+      {
+        "doc": "demo-bs-sluis",
+        "ref": "geboorteakte 1831, nr. 33",
+        "url": "https://example.org/akten/sluis-1831-33",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          12
+        ]
+      }
+    ],
+    "confidence": "probable",
+    "children": [
+      "wouter-verdolor-2",
+      "anna-verdolor"
+    ]
+  },
+  {
+    "id": "wouter-verdolor-2",
+    "given": "Wouter",
+    "surname": "Verdolor",
+    "sex": "m",
+    "birth": {
+      "date": "1884-03-12",
+      "place": "Sluis"
+    },
+    "death": {
+      "date": "1966-09-08",
+      "place": "Middelburg"
+    },
+    "father": "jacob-verdolor",
+    "mother": "marie-van-aliquam",
+    "spouses": [
+      {
+        "id": "stien-consectetur",
+        "order": 1,
+        "marriage": {
+          "date": "1912-06-05",
+          "place": "Sluis"
+        }
+      }
+    ],
+    "occupation": "brouwer",
+    "residences": [
+      {
+        "place": "Sluis",
+        "period": "1884-1920"
+      },
+      {
+        "place": "Middelburg",
+        "period": "1920-1966"
+      }
+    ],
+    "story": "Werkte tot 1920 in de brouwerij en verhuisde later naar Middelburg. Hij bleef eigenaar tot hij de brouwerij in 1935 aan familielid Henri Van Aliquam verkocht.",
+    "story_en": "He worked in the brewery until 1920 and later moved to Middelburg. He retained ownership until selling the brewery to his relative Henri Van Aliquam in 1935.",
+    "sources": [
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          13,
+          22
+        ]
+      },
+      {
+        "doc": "demo-verhaal-griet",
+        "pages": []
+      }
+    ],
+    "confidence": "family-story",
+    "children": []
+  },
+  {
+    "id": "stien-consectetur",
+    "given": "Stien",
+    "surname": "Consectetur",
+    "sex": "f",
+    "birth": {
+      "date": "1889-04-17",
+      "place": "Sluis"
+    },
+    "death": {
+      "date": "1975-12-24",
+      "place": "Middelburg",
+      "circumstance": null
+    },
+    "father": null,
+    "mother": null,
+    "spouses": [
+      {
+        "id": "wouter-verdolor-2",
+        "order": 1,
+        "marriage": {
+          "date": "1912-06-05",
+          "place": "Sluis"
+        }
+      }
+    ],
+    "occupation": null,
+    "residences": [
+      {
+        "place": "Sluis",
+        "period": "1889-1920"
+      },
+      {
+        "place": "Middelburg",
+        "period": "1920-1975"
+      }
+    ],
+    "story": "Vrouw van Wouter II; hield het huishouden van de brouwerswoning en later van het Middelburgse pensionnetje. Alles wat over haar bekend is, komt uit het verhaal van tante Griet.",
+    "story_en": "Wouter II's wife; she kept the brewery household and later their small Middelburg boarding house. Everything known about her comes from aunt Griet's story.",
+    "sources": [
+      {
+        "doc": "demo-verhaal-griet",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          14
+        ]
+      }
+    ],
+    "confidence": "family-story",
+    "children": []
+  },
+  {
+    "id": "anna-verdolor",
+    "given": "Anna",
+    "surname": "Verdolor",
+    "sex": "f",
+    "birth": {
+      "date": "1888-08-29",
+      "place": "Sluis"
+    },
+    "death": {
+      "date": "1971-03-03",
+      "place": "Middelburg",
+      "circumstance": null
+    },
+    "father": "jacob-verdolor",
+    "mother": "marie-van-aliquam",
+    "spouses": [
+      {
+        "id": "leopold-dolorsit",
+        "order": 1,
+        "marriage": {
+          "date": "1917-04-14",
+          "place": "Sluis"
+        }
+      }
+    ],
+    "occupation": "naaister",
+    "residences": [
+      {
+        "place": "Sluis",
+        "period": "1888-1917"
+      },
+      {
+        "place": "Middelburg",
+        "period": "1917-1971"
+      }
+    ],
+    "story": "De jongere brouwersdochter; naaide eerst in Sluis en verhuisde in 1917 met haar man Leopold Dolorsit naar Middelburg. Haar zoon Gerard is de enige Dolorsit die in Zeeland geboren werd.",
+    "story_en": "The younger brewer's daughter; she sewed in Sluis first and in 1917 moved to Middelburg with her husband Leopold Dolorsit. Her son Gerard is the only Dolorsit born in Zeeland.",
+    "sources": [
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          14
+        ]
+      },
+      {
+        "doc": "demo-bs-sluis",
+        "ref": "geboorteakte 1888, nr. 40",
+        "url": "https://example.org/akten/sluis-1888-40",
+        "pages": []
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "gerard-dolorsit"
+    ]
+  },
+  {
+    "id": "gerard-dolorsit",
+    "given": "Gerard",
+    "surname": "Dolorsit",
+    "sex": "m",
+    "birth": {
+      "date": "1919-01-30",
+      "place": "Middelburg"
+    },
+    "death": {
+      "date": "1997-10-15",
+      "place": "Brugge",
+      "circumstance": null
+    },
+    "father": "leopold-dolorsit",
+    "mother": "anna-verdolor",
+    "spouses": [],
+    "occupation": "werkman",
+    "residences": [
+      {
+        "place": "Middelburg",
+        "period": "1919-1948"
+      },
+      {
+        "place": "Brugge",
+        "period": "1948-1997"
+      }
+    ],
+    "story": "Geboren in Middelburg, werken vond hij in Brugge, bij de werkplaatsen van de spoorweg. Kwam elke kerst terug naar Sluis, naar de brouwerij van Henri.",
+    "story_en": "Born in Middelburg, he found work in Bruges, at the railway workshops. He came back to Sluis every Christmas, to Henri's brewery.",
+    "sources": [
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          14
+        ]
+      },
+      {
+        "doc": "demo-verhaal-griet",
+        "pages": []
+      }
+    ],
+    "confidence": "family-story",
+    "children": []
+  },
+  {
+    "id": "gregorius-de-loremans",
+    "given": "Gregorius",
+    "surname": "De Loremans",
+    "sex": "m",
+    "birth": {
+      "date": "1791-07-14",
+      "place": "Eeklo"
+    },
+    "death": {
+      "date": "1861-12-09",
+      "place": "Eeklo",
+      "circumstance": null
+    },
+    "father": null,
+    "mother": null,
+    "spouses": [
+      {
+        "id": "jacoba-dolorsit",
+        "order": 1,
+        "marriage": {
+          "date": "1816-02-11",
+          "place": "Eeklo"
+        }
+      }
+    ],
+    "occupation": "onderwijzer",
+    "residences": [
+      {
+        "place": "Eeklo",
+        "period": "1791-1861"
+      }
+    ],
+    "story": "Schoolmeester in Eeklo. Zijn zonen Hendrik en Jules gingen ook het onderwijs in. Zijn dochter Maria huwde de sluiswachter Albert Ipsenbeke.",
+    "story_en": "A schoolmaster in Eeklo. His sons Hendrik and Jules also became teachers. His daughter Maria married the lock keeper Albert Ipsenbeke.",
+    "sources": [
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          5
+        ]
+      },
+      {
+        "doc": "demo-bs-eeklo",
+        "ref": "overlijdensakte 1861, nr. 77",
+        "url": "https://example.org/akten/eeklo-1861-77",
+        "pages": []
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "hendrik-de-loremans",
+      "maria-de-loremans-2",
+      "jules-de-loremans"
+    ]
+  },
+  {
+    "id": "jacoba-dolorsit",
+    "given": "Jacoba",
+    "surname": "Dolorsit",
+    "sex": "f",
+    "birth": {
+      "date": "1796-09-02",
+      "place": "Gent"
+    },
+    "death": {
+      "date": "1852-05-28",
+      "place": "Eeklo",
+      "circumstance": null
+    },
+    "father": null,
+    "mother": null,
+    "spouses": [
+      {
+        "id": "gregorius-de-loremans",
+        "order": 1,
+        "marriage": {
+          "date": "1816-02-11",
+          "place": "Eeklo"
+        }
+      }
+    ],
+    "occupation": null,
+    "residences": [
+      {
+        "place": "Gent",
+        "period": "1796-1816"
+      },
+      {
+        "place": "Eeklo",
+        "period": "1816-1852"
+      }
+    ],
+    "story": "Uit Gent, naar Eeklo gehuwd met de schoolmeester. Haar Dolorsit-lijn staat los van de Dolorsits uit het verhaal van Margaretha Van Aliquam; vermoedelijk, want bewezen is niets.",
+    "story_en": "From Ghent, married to the schoolmaster and so moved to Eeklo. Her Dolorsit line is separate from the Dolorsits in Margaretha Van Aliquam's story; presumably, for nothing is proven.",
+    "sources": [
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          5
+        ]
+      }
+    ],
+    "confidence": "probable",
+    "children": [
+      "hendrik-de-loremans",
+      "maria-de-loremans-2",
+      "jules-de-loremans"
+    ]
+  },
+  {
+    "id": "hendrik-de-loremans",
+    "given": "Hendrik",
+    "surname": "De Loremans",
+    "sex": "m",
+    "birth": {
+      "date": "1834-10-08",
+      "place": "Eeklo"
+    },
+    "death": {
+      "date": "1905-03-19",
+      "place": "Eeklo",
+      "circumstance": null
+    },
+    "father": "gregorius-de-loremans",
+    "mother": "jacoba-dolorsit",
+    "spouses": [
+      {
+        "id": "maaike-van-aliquam",
+        "order": 1,
+        "marriage": {
+          "date": "1887-04-06",
+          "place": "Eeklo"
+        }
+      }
+    ],
+    "occupation": "onderwijzer",
+    "residences": [
+      {
+        "place": "Eeklo",
+        "period": "1826-1905"
+      }
+    ],
+    "story": "Onderwijzer zoals zijn vader; huwde in 1887, op zijn drieënvijftigste, de Sluisse Maaike Van Aliquam. Voor het schoollokaal ernaast stond zijn huis vol met de geschriften van zijn vader; zijn dochter Emma en kleindochter lijn bleven in het onderwijs.",
+    "story_en": "A teacher like his father; he married the Sluis-born Maaike Van Aliquam in 1887, at fifty-three. The house next to the schoolroom was full of his father's writings; his daughter Emma and her line stayed in teaching.",
+    "sources": [
+      {
+        "doc": "demo-bs-eeklo",
+        "ref": "geboorteakte 1826, nr. 58",
+        "url": "https://example.org/akten/eeklo-1826-58",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          6,
+          11
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "emma-de-loremans",
+      "griet-de-loremans"
+    ]
+  },
+  {
+    "id": "griet-de-loremans",
+    "given": "Griet",
+    "surname": "De Loremans",
+    "sex": "f",
+    "birth": {
+      "date": "1894-01-26",
+      "place": "Eeklo"
+    },
+    "death": {
+      "date": "1981-05-09",
+      "place": "Eeklo",
+      "circumstance": null
+    },
+    "father": "hendrik-de-loremans",
+    "mother": "maaike-van-aliquam",
+    "spouses": [],
+    "occupation": "naaister",
+    "residences": [
+      {
+        "place": "Eeklo",
+        "period": "1894-1981"
+      }
+    ],
+    "story": "Bleef ongehuwd in Eeklo en werd de vertelster van de familie: bijna alles wat oudere generaties over zichzelf vertelden, is door haar in 1980 opgetekend. Het familieboek noemt haar overal als bron. Haar naaimachine staat nog in het familiebezit; dat wil zeggen: in dit verhaal.",
+    "story_en": "She stayed unmarried in Eeklo and became the family's storyteller: nearly everything the older generations told about themselves was written down by her in 1980. The family book cites her throughout. Her sewing machine is still in the family's possession; that is, in this story.",
+    "sources": [
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          24
+        ]
+      },
+      {
+        "doc": "demo-verhaal-griet",
+        "pages": []
+      }
+    ],
+    "confidence": "family-story",
+    "children": []
+  },
+  {
+    "id": "maria-de-loremans-2",
+    "given": "Maria",
+    "surname": "De Loremans",
+    "sex": "f",
+    "birth": {
+      "date": "1832-04-19",
+      "place": "Eeklo"
+    },
+    "death": {
+      "date": "1897-08-23",
+      "place": "Schoten",
+      "circumstance": null
+    },
+    "father": "gregorius-de-loremans",
+    "mother": "jacoba-dolorsit",
+    "spouses": [
+      {
+        "id": "albert-ipsenbeke",
+        "order": 1,
+        "marriage": {
+          "date": "1855-11-08",
+          "place": "Schoten"
+        }
+      }
+    ],
+    "occupation": null,
+    "residences": [
+      {
+        "place": "Eeklo",
+        "period": "1832-1855"
+      },
+      {
+        "place": "Schoten",
+        "period": "1855-1897"
+      }
+    ],
+    "story": "De dochter van de schoolmeester die naar het kanaal trouwde: in 1855 met de sluiswachter Albert Ipsenbeke uit Schoten. Bracht de geschriften van haar vader mee naar het sluishuis; haar dochter Sophie leerde er lezen vóór de schoolleeftijd.",
+    "story_en": "The schoolmaster's daughter who married towards the canal: in 1855 to the Schoten lock keeper Albert Ipsenbeke. She brought her father's writings along to the lock house; her daughter Sophie learned to read there before school age.",
+    "sources": [
+      {
+        "doc": "demo-bs-eeklo",
+        "ref": "geboorteakte 1832, nr. 23",
+        "url": "https://example.org/akten/eeklo-1832-23",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          6
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "sophie-ipsenbeke",
+      "alfons-ipsenbeke"
+    ]
+  },
+  {
+    "id": "jules-de-loremans",
+    "given": "Jules",
+    "surname": "De Loremans",
+    "sex": "m",
+    "birth": {
+      "date": "1837-12-03",
+      "place": "Eeklo"
+    },
+    "death": {
+      "date": "1902-07-28",
+      "place": "Eeklo",
+      "circumstance": null
+    },
+    "father": "gregorius-de-loremans",
+    "mother": "jacoba-dolorsit",
+    "spouses": [],
+    "occupation": "onderwijzer",
+    "residences": [
+      {
+        "place": "Eeklo",
+        "period": "1837-1902"
+      }
+    ],
+    "story": "De derde schoolmeester van het gezin; bleef ongehuwd. Schreef tussen 1880 en 1900 de eerste familie-kroniek, die later deels in het familieboek van 1972 terechtkwam.",
+    "story_en": "The third schoolmaster of the family; he stayed unmarried. Between 1880 and 1900 he wrote the first family chronicle, parts of which later ended up in the 1972 family book.",
+    "sources": [
+      {
+        "doc": "demo-bs-eeklo",
+        "ref": "overlijdensakte 1902, nr. 66",
+        "url": "https://example.org/akten/eeklo-1902-66",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          6,
+          24
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": []
+  },
+  {
+    "id": "albert-ipsenbeke",
+    "given": "Albert",
+    "surname": "Ipsenbeke",
+    "sex": "m",
+    "birth": {
+      "date": "1826-02-27",
+      "place": "Schoten"
+    },
+    "death": {
+      "date": "1888-03-02",
+      "place": "Schoten",
+      "circumstance": null
+    },
+    "father": null,
+    "mother": null,
+    "spouses": [
+      {
+        "id": "maria-de-loremans-2",
+        "order": 1,
+        "marriage": {
+          "date": "1855-11-08",
+          "place": "Schoten"
+        }
+      }
+    ],
+    "occupation": "sluiswachter",
+    "residences": [
+      {
+        "place": "Schoten",
+        "period": "1826-1888"
+      }
+    ],
+    "story": "Sluiswachter op het Kempens kanaal. Een fictief register uit 1850 vermeldt zijn naam. Zijn zoon Alfons en kleinzonen Henri en Lodewijk gingen hetzelfde vak in.",
+    "story_en": "A lock keeper on the Kempen canal, named in a fictional register from 1850. His son Alfons and grandsons Henri and Lodewijk followed him into the same trade.",
+    "sources": [
+      {
+        "doc": "demo-bs-schoten",
+        "ref": "geboorteakte 1826, nr. 2",
+        "url": "https://example.org/akten/schoten-1826-2",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          13
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "sophie-ipsenbeke",
+      "alfons-ipsenbeke"
+    ]
+  },
+  {
+    "id": "alfons-ipsenbeke",
+    "given": "Alfons",
+    "surname": "Ipsenbeke",
+    "sex": "m",
+    "birth": {
+      "date": "1861-11-19",
+      "place": "Schoten"
+    },
+    "death": {
+      "date": "1919-06-04",
+      "place": "Schoten",
+      "circumstance": null
+    },
+    "father": "albert-ipsenbeke",
+    "mother": "maria-de-loremans-2",
+    "spouses": [
+      {
+        "id": "louise-dolorsit",
+        "order": 1,
+        "marriage": {
+          "date": "1890-02-18",
+          "place": "Schoten"
+        }
+      }
+    ],
+    "occupation": "sluiswachter",
+    "residences": [
+      {
+        "place": "Schoten",
+        "period": "1861-1919"
+      }
+    ],
+    "story": "Volgde zijn vader op als sluiswachter, van 1888 tot zijn dood in 1919. Trouwde in 1890 met Louise Dolorsit uit Gent. Zijn zoon Henri en diens dochter Maria woonden weer in het sluishuis.",
+    "story_en": "Succeeded his father as lock keeper, from 1888 until his death in 1919. In 1890 he married Louise Dolorsit from Ghent. His son Henri and the latter's daughter Maria lived in the lock house in their turn.",
+    "sources": [
+      {
+        "doc": "demo-bs-schoten",
+        "ref": "geboorteakte 1861, nr. 14",
+        "url": "https://example.org/akten/schoten-1861-14",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          13
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "henri-ipsenbeke",
+      "mathilde-ipsenbeke"
+    ]
+  },
+  {
+    "id": "louise-dolorsit",
+    "given": "Louise",
+    "surname": "Dolorsit",
+    "sex": "f",
+    "birth": {
+      "date": "1858-04-14",
+      "place": "Gent"
+    },
+    "death": {
+      "date": "1944-01-20",
+      "place": "Schoten",
+      "circumstance": null
+    },
+    "father": "lodewijk-dolorsit",
+    "mother": "margaretha-van-aliquam",
+    "spouses": [
+      {
+        "id": "alfons-ipsenbeke",
+        "order": 1,
+        "marriage": {
+          "date": "1890-02-18",
+          "place": "Schoten"
+        }
+      }
+    ],
+    "occupation": null,
+    "residences": [
+      {
+        "place": "Gent",
+        "period": "1858-1890"
+      },
+      {
+        "place": "Schoten",
+        "period": "1890-1944"
+      }
+    ],
+    "story": "Bracht als kind de Gentse kranten mee naar het sluishuis, zodat de sluiswachters als eersten het nieuws kenden. Door haar huwelijk met Alfons Ipsenbeke kruisten de Gentse Dolorsits en de kanaalfamilie elkaar.",
+    "story_en": "As a child she brought the Ghent papers to the lock house, so the lock keepers knew the news first. Through her marriage to Alfons Ipsenbeke the Ghent Dolorsits and the canal family crossed paths.",
+    "sources": [
+      {
+        "doc": "demo-bs-gent",
+        "ref": "geboorteakte 1858, nr. 121",
+        "url": "https://example.org/akten/gent-1858-121",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          9,
+          13
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "henri-ipsenbeke",
+      "mathilde-ipsenbeke"
+    ]
+  },
+  {
+    "id": "henri-ipsenbeke",
+    "given": "Henri",
+    "surname": "Ipsenbeke",
+    "sex": "m",
+    "birth": {
+      "date": "1892-09-09",
+      "place": "Schoten"
+    },
+    "death": {
+      "date": "1961-04-17",
+      "place": "Schoten",
+      "circumstance": null
+    },
+    "father": "alfons-ipsenbeke",
+    "mother": "louise-dolorsit",
+    "spouses": [
+      {
+        "id": "helena-verdolor",
+        "order": 1,
+        "marriage": {
+          "date": "1918-09-25",
+          "place": "Schoten"
+        }
+      }
+    ],
+    "occupation": "sluiswachter",
+    "residences": [
+      {
+        "place": "Schoten",
+        "period": "1892-1961"
+      }
+    ],
+    "story": "De derde generatie sluiswachter. Trouwde in 1918 met Helena Verdolor uit Sluis; hun dochter Maria huwde brouwer Henri Van Aliquam; opnieuw brouwketel en kanaal in één huwelijk.",
+    "story_en": "The third lock-keeper generation. In 1918 he married Helena Verdolor from Sluis; their daughter Maria married the brewer Henri Van Aliquam; brew kettle and canal joined again in one marriage.",
+    "sources": [
+      {
+        "doc": "demo-bs-schoten",
+        "ref": "geboorteakte 1892, nr. 61",
+        "url": "https://example.org/akten/schoten-1892-61",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          13,
+          22
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "maria-ipsenbeke"
+    ]
+  },
+  {
+    "id": "helena-verdolor",
+    "given": "Helena",
+    "surname": "Verdolor",
+    "sex": "f",
+    "birth": {
+      "date": "1895-05-13",
+      "place": "Sluis"
+    },
+    "death": {
+      "date": "1985-02-27",
+      "place": "Schoten",
+      "circumstance": null
+    },
+    "father": null,
+    "mother": null,
+    "spouses": [
+      {
+        "id": "henri-ipsenbeke",
+        "order": 1,
+        "marriage": {
+          "date": "1918-09-25",
+          "place": "Schoten"
+        }
+      }
+    ],
+    "guess": true,
+    "residences": [
+      {
+        "place": "Sluis",
+        "period": "1895-1918"
+      },
+      {
+        "place": "Schoten",
+        "period": "1918-1985"
+      }
+    ],
+    "story": "Volgens het familieboek een Verdolor uit Sluis; welke tak precies, is niet uitgezocht; haar naam is een gok die in de familie mondeling werd doorgegeven. Ze zou de kleindochter van brouwer Jacob zijn geweest, maar daarvoor ontbreekt een akte.",
+    "story_en": "According to the family book a Verdolor from Sluis; which branch exactly has never been worked out; her name is a guess passed on orally in the family. She is said to have been the brewer Jacob's granddaughter, but there is no record for that.",
+    "sources": [
+      {
+        "doc": "demo-verhaal-griet",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          22
+        ]
+      }
+    ],
+    "confidence": "family-story",
+    "children": [
+      "maria-ipsenbeke"
+    ]
+  },
+  {
+    "id": "mathilde-ipsenbeke",
+    "given": "Mathilde",
+    "surname": "Ipsenbeke",
+    "sex": "f",
+    "birth": {
+      "date": "1896-10-31",
+      "place": "Schoten"
+    },
+    "death": {
+      "date": "1988-07-08",
+      "place": "Eeklo",
+      "circumstance": null
+    },
+    "father": "alfons-ipsenbeke",
+    "mother": "louise-dolorsit",
+    "spouses": [],
+    "occupation": "onderwijzeres",
+    "residences": [
+      {
+        "place": "Schoten",
+        "period": "1896-1960"
+      },
+      {
+        "place": "Eeklo",
+        "period": "1960-1988"
+      }
+    ],
+    "story": "De dochter van de sluiswachter koos het onderwijs. Volgens het fictieve familieboek gaf ze in Schoten en later in Eeklo les.",
+    "story_en": "The lock keeper's daughter chose teaching. The fictional family book describes her work in Schoten and later in Eeklo.",
+    "sources": [
+      {
+        "doc": "demo-bs-schoten",
+        "ref": "geboorteakte 1896, nr. 77",
+        "url": "https://example.org/akten/schoten-1896-77",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          17
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": []
+  },
+  {
+    "id": "lodewijk-dolorsit",
+    "given": "Lodewijk",
+    "surname": "Dolorsit",
+    "sex": "m",
+    "birth": {
+      "date": "1822-03-15",
+      "place": "Gent"
+    },
+    "death": {
+      "date": "1885-08-08",
+      "place": "Gent",
+      "circumstance": null
+    },
+    "father": null,
+    "mother": null,
+    "spouses": [
+      {
+        "id": "margaretha-van-aliquam",
+        "order": 1,
+        "marriage": {
+          "date": "1855-09-27",
+          "place": "Gent"
+        }
+      }
+    ],
+    "occupation": "wever",
+    "residences": [
+      {
+        "place": "Gent",
+        "period": "1822-1885"
+      }
+    ],
+    "story": "Wever in de Gentse katoenweverijen. Trouwde in 1855 met Margaretha Van Aliquam, die in Gent als naaister werkte. Twee kinderen: Willem, die het weefgetouw overnam, en Louise, die naar Schoten trouwde.",
+    "story_en": "A weaver in the Ghent cotton mills. In 1855 he married Margaretha Van Aliquam, who worked in Ghent as a seamstress. Two children: Willem, who took over the loom, and Louise, who married towards Schoten.",
+    "sources": [
+      {
+        "doc": "demo-bs-gent",
+        "ref": "huwelijksakte 1855, nr. 190",
+        "url": "https://example.org/akten/gent-1855-190",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          9
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "louise-dolorsit",
+      "willem-dolorsit"
+    ]
+  },
+  {
+    "id": "willem-dolorsit",
+    "given": "Willem",
+    "surname": "Dolorsit",
+    "sex": "m",
+    "birth": {
+      "date": "1856-07-24",
+      "place": "Gent"
+    },
+    "death": {
+      "date": "1929-11-30",
+      "place": "Gent",
+      "circumstance": null
+    },
+    "father": "lodewijk-dolorsit",
+    "mother": "margaretha-van-aliquam",
+    "spouses": [
+      {
+        "id": "henrietta-consectetur",
+        "order": 1,
+        "marriage": {
+          "date": "1882-01-10",
+          "place": "Gent"
+        }
+      }
+    ],
+    "occupation": "wever",
+    "residences": [
+      {
+        "place": "Gent",
+        "period": "1856-1929"
+      }
+    ],
+    "story": "Wever zoals zijn vader. Trouwde in 1882 met Henrietta Consectetur; hun kinderen Felix en Anneke werden in 1885 en 1886 geboren. Van Felix verloor het gezin elk spoor; Anneke emigreerde met haar man naar Detroit.",
+    "story_en": "A weaver like his father. He married Henrietta Consectetur in 1882; their children Felix and Anneke were born in 1885 and 1886. Of Felix the family lost all trace; Anneke emigrated with her husband to Detroit.",
+    "sources": [
+      {
+        "doc": "demo-bs-gent",
+        "ref": "geboorteakte 1856, nr. 98",
+        "url": "https://example.org/akten/gent-1856-98",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          9,
+          20
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "felix-dolorsit",
+      "anneke-dolorsit"
+    ]
+  },
+  {
+    "id": "henrietta-consectetur",
+    "given": "Henrietta",
+    "surname": "Consectetur",
+    "sex": "f",
+    "birth": {
+      "date": "1860-02-06",
+      "place": "Gent"
+    },
+    "death": {
+      "date": "1934-04-15",
+      "place": "Gent",
+      "circumstance": null
+    },
+    "father": null,
+    "mother": null,
+    "spouses": [
+      {
+        "id": "willem-dolorsit",
+        "order": 1,
+        "marriage": {
+          "date": "1882-01-10",
+          "place": "Gent"
+        }
+      }
+    ],
+    "occupation": null,
+    "residences": [
+      {
+        "place": "Gent",
+        "period": "1860-1934"
+      }
+    ],
+    "story": "De weversvrouw in de Gentse fabrieksstraat. Na de verdwijning van haar zoon Felix zette ze tot haar dood elke maand een advertentie in de krant.",
+    "story_en": "The weaver's wife in the Ghent mill street. After her son Felix disappeared she placed a newspaper advertisement every month until her death.",
+    "sources": [
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          20
+        ]
+      },
+      {
+        "doc": "demo-verhaal-griet",
+        "pages": []
+      }
+    ],
+    "confidence": "family-story",
+    "children": [
+      "felix-dolorsit",
+      "anneke-dolorsit"
+    ]
+  },
+  {
+    "id": "felix-dolorsit",
+    "given": "Felix",
+    "surname": "Dolorsit",
+    "sex": "m",
+    "birth": {
+      "date": "1885-09-17",
+      "place": "Gent"
+    },
+    "death": {
+      "date": null,
+      "place": null,
+      "circumstance": null
+    },
+    "father": "willem-dolorsit",
+    "mother": "henrietta-consectetur",
+    "spouses": [],
+    "occupation": "werkman",
+    "residences": [
+      {
+        "place": "Gent",
+        "period": "1885-1907"
+      },
+      {
+        "place": "Antwerpen",
+        "period": "1907-"
+      }
+    ],
+    "story": "Trok in 1907 als dokwerker naar Antwerpen en verdween daarna uit het zicht. In het Antwerpse overlijdensregister van 1919 staat een F. Dolorsit, dokwerker, 34 jaar; precies het juiste geboortejaar. Die akte is hier opzettelijk niet overgenomen: de initialen en het vak kloppen, maar zeker is het niet, en dus blijft zijn overlijden onbekend. [Mogelijke akte (fictief, niet aanvaard)](https://example.org/akten/antwerpen-1919-887).",
+    "story_en": "He moved to Antwerp as a dock worker in 1907 and then vanished from sight. In the Antwerp death register of 1919 there is a F. Dolorsit, dock worker, aged 34; exactly the right birth year. That record is deliberately not adopted here: the initial and the trade fit, but it is not certain, so his death remains unknown. [Possible record (fictional, not accepted)](https://example.org/akten/antwerpen-1919-887).",
+    "sources": [
+      {
+        "doc": "demo-bs-gent",
+        "ref": "geboorteakte 1885, nr. 143",
+        "url": "https://example.org/akten/gent-1885-143",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          20
+        ]
+      }
+    ],
+    "confidence": "uncertain",
+    "children": []
+  },
+  {
+    "id": "anneke-dolorsit",
+    "given": "Anneke",
+    "surname": "Dolorsit",
+    "sex": "f",
+    "birth": {
+      "date": "1886-11-27",
+      "place": "Gent"
+    },
+    "death": {
+      "date": "1976-05-30",
+      "place": "Detroit (Michigan)"
+    },
+    "father": "willem-dolorsit",
+    "mother": "henrietta-consectetur",
+    "spouses": [
+      {
+        "id": "georges-van-nemo",
+        "order": 1,
+        "marriage": {
+          "date": "1907-04-03",
+          "place": "Sluis"
+        }
+      }
+    ],
+    "occupation": "naaister",
+    "residences": [
+      {
+        "place": "Gent",
+        "period": "1886-1907"
+      },
+      {
+        "place": "Sluis",
+        "period": "1907-1912"
+      },
+      {
+        "place": "Detroit (Michigan)",
+        "period": "1912-1976"
+      }
+    ],
+    "story": "De jongste van de weverskinderen; naaide in Gent, huwde in 1907 in Sluis Georges Van Nemo en voer vijf jaar later met hem naar Amerika. In Detroit hield ze een kosthuis voor brouwerijarbeiders en schreef ze elke week een brief naar Sluis; de brieven van na 1940 zijn bewaard, staat in het familieboek.",
+    "story_en": "The youngest of the weaver's children; she sewed in Ghent, married Georges Van Nemo in Sluis in 1907 and sailed with him to America five years later. In Detroit she kept a boarding house for brewery workers and wrote a letter to Sluis every week; the letters after 1940 survive, the family book says.",
+    "sources": [
+      {
+        "doc": "demo-bs-gent",
+        "ref": "geboorteakte 1886, nr. 156",
+        "url": "https://example.org/akten/gent-1886-156",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          20,
+          21
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "harold-van-nemo",
+      "margriet-van-nemo"
+    ]
+  },
+  {
+    "id": "leopold-dolorsit",
+    "given": "Leopold",
+    "surname": "Dolorsit",
+    "sex": "m",
+    "birth": {
+      "date": "1887-01-08",
+      "place": "Gent"
+    },
+    "death": {
+      "date": "1948-06-19",
+      "place": "Middelburg",
+      "circumstance": null
+    },
+    "father": null,
+    "mother": null,
+    "spouses": [
+      {
+        "id": "anna-verdolor",
+        "order": 1,
+        "marriage": {
+          "date": "1917-04-14",
+          "place": "Sluis"
+        }
+      }
+    ],
+    "guess": true,
+    "occupation": "werkman",
+    "residences": [
+      {
+        "place": "Gent",
+        "period": "1887-1917"
+      },
+      {
+        "place": "Middelburg",
+        "period": "1917-1948"
+      }
+    ],
+    "story": "Volgens tante Griet een Dolorsit uit de Gentse lijn; zijn ouders zijn niet bekend; de koppeling aan die lijn is een gok. Werkte in Gent aan het spoor en verhuisde in 1917 met zijn vrouw Anna Verdolor naar Middelburg.",
+    "story_en": "According to aunt Griet a Dolorsit from the Ghent line; his parents are not known; the link to that line is a guess. He worked on the railways in Ghent and in 1917 moved to Middelburg with his wife Anna Verdolor.",
+    "sources": [
+      {
+        "doc": "demo-verhaal-griet",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          14
+        ]
+      }
+    ],
+    "confidence": "family-story",
+    "children": [
+      "gerard-dolorsit"
+    ]
+  },
+  {
+    "id": "pieter-van-nemo",
+    "given": "Pieter",
+    "surname": "Van Nemo",
+    "sex": "m",
+    "birth": {
+      "date": "1863-08-05",
+      "place": "Sluis"
+    },
+    "death": {
+      "date": "1938-04-26",
+      "place": "Sluis",
+      "circumstance": null
+    },
+    "father": null,
+    "mother": null,
+    "spouses": [
+      {
+        "id": "ida-van-aliquam",
+        "order": 1,
+        "marriage": {
+          "date": "1886-05-11",
+          "place": "Sluis"
+        }
+      }
+    ],
+    "occupation": "werkman",
+    "residences": [
+      {
+        "place": "Sluis",
+        "period": "1863-1938"
+      }
+    ],
+    "story": "Arbeider in Sluis; trouwde in 1886 met Ida Van Aliquam. Hun zoon Georges werd brouwerijarbeider en emigreerde; dochter Antje bleef in Sluis.",
+    "story_en": "A labourer in Sluis; he married Ida Van Aliquam in 1886. Their son Georges became a brewery worker and emigrated; daughter Antje stayed in Sluis.",
+    "sources": [
+      {
+        "doc": "demo-bs-sluis",
+        "ref": "geboorteakte 1863, nr. 30",
+        "url": "https://example.org/akten/sluis-1863-30",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          19
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "georges-van-nemo",
+      "antje-van-nemo"
+    ]
+  },
+  {
+    "id": "georges-van-nemo",
+    "given": "Georges",
+    "surname": "Van Nemo",
+    "sex": "m",
+    "aka": [
+      "George"
+    ],
+    "birth": {
+      "date": "1888-03-14",
+      "place": "Sluis"
+    },
+    "death": {
+      "date": "1957-12-01",
+      "place": "Detroit (Michigan)",
+      "circumstance": null
+    },
+    "father": "pieter-van-nemo",
+    "mother": "ida-van-aliquam",
+    "spouses": [
+      {
+        "id": "anneke-dolorsit",
+        "order": 1,
+        "marriage": {
+          "date": "1907-04-03",
+          "place": "Sluis"
+        }
+      }
+    ],
+    "occupation": "brouwerijarbeider",
+    "residences": [
+      {
+        "place": "Sluis",
+        "period": "1888-1912"
+      },
+      {
+        "place": "Detroit (Michigan)",
+        "period": "1912-1957"
+      }
+    ],
+    "story": "De emigrant van de familie: leerde het brouwersvak bij de Verdolors, trouwde in 1907 met Anneke Dolorsit en voer in 1912 met haar naar Amerika. In Detroit vond hij werk in een brouwerij, waar hij tot zijn pensioen bleef. Zijn afscheid in de Sluisse krant van april 1912 is bewaard; althans, in dit verhaal.",
+    "story_en": "The family's emigrant: he learned brewing from the Verdolors, married Anneke Dolorsit in 1907 and sailed with her to America in 1912. In Detroit he found work in a brewery, where he stayed until his retirement. His farewell in the Sluis newspaper of April 1912 survives; at least, in this story.",
+    "sources": [
+      {
+        "doc": "demo-bs-sluis",
+        "ref": "geboorteakte 1888, nr. 12",
+        "url": "https://example.org/akten/sluis-1888-12",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          19,
+          21
+        ]
+      }
+    ],
+    "confidence": "documented",
+    "children": [
+      "harold-van-nemo",
+      "margriet-van-nemo"
+    ]
+  },
+  {
+    "id": "antje-van-nemo",
+    "given": "Antje",
+    "surname": "Van Nemo",
+    "sex": "f",
+    "birth": {
+      "date": "1892-01-22",
+      "place": "Sluis"
+    },
+    "death": {
+      "date": "1978-09-13",
+      "place": "Sluis",
+      "circumstance": null
+    },
+    "father": "pieter-van-nemo",
+    "mother": "ida-van-aliquam",
+    "spouses": [],
+    "occupation": "dienstbode",
+    "residences": [
+      {
+        "place": "Sluis",
+        "period": "1892-1978"
+      }
+    ],
+    "story": "Bleef ongehuwd en werkte als dienstbode bij notabelen in Sluis. Ontving elke maand een dollarbiljet uit Detroit, dat ze volgens tante Griet in een theebus bewaarde.",
+    "story_en": "She stayed unmarried and worked as a domestic servant for Sluis notables. Every month she received a dollar bill from Detroit, which, aunt Griet said, she kept in a tea caddy.",
+    "sources": [
+      {
+        "doc": "demo-bs-sluis",
+        "ref": "geboorteakte 1892, nr. 5",
+        "url": "https://example.org/akten/sluis-1892-5",
+        "pages": []
+      },
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          19
+        ]
+      },
+      {
+        "doc": "demo-verhaal-griet",
+        "pages": []
+      }
+    ],
+    "confidence": "documented",
+    "children": []
+  },
+  {
+    "id": "harold-van-nemo",
+    "given": "Harold",
+    "surname": "Van Nemo",
+    "sex": "m",
+    "birth": {
+      "date": "1914-07-19",
+      "place": "Detroit (Michigan)"
+    },
+    "death": {
+      "date": "1999-03-08",
+      "place": "Detroit (Michigan)",
+      "circumstance": null
+    },
+    "father": "georges-van-nemo",
+    "mother": "anneke-dolorsit",
+    "spouses": [
+      {
+        "id": "ellen-consectetur",
+        "order": 1,
+        "marriage": {
+          "date": "1938-06-25",
+          "place": "Detroit (Michigan)"
+        }
+      }
+    ],
+    "occupation": "brouwerijarbeider",
+    "residences": [
+      {
+        "place": "Detroit (Michigan)",
+        "period": "1914-1999"
+      }
+    ],
+    "story": "Geboren in Detroit, twee jaar na de oversteek; werkte zich op tot ploegbaas in dezelfde brouwerij als zijn vader. Sprak Vlaams zoals zijn moeder het thuis leerde, met een Amerikaans accent eroverheen.",
+    "story_en": "Born in Detroit two years after the crossing; he worked his way up to foreman in the same brewery as his father. He spoke Flemish as his mother taught it at home, with an American accent laid over it.",
+    "sources": [
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          21
+        ]
+      },
+      {
+        "doc": "demo-verhaal-griet",
+        "pages": []
+      }
+    ],
+    "confidence": "family-story",
+    "children": [
+      "norbert-van-nemo"
+    ]
+  },
+  {
+    "id": "ellen-consectetur",
+    "given": "Ellen",
+    "surname": "Consectetur",
+    "sex": "f",
+    "birth": {
+      "date": "1915-04-02",
+      "place": "Detroit (Michigan)"
+    },
+    "death": {
+      "date": "2003-11-17",
+      "place": "Detroit (Michigan)",
+      "circumstance": null
+    },
+    "father": null,
+    "mother": null,
+    "spouses": [
+      {
+        "id": "harold-van-nemo",
+        "order": 1,
+        "marriage": {
+          "date": "1938-06-25",
+          "place": "Detroit (Michigan)"
+        }
+      }
+    ],
+    "occupation": null,
+    "residences": [
+      {
+        "place": "Detroit (Michigan)",
+        "period": "1915-2003"
+      }
+    ],
+    "story": "Vrouw van Harold; haar familie kwam volgens het familieboek 'van elders in het Midden-Westen'. Meer staat er niet over haar.",
+    "story_en": "Harold's wife; her family came 'from elsewhere in the Midwest' according to the family book. That is all it says about her.",
+    "sources": [
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          21
+        ]
+      }
+    ],
+    "confidence": "probable",
+    "children": [
+      "norbert-van-nemo"
+    ]
+  },
+  {
+    "id": "margriet-van-nemo",
+    "given": "Margriet",
+    "surname": "Van Nemo",
+    "sex": "f",
+    "birth": {
+      "date": "1917-09-28",
+      "place": "Detroit (Michigan)"
+    },
+    "death": {
+      "date": "1991-08-05",
+      "place": "Detroit (Michigan)",
+      "circumstance": null
+    },
+    "father": "georges-van-nemo",
+    "mother": "anneke-dolorsit",
+    "spouses": [],
+    "occupation": "onderwijzeres",
+    "residences": [
+      {
+        "place": "Detroit (Michigan)",
+        "period": "1917-1991"
+      }
+    ],
+    "story": "Werd onderwijzeres in Detroit en bleef daar tot haar pensioen. Volgens het familieboek schreef ze haar Vlaamse familie over het schoolleven in Amerika.",
+    "story_en": "She became a schoolteacher in Detroit and stayed there until retirement. The family book says she wrote to her Flemish relatives about school life in America.",
+    "sources": [
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          21
+        ]
+      },
+      {
+        "doc": "demo-verhaal-griet",
+        "pages": []
+      }
+    ],
+    "confidence": "family-story",
+    "children": []
+  },
+  {
+    "id": "norbert-van-nemo",
+    "given": "Norbert",
+    "surname": "Van Nemo",
+    "sex": "m",
+    "birth": {
+      "date": "1940-12-11",
+      "place": "Detroit (Michigan)"
+    },
+    "death": {
+      "date": "2021-05-23",
+      "place": "Detroit (Michigan)",
+      "circumstance": null
+    },
+    "father": "harold-van-nemo",
+    "mother": "ellen-consectetur",
+    "spouses": [
+      {
+        "id": "nancy-amets",
+        "order": 1,
+        "marriage": {
+          "date": "1968-09-07",
+          "place": "Detroit (Michigan)"
+        }
+      }
+    ],
+    "occupation": "brouwerijarbeider",
+    "residences": [
+      {
+        "place": "Detroit (Michigan)",
+        "period": "1940-2021"
+      }
+    ],
+    "story": "De derde brouwerijarbeider van de Detroit-tak; werkte in de brouwerij tot die in 1979 sloot en werd daarna verteller van de familiegeschiedenis aan de Amerikaanse kant.",
+    "story_en": "The third brewery worker of the Detroit branch; he worked at the brewery until it closed in 1979 and after that became the family's storyteller on the American side.",
+    "sources": [
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          21
+        ]
+      },
+      {
+        "doc": "demo-verhaal-griet",
+        "pages": []
+      }
+    ],
+    "confidence": "family-story",
+    "children": [
+      "lisa-van-nemo"
+    ]
+  },
+  {
+    "id": "nancy-amets",
+    "given": "Nancy",
+    "surname": "Amets",
+    "sex": "f",
+    "birth": {
+      "date": "1945-03-19",
+      "place": "Detroit (Michigan)"
+    },
+    "death": {
+      "date": null,
+      "place": null,
+      "circumstance": null
+    },
+    "father": null,
+    "mother": null,
+    "spouses": [
+      {
+        "id": "norbert-van-nemo",
+        "order": 1,
+        "marriage": {
+          "date": "1968-09-07",
+          "place": "Detroit (Michigan)"
+        }
+      }
+    ],
+    "occupation": null,
+    "residences": [],
+    "story": null,
+    "story_en": null,
+    "sources": [
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          21
+        ]
+      }
+    ],
+    "confidence": "probable",
+    "children": [
+      "lisa-van-nemo"
+    ]
+  },
+  {
+    "id": "lisa-van-nemo",
+    "given": "Lisa",
+    "surname": "Van Nemo",
+    "sex": "f",
+    "birth": {
+      "date": "1972-06-30",
+      "place": "Detroit (Michigan)"
+    },
+    "death": {
+      "date": null,
+      "place": null,
+      "circumstance": null
+    },
+    "father": "norbert-van-nemo",
+    "mother": "nancy-amets",
+    "spouses": [],
+    "occupation": null,
+    "residences": [],
+    "story": null,
+    "story_en": null,
+    "sources": [
+      {
+        "doc": "demo-familieboek",
+        "pages": [
+          21
+        ]
+      }
+    ],
+    "confidence": "probable",
+    "children": []
+  }
+]

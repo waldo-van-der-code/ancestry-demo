@@ -1,0 +1,56 @@
+---
+// Fun facts page: one section per view.
+// Data: src/generated/facts.demo.json (scripts/facts.mjs), inlined once as #facts-data for the views' scripts.
+import fs from "node:fs";
+import path from "node:path";
+import { url, type Lang } from "../lib/site";
+import DidYouKnow from "./facts/DidYouKnow.astro";
+import Lifelines from "./facts/Lifelines.astro";
+import Names from "./facts/Names.astro";
+import Charts from "./facts/Charts.astro";
+import Fan from "./facts/Fan.astro";
+import Jobs from "./facts/Jobs.astro";
+import Related from "./facts/Related.astro";
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const file = path.resolve(`src/generated/facts.demo.json`);
+const facts = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : null;
+const nl = lang === "nl";
+// Section ids are per language (anchors in the URL); the order here is the order on the page.
+const VIEWS = [
+  { key: "dyk", id: nl ? "wist-je-dat" : "did-you-know", title: nl ? "Wist je dat…" : "Did you know…" },
+  { key: "lifelines", id: nl ? "levenslijnen" : "lifelines", title: nl ? "Levenslijnen" : "Lifelines" },
+  { key: "names", id: nl ? "namen" : "names", title: nl ? "Namen" : "Names" },
+  { key: "charts", id: nl ? "in-cijfers" : "in-numbers", title: nl ? "In cijfers" : "In numbers" },
+  { key: "jobs", id: nl ? "beroepen" : "professions", title: nl ? "Beroepen" : "Professions" },
+  { key: "fan", id: nl ? "voorouderwaaier" : "ancestor-fan", title: nl ? "Voorouderwaaier" : "Ancestor fan" },
+  { key: "related", id: nl ? "verwantschap" : "related", title: nl ? "Hoe zijn we verwant?" : "How are we related?" },
+] as const;
+const n = facts?.people.length ?? 0;
+const config = facts && { ...facts, lang, personPath: url(lang, "person") };
+---
+{facts && (
+  <div class="facts">
+    <h1>{nl ? "Weetjes" : "Fun facts"}</h1>
+    <p class="lede">{nl
+      ? `Spelen met wat we weten over de ${n} mensen op deze site. Klik op een naam, balk of vak om de persoon te openen.`
+      : `Playing with what we know about the ${n} people on this site. Click a name, bar or segment to open the person.`}</p>
+    <nav class="jump" aria-label={nl ? "Onderdelen" : "Sections"}>
+      {VIEWS.map((v) => <a href={`#${v.id}`}>{v.title}</a>)}
+    </nav>
+    {VIEWS.map((v) => (
+      <section class="view" id={v.id} data-view={v.key}>
+        <h2>{v.title}</h2>
+        {v.key === "dyk" ? <DidYouKnow facts={facts} lang={lang} /> : v.key === "lifelines" ? <Lifelines lang={lang} /> : v.key === "names" ? <Names facts={facts} lang={lang} />  : v.key === "charts" ? <Charts facts={facts} lang={lang} /> : v.key === "jobs" ? <Jobs facts={facts} lang={lang} personPath={url(lang, "person")} /> : v.key === "fan" ? <Fan facts={facts} lang={lang} /> : v.key === "related" ? <Related facts={facts} lang={lang} /> : <p class="muted soon">{nl ? "Komt binnenkort." : "Coming soon."}</p>}
+      </section>
+    ))}
+    <script type="application/json" id="facts-data" set:html={JSON.stringify(config).replace(/</g, "\\u003c")} />
+  </div>
+)}
+<style>
+  .jump { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 8px; font-family: system-ui, sans-serif; font-size: 0.9rem; }
+  .jump a { padding: 4px 12px; border: 1px solid var(--line); border-radius: 99px; text-decoration: none; color: var(--ink); background: var(--card); }
+  .jump a:hover { border-color: var(--accent); }
+  .view { scroll-margin-top: calc(var(--head) + 12px); min-width: 0; }
+  .view h2 { border-top: 1px solid var(--line); padding-top: 1em; }
+</style>

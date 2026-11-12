@@ -1,0 +1,75 @@
+{
+  "_about": "Record check output for the fictional demo family. Every record, archive and URL is invented; links point to example.org. The birth record of Jan Van Aliquam gives 14 March where the family book says 12 March; the site follows the record and shows the difference. The Antwerp 1919 death record of 'F. Dolorsit' is deliberately NOT accepted for Felix Dolorsit (status ambiguous) and is therefore not on his page as a fact, only in his story.",
+  "people": {
+    "jan-van-aliquam": [
+      {
+        "kind": "birth",
+        "status": "matched",
+        "basis": ["date", "parents"],
+        "url": "https://example.org/akten/sluis-1854-27",
+        "archive": "Demo Archive Sluis (fictional)",
+        "source": "Civil registration births (fictional)",
+        "date": "1854-03-14",
+        "place": "Sluis",
+        "diffs": [{ "field": "birth.date", "book": "1854-03-12", "record": "1854-03-14" }]
+      }
+    ],
+    "lodewijk-van-aliquam": [
+      {
+        "kind": "marriage",
+        "with": "emma-de-loremans",
+        "status": "matched",
+        "basis": ["groom and bride"],
+        "url": "https://example.org/akten/schoten-1911-41",
+        "archive": "Demo Archive Schoten (fictional)",
+        "source": "Civil registration marriages (fictional)",
+        "date": "1911-06-10",
+        "place": "Schoten",
+        "diffs": []
+      }
+    ],
+    "henri-van-aliquam": [
+      {
+        "kind": "death",
+        "status": "matched",
+        "basis": ["date"],
+        "url": "https://example.org/akten/sluis-1978-12",
+        "archive": "Demo Archive Sluis (fictional)",
+        "source": "Civil registration deaths (fictional)",
+        "date": "1978-03-29",
+        "place": "Sluis",
+        "diffs": []
+      }
+    ],
+    "georges-van-nemo": [
+      {
+        "kind": "birth",
+        "status": "matched",
+        "basis": ["date", "parents"],
+        "url": "https://example.org/akten/sluis-1888-12",
+        "archive": "Demo Archive Sluis (fictional)",
+        "source": "Civil registration births (fictional)",
+        "date": "1888-03-14",
+        "place": "Sluis",
+        "diffs": []
+      }
+    ],
+    "felix-dolorsit": [
+      {
+        "kind": "death",
+        "status": "ambiguous",
+        "reason": "record says 34 years old, which fits his birth year, but the surname is only an initial and no other detail confirms it",
+        "candidates": [
+          {
+            "url": "https://example.org/akten/antwerpen-1919-887",
+            "archive": "Demo Archive Antwerpen (fictional)",
+            "source": "Civil registration deaths (fictional)",
+            "date": "1919-11-02",
+            "place": "Antwerpen",
+            "name": "F. Dolorsit, dokwerker, 34 jaar"
+          }
+        ]
+      }
+    ]
+  }
+}

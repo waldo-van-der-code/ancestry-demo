@@ -1,0 +1,38 @@
+[
+  {
+    "people": ["lodewijk-van-aliquam", "emma-de-loremans"],
+    "date": "1911-06-17",
+    "rating": "nice",
+    "nl": "Huwelijksbericht: de Schotense sluiswachter Lodewijk Van Aliquam, zoon van Jan en Sophie, trouwde op 10 juni met Emma De Loremans, onderwijzeres, dochter van Hendrik De Loremans en Maaike Van Aliquam, beiden uit Eeklo.",
+    "en": "Wedding notice: the Schoten lock keeper Lodewijk Van Aliquam, son of Jan and Sophie, married on 10 June Emma De Loremans, schoolteacher, daughter of Hendrik De Loremans and Maaike Van Aliquam, both of Eeklo.",
+    "probable": false,
+    "links": [{ "paper": "Schotensche Nieuwsbode (fictief)", "date": "1911-06-17", "url": "https://example.org/krant/schoten-1911-06-17" }]
+  },
+  {
+    "people": ["georges-van-nemo", "anneke-dolorsit"],
+    "date": "1912-04-20",
+    "rating": "striking",
+    "nl": "Afscheid van Sluis: de jonge brouwerijarbeider Georges Van Nemo en zijn vrouw Anneke Dolorsit vertrekken donderdag per stoomschip uit Antwerpen naar Amerika. \"Wij brouwen in Detroit verder waar wij in Sluis stopten,\" zo liet de vertrekkende brouwerijarbeider optekenen.",
+    "en": "Sluis says goodbye: the young brewery worker Georges Van Nemo and his wife Anneke Dolorsit leave on Thursday by steamship from Antwerp for America. \"We will carry on brewing in Detroit where we stopped in Sluis,\" the departing brewery worker was quoted.",
+    "probable": false,
+    "links": [{ "paper": "Sluisse Courant (fictief)", "date": "1912-04-20", "url": "https://example.org/krant/sluis-1912-04-20" }]
+  },
+  {
+    "people": ["henri-van-aliquam"],
+    "date": "1927-08-13",
+    "rating": "striking",
+    "nl": "De tienjarige Henri Van Aliquam, zoon van de Schotense sluiswachter, behaalde met zijn zelfgemaakte limonade van brouwerij Verdolor de eerste plaats op de Sluisse kermis. De jury noemde de drank \"ouderwets van smaak en vakkundig van bereiding\".",
+    "en": "Ten-year-old Henri Van Aliquam, son of the Schoten lock keeper, took first place at the Sluis fair with homemade lemonade from the Verdolor brewery. The jury called the drink \"old-fashioned in taste and masterly in preparation\".",
+    "probable": false,
+    "links": [{ "paper": "Sluisse Courant (fictief)", "date": "1927-08-13", "url": "https://example.org/krant/sluis-1927-08-13" }]
+  },
+  {
+    "people": ["henri-van-aliquam"],
+    "date": "1936-07-05",
+    "rating": "routine",
+    "nl": "Wielerwedstrijd op de kermis van Middelburg: een \"H. Van Aliquam, brouwersknecht uit Sluis\" finishte als derde. Vermoedelijk dezelfde Henri Van Aliquam die in 1927 de limonadeprijs won, maar zeker is dat niet.",
+    "en": "Cycling race at the Middelburg fair: an \"H. Van Aliquam, brewery hand from Sluis\" finished third. Probably the same Henri Van Aliquam whose lemonade won in 1927, but that is not proven.",
+    "probable": true,
+    "links": [{ "paper": "Middelburgsche Courant (fictief)", "date": "1936-07-05", "url": "https://example.org/krant/middelburg-1936-07-05" }]
+  }
+]

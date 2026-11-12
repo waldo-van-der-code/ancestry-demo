@@ -1,0 +1,11 @@
+---
+// A person's name; a guessed person gets a "?" that explains itself on hover.
+import { T, type Lang, type Person } from "../lib/site";
+interface Props { p: Person; lang: Lang; surnameFirst?: boolean; }
+const { p, lang, surnameFirst } = Astro.props;
+const q = p.guess ? T[lang].guess : null;
+---
+{surnameFirst && p.surname ? <><strong>{p.surname}</strong>, {p.given || "N.N."}</> : <>{[p.given, p.surname].filter(Boolean).join(" ") || "N.N."}</>}{q && <> <abbr class="guess" title={q} aria-label={q} tabindex="0">?</abbr></>}
+<style>
+  .guess { text-decoration: none; cursor: help; color: var(--accent); font-weight: 700; border-bottom: 1px dotted currentColor; }
+</style>

@@ -1,0 +1,224 @@
+---
+// In numbers / In cijfers: three static inline-SVG charts built from facts.charts;
+// a small script shows a tooltip on hover/focus. Colours: categorical slots 1-3 of the dataviz palette (validated light + dark).
+import type { Lang } from "../../lib/site";
+interface Props { facts: any; lang: Lang }
+const { facts, lang } = Astro.props;
+const nl = lang === "nl";
+const ch = facts.charts;
+const famName: Record<string, string> = { demo: "Van Aliquam – De Loremans" };
+const stacked = ch.fams.length > 1;
+const ord = (c: number) => (nl ? `${c}e eeuw` : `${c}${c % 100 >= 11 && c % 100 <= 13 ? "th" : ({ 1: "st", 2: "nd", 3: "rd" } as any)[c % 10] || "th"} century`);
+const num = (x: number) => String(x).replace(".", nl ? "," : ".");
+const MONTHS = nl ? ["jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"] : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MONTHS_LONG = nl ? ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"] : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const niceMax = (m: number) => { const s = m <= 10 ? 2 : m <= 30 ? 5 : m <= 60 ? 10 : m <= 120 ? 20 : 50; return Math.max(s, Math.ceil(m / s) * s); };
+const step = (top: number) => (top <= 10 ? 2 : top <= 30 ? 5 : top <= 60 ? 10 : top <= 120 ? 20 : 50);
+
+// ---- 1. births per decade
+const W = 560, L = 40, R = 8, T = 14, B = 34, H = 300;
+const decs = ch.decades.map(([d, a]: [number, number[]]) => ({ d, a, t: a.reduce((x: number, y: number) => x + y, 0) }));
+const dTotal = decs.reduce((x: number, y: any) => x + y.t, 0);
+const peak = decs.reduce((a: any, b: any) => (b.t > a.t ? b : a), decs[0]);
+const dTop = niceMax(peak.t);
+const dSlot = (W - L - R) / decs.length, dBar = Math.min(dSlot - 2, 22);
+const dy = (v: number) => H - B - (v / dTop) * (H - B - T);
+const dEvery = decs.length > 24 ? 5 : decs.length > 12 ? 2 : 1;
+const famLabel = (f: string) => famName[f] || f;
+const decTip = (x: any) => `${x.d}${nl ? "-" : "-"}${x.d + 9}: ${x.t} ${nl ? "geboren" : "born"}` + (stacked ? " (" + ch.fams.map((f: string, i: number) => `${famLabel(f)} ${x.a[i]}`).join(", ") + ")" : "");
+const decTitle = nl ? `Het meest geboren in ${peak.d}-${peak.d + 9}: ${peak.t} mensen` : `Most births were in ${peak.d}-${peak.d + 9}: ${peak.t} people`;
+
+// ---- 2. age at death per century of birth
+const ages = ch.age;
+const AH = 48, aT = 8, aB = 34, aL = 108, aR = 40, aH = aT + aB + AH * ages.length;
+const ax = (v: number) => aL + (v / 110) * (W - aL - aR);
+const medMin = ages.length ? ages.reduce((a: any, b: any) => (b.med < a.med ? b : a)) : null;
+const medMax = ages.length ? ages.reduce((a: any, b: any) => (b.med > a.med ? b : a)) : null;
+const ageTitle = !ages.length ? "" : ages.length === 1
+  ? (nl ? `Mediane leeftijd bij overlijden: ${num(ages[0].med)} jaar (${ord(ages[0].c)})` : `Median age at death: ${num(ages[0].med)} years (${ord(ages[0].c)})`)
+  : (nl ? `Mediane leeftijd bij overlijden: van ${num(medMin.med)} jaar (${ord(medMin.c)}) tot ${num(medMax.med)} jaar (${ord(medMax.c)})` : `Median age at death: from ${num(medMin.med)} years (${ord(medMin.c)}) to ${num(medMax.med)} years (${ord(medMax.c)})`);
+const ageTip = (a: any) => nl
+  ? `${ord(a.c)}: mediaan ${num(a.med)} jaar, middelste helft ${num(a.q1)}-${num(a.q3)}, bereik ${a.min}-${a.max}, ${a.n} mensen`
+  : `${ord(a.c)}: median ${num(a.med)} years, middle half ${num(a.q1)}-${num(a.q3)}, range ${a.min}-${a.max}, ${a.n} people`;
+
+// ---- 3. births per month
+const mo: number[] = ch.months, mN = mo.reduce((x, y) => x + y, 0);
+const mMax = Math.max(...mo), mMin = Math.min(...mo), mTop = niceMax(mMax);
+const mSlot = (W - L - R) / 12, mBar = Math.min(mSlot - 6, 30);
+const my = (v: number) => H - B - (v / mTop) * (H - B - T);
+const iMax = mo.indexOf(mMax), iMin = mo.indexOf(mMin);
+const monthTitle = nl ? `Meeste geboortes in ${MONTHS_LONG[iMax]} (${mMax}), minste in ${MONTHS_LONG[iMin]} (${mMin})` : `Most births in ${MONTHS_LONG[iMax]} (${mMax}), fewest in ${MONTHS_LONG[iMin]} (${mMin})`;
+---
+<div class="ch" data-lang={lang} data-stacked={stacked ? "1" : "0"}>
+  <div class="ch-tip" role="status" aria-live="polite" hidden></div>
+
+  <!-- 1 -->
+  <figure class="ch-fig" id="ch-decade">
+    <h3>{decTitle}</h3>
+    <p class="muted ch-sub">{nl ? "Geboortes per decennium (mensen met een geboortejaar, ook bij benadering)" : "Births per decade (people with a birth year, approximate years included)"}</p>
+    {stacked && (
+      <p class="ch-legend" aria-label={nl ? "Legenda" : "Legend"}>
+        {ch.fams.map((f: string, i: number) => <span class="ch-key"><i class={`ch-sw s${i + 1}`}></i>{famLabel(f)}</span>)}
+      </p>
+    )}
+    <svg viewBox={`0 0 ${W} ${H}`} class="ch-svg" role="img" aria-label={decTitle}>
+      {Array.from({ length: dTop / step(dTop) + 1 }, (_, i) => i * step(dTop)).map((v) => (
+        <g><line class="ch-grid" x1={L} x2={W - R} y1={dy(v)} y2={dy(v)} /><text class="ch-tick" x={L - 6} y={dy(v) + 4} text-anchor="end">{v}</text></g>
+      ))}
+      <text class="ch-axis" x={12} y={T + 2} transform={`rotate(-90 12 ${T + 2})`} text-anchor="end">{nl ? "aantal mensen" : "people"}</text>
+      {decs.map((x: any, i: number) => {
+        const cx = L + dSlot * i + dSlot / 2;
+        let acc = 0;
+        return (
+          <g class="ch-hit" tabindex="0" data-tip={decTip(x)} aria-label={decTip(x)}>
+            <rect class="ch-hitbox" x={L + dSlot * i} y={T} width={dSlot} height={H - B - T} />
+            {x.a.map((v: number, k: number) => { if (!v) return null; const y0 = dy(acc), y1 = dy(acc + v); acc += v; const last = acc === x.t; return <rect class={`ch-bar s${k + 1}`} x={cx - dBar / 2} y={y1} width={dBar} height={Math.max(1, y0 - y1 - (stacked && !last ? 2 : 0))} rx={last ? 3 : 0} />; })}
+            {i % dEvery === 0 && <text class="ch-tick" x={cx} y={H - B + 16} text-anchor="middle">{x.d}</text>}
+          </g>
+        );
+      })}
+      <line class="ch-base" x1={L} x2={W - R} y1={H - B} y2={H - B} />
+      <text class="ch-axis" x={(L + W - R) / 2} y={H - 4} text-anchor="middle">{nl ? "decennium van geboorte" : "decade of birth"}</text>
+    </svg>
+    <details class="ch-table"><summary>{nl ? "Toon als tabel" : "Show as table"}</summary>
+      <table data-chart="decade"><thead><tr><th>{nl ? "Decennium" : "Decade"}</th><th>{nl ? "Totaal" : "Total"}</th>{stacked && ch.fams.map((f: string) => <th>{famLabel(f)}</th>)}</tr></thead>
+        <tbody>{decs.map((x: any) => <tr><th>{x.d}-{x.d + 9}</th><td data-v>{x.t}</td>{stacked && x.a.map((v: number) => <td>{v}</td>)}</tr>)}</tbody>
+        <tfoot><tr><th>{nl ? "Totaal" : "Total"}</th><td data-total>{dTotal}</td>{stacked && ch.fams.map((_: string, k: number) => <td>{decs.reduce((s: number, x: any) => s + x.a[k], 0)}</td>)}</tr></tfoot></table>
+    </details>
+  </figure>
+
+  <!-- 2 -->
+  <figure class="ch-fig" id="ch-age">
+    <h3>{ageTitle}</h3>
+    <p class="muted ch-sub">{nl ? "Leeftijd bij overlijden, per eeuw van geboorte. Alleen mensen met geboorte- en sterfjaar (zonder 'circa'), leeftijden 0-110." : "Age at death, by century of birth. Only people with a birth and a death year (no 'circa'), ages 0-110."}</p>
+    {ages.length === 0 ? <p class="muted">{nl ? "Te weinig mensen met bekende jaren." : "Too few people with known years."}</p> : (
+      <>
+      <p class="ch-legend" aria-label={nl ? "Legenda" : "Legend"}>
+        <span class="ch-key"><i class="ch-sw s1"></i>{nl ? "middelste helft van de mensen" : "middle half of people"}</span>
+        <span class="ch-key"><i class="ch-ln"></i>{nl ? "van jongst tot oudst" : "youngest to oldest"}</span>
+        <span class="ch-key"><i class="ch-med"></i>{nl ? "mediaan" : "median"}</span>
+      </p>
+      <svg viewBox={`0 0 ${W} ${aH}`} class="ch-svg" role="img" aria-label={ageTitle}>
+        {[0, 20, 40, 60, 80, 100].map((v) => (
+          <g><line class="ch-grid" x1={ax(v)} x2={ax(v)} y1={aT} y2={aH - aB} /><text class="ch-tick" x={ax(v)} y={aH - aB + 16} text-anchor="middle">{v}</text></g>
+        ))}
+        {ages.map((a: any, i: number) => {
+          const cy = aT + AH * i + AH / 2;
+          return (
+            <g class="ch-hit" tabindex="0" data-tip={ageTip(a)} aria-label={ageTip(a)} data-c={a.c}>
+              <rect class="ch-hitbox" x={0} y={cy - AH / 2} width={W} height={AH} />
+              <text class="ch-cat" x={aL - 8} y={cy - 2} text-anchor="end">{ord(a.c)}</text>
+              <text class="ch-tick" x={aL - 8} y={cy + 13} text-anchor="end">n = {a.n}</text>
+              <line class="ch-whisk" x1={ax(a.min)} x2={ax(a.max)} y1={cy} y2={cy} />
+              <rect class="ch-bar s1" x={ax(a.q1)} y={cy - 9} width={Math.max(2, ax(a.q3) - ax(a.q1))} height={18} rx="4" />
+              <line class="ch-medline" x1={ax(a.med)} x2={ax(a.med)} y1={cy - 13} y2={cy + 13} />
+              <text class="ch-val" x={ax(a.med)} y={cy - 17} text-anchor="middle">{num(a.med)}</text>
+            </g>
+          );
+        })}
+        <text class="ch-axis" x={(aL + W - aR) / 2} y={aH - 4} text-anchor="middle">{nl ? "leeftijd bij overlijden (jaren)" : "age at death (years)"}</text>
+      </svg>
+      <p class="muted ch-note">{nl ? "Bij jaartallen zonder dag kan een leeftijd een jaar afwijken." : "With year-only dates an age can be off by a year."}</p>
+      <details class="ch-table"><summary>{nl ? "Toon als tabel" : "Show as table"}</summary>
+        <table data-chart="age"><thead><tr><th>{nl ? "Eeuw van geboorte" : "Century of birth"}</th><th>{nl ? "Mensen" : "People"}</th><th>{nl ? "Mediaan" : "Median"}</th><th>{nl ? "Middelste helft" : "Middle half"}</th><th>{nl ? "Bereik" : "Range"}</th></tr></thead>
+          <tbody>{ages.map((a: any) => <tr><th>{ord(a.c)}</th><td>{a.n}</td><td data-v>{num(a.med)}</td><td>{num(a.q1)}-{num(a.q3)}</td><td>{a.min}-{a.max}</td></tr>)}</tbody></table>
+      </details>
+      </>
+    )}
+  </figure>
+
+  <!-- 3 -->
+  <figure class="ch-fig" id="ch-month">
+    <h3>{monthTitle}</h3>
+    <p class="muted ch-sub">{nl ? `Geboortes per maand, gebaseerd op ${mN} mensen met een geboortemaand.` : `Births per month, based on ${mN} people with a known birth month.`}</p>
+    <svg viewBox={`0 0 ${W} ${H}`} class="ch-svg" role="img" aria-label={monthTitle}>
+      {Array.from({ length: mTop / step(mTop) + 1 }, (_, i) => i * step(mTop)).map((v) => (
+        <g><line class="ch-grid" x1={L} x2={W - R} y1={my(v)} y2={my(v)} /><text class="ch-tick" x={L - 6} y={my(v) + 4} text-anchor="end">{v}</text></g>
+      ))}
+      <text class="ch-axis" x={12} y={T + 2} transform={`rotate(-90 12 ${T + 2})`} text-anchor="end">{nl ? "aantal mensen" : "people"}</text>
+      {mo.map((v, i) => {
+        const cx = L + mSlot * i + mSlot / 2, tip = `${MONTHS_LONG[i]}: ${v} ${nl ? "geboren" : "born"}`;
+        return (
+          <g class="ch-hit" tabindex="0" data-tip={tip} aria-label={tip}>
+            <rect class="ch-hitbox" x={L + mSlot * i} y={T} width={mSlot} height={H - B - T} />
+            {v > 0 && <rect class="ch-bar s1" x={cx - mBar / 2} y={my(v)} width={mBar} height={H - B - my(v)} rx="3" />}
+            {(i === iMax || i === iMin) && <text class="ch-val" x={cx} y={my(v) - 5} text-anchor="middle">{v}</text>}
+            <text class="ch-tick" x={cx} y={H - B + 16} text-anchor="middle">{MONTHS[i]}</text>
+          </g>
+        );
+      })}
+      <line class="ch-base" x1={L} x2={W - R} y1={H - B} y2={H - B} />
+    </svg>
+    <details class="ch-table"><summary>{nl ? "Toon als tabel" : "Show as table"}</summary>
+      <table data-chart="month"><thead><tr><th>{nl ? "Maand" : "Month"}</th><th>{nl ? "Geboren" : "Born"}</th></tr></thead>
+        <tbody>{mo.map((v, i) => <tr><th>{MONTHS_LONG[i]}</th><td data-v>{v}</td></tr>)}</tbody>
+        <tfoot><tr><th>{nl ? "Totaal" : "Total"}</th><td data-total>{mN}</td></tr></tfoot></table>
+    </details>
+  </figure>
+</div>
+<style is:global>
+  .ch { --ch-1: #2a78d6; --ch-2: #eb6834; --ch-3: #1baf7a; --ch-med: var(--ink); font-family: system-ui, sans-serif; min-width: 0; position: relative; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ch { --ch-1: #3987e5; --ch-2: #d95926; --ch-3: #199e70; } }
+  :root[data-theme="dark"] .ch { --ch-1: #3987e5; --ch-2: #d95926; --ch-3: #199e70; }
+  .ch-fig { margin: 0 0 28px; min-width: 0; }
+  .ch h3 { margin: 0.8em 0 0.2em; }
+  .ch-sub { margin: 0 0 8px; font-size: 0.88rem; }
+  .ch-note { margin: 6px 0; font-size: 0.85rem; }
+  .ch-svg { width: 100%; height: auto; display: block; background: var(--card); border: 1px solid var(--line); border-radius: 8px; }
+  .ch-grid { stroke: var(--line); stroke-width: 1; }
+  .ch-base { stroke: var(--muted); stroke-width: 1; }
+  .ch-tick { fill: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .ch-axis { fill: var(--muted); font-size: 13px; }
+  .ch-cat { fill: var(--ink); font-size: 14px; }
+  .ch-val { fill: var(--ink); font-size: 14px; font-weight: 600; }
+  .ch-bar.s1, .ch-sw.s1 { fill: var(--ch-1); background: var(--ch-1); }
+  .ch-bar.s2 { fill: var(--ch-2); } .ch-sw.s2 { background: var(--ch-2); }
+  .ch-bar.s3 { fill: var(--ch-3); } .ch-sw.s3 { background: var(--ch-3); }
+  .ch-hitbox { fill: transparent; }
+  .ch-hit { outline: none; cursor: default; }
+  .ch-hit:hover .ch-hitbox, .ch-hit:focus-visible .ch-hitbox { fill: var(--accent-soft); opacity: 0.55; }
+  .ch-hit:hover .ch-bar, .ch-hit:focus-visible .ch-bar { stroke: var(--ink); stroke-width: 1.5; }
+  .ch-whisk { stroke: var(--muted); stroke-width: 2; }
+  .ch-medline { stroke: var(--ink); stroke-width: 3; stroke-linecap: round; }
+  path.ch-dia { fill: var(--card); stroke: var(--ink); stroke-width: 2; }
+  .ch-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0 0 8px; font-size: 0.85rem; }
+  .ch-key { display: inline-flex; align-items: center; gap: 6px; }
+  .ch-sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
+  .ch-ln { display: inline-block; width: 18px; height: 0; border-top: 2px solid var(--muted); }
+  i.ch-med { display: inline-block; width: 3px; height: 14px; background: var(--ink); border-radius: 2px; }
+  i.ch-dia { display: inline-block; width: 9px; height: 9px; border: 2px solid var(--ink); transform: rotate(45deg); background: var(--card); }
+  .ch-table { margin: 8px 0 0; font-size: 0.88rem; }
+  .ch-table summary { cursor: pointer; color: var(--muted); }
+  .ch-table table { border-collapse: collapse; margin-top: 6px; display: block; overflow-x: auto; max-width: 100%; }
+  .ch-table th, .ch-table td { padding: 3px 10px; border-top: 1px solid var(--line); text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .ch-table thead th { color: var(--muted); font-weight: 500; border-top: 0; }
+  .ch-table tbody th, .ch-table tfoot th { text-align: left; font-weight: 400; }
+  .ch-tip { position: absolute; z-index: 5; pointer-events: none; max-width: min(320px, 80vw); background: var(--ink); color: var(--paper); padding: 6px 9px; border-radius: 6px; font-size: 0.82rem; line-height: 1.35; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+  .ch-tip[hidden] { display: none; }
+  @media (max-width: 700px) { .ch-tick, .ch-axis { font-size: 15px; } .ch-cat, .ch-val { font-size: 16px; } }
+</style>
+<script>
+  const root = document.querySelector<HTMLElement>(".ch");
+  if (root) {
+    const tip = root.querySelector<HTMLElement>(".ch-tip")!;
+    const show = (g: Element) => {
+      tip.textContent = g.getAttribute("data-tip") || "";
+      tip.hidden = false;
+      const r = g.getBoundingClientRect(), b = root.getBoundingClientRect();
+      const x = Math.min(Math.max(r.left + r.width / 2 - b.left - tip.offsetWidth / 2, 0), b.width - tip.offsetWidth);
+      tip.style.left = `${x}px`;
+      tip.style.top = `${Math.max(r.top - b.top - tip.offsetHeight - 6, 0)}px`;
+    };
+    const seen = new Set<string>();
+    root.querySelectorAll(".ch-hit").forEach((g) => {
+      g.addEventListener("mouseenter", () => show(g));
+      g.addEventListener("focus", () => show(g));
+      g.addEventListener("mouseleave", () => (tip.hidden = true));
+      g.addEventListener("blur", () => (tip.hidden = true));
+      g.addEventListener("mouseenter", () => {
+        const fig = g.closest("figure")!.id;
+        if (!seen.has(fig)) { seen.add(fig); (window as any).track?.("facts_charts", { chart: fig }); }
+      });
+    });
+  }
+</script>

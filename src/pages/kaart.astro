@@ -1,0 +1,8 @@
+---
+import { DEMO_BANNER, DEMO_REPO, url } from "../lib/site";
+// Old address of the map: forward to the Dutch map, keeping ?f=.
+---
+<html lang="nl"><head><meta charset="utf-8" /><meta name="robots" content="noindex, nofollow" />
+<meta http-equiv="refresh" content={`0; url=${url("nl", "map")}`} />
+<script is:inline define:vars={{ mapUrl: url("nl", "map") }}>location.replace(mapUrl + location.search);</script></head>
+<body><p><a href={DEMO_REPO}>{DEMO_BANNER}</a></p><a href={url("nl", "map")}>Kaart</a></body></html>

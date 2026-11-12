@@ -1,0 +1,214 @@
+---
+// ancestry and colour groups are derived from #facts-data in the browser.
+import { personUrl, type Lang } from "../../lib/site";
+interface Props { facts: any; lang: Lang }
+const { facts, lang } = Astro.props;
+const nl = lang === "nl";
+const people = facts.people;
+const ids = new Set(people.map((p: any) => p.id));
+const choices = people.filter((p: any) => ids.has(p.f) || ids.has(p.m)).sort((a: any, b: any) => a.n.localeCompare(b.n, lang));
+const initial = people.find((p: any) => p.id === facts.root) || choices[0];
+---
+<div class="fan">
+  <p class="muted fan-note">{nl
+    ? "Van binnen naar buiten: ouders, grootouders en verder terug. De vaderlijke lijn staat links, de moederlijke rechts. Wijs een vak aan of geef het toetsenbordfocus voor details; klik om de persoon te openen."
+    : "From the centre outwards: parents, grandparents and earlier ancestors. The paternal line is on the left, the maternal line on the right. Hover or focus a segment for details; click to open the person."}</p>
+  <div class="fan-tools">
+    <label>{nl ? "Kies een persoon" : "Choose a person"}
+      <select class="fan-person">
+        {choices.map((p: any) => <option value={p.id} selected={p.id === initial?.id}>{p.n}{p.by ? ` (${p.b?.startsWith("c") ? (nl ? "ca. " : "c. ") : ""}${p.by})` : ""}</option>)}
+      </select>
+    </label>
+    <label>{nl ? "Kleur op" : "Colour by"}
+      <select class="fan-colour">
+        <option value="country">{nl ? "Geboorteland" : "Birth country"}</option>
+        <option value="town">{nl ? "Geboorteplaats" : "Birth town"}</option>
+      </select>
+    </label>
+  </div>
+  <p class="fan-summary" aria-live="polite"></p>
+  <figure class="fan-figure">
+    <svg class="fan-svg" viewBox="0 0 720 410" role="group" aria-label={nl ? "Voorouderwaaier" : "Ancestor fan"}></svg>
+    <figcaption class="fan-caption muted">{nl
+      ? "Lichte vakken: onbekende voorouders. Landen volgen de huidige grenzen, niet de nationaliteit. Dezelfde persoon kan via verschillende lijnen terugkomen."
+      : "Faint segments: unknown ancestors. Countries follow present-day borders, not nationality. The same person may appear along several lines."}</figcaption>
+  </figure>
+  <p class="fan-legend-title"></p>
+  <ul class="fan-legend" aria-label={nl ? "Legenda" : "Legend"}></ul>
+  <!-- A stationary tooltip keeps the re-centre button reachable by mouse, touch and keyboard. -->
+  <div class="fan-tip" aria-label={nl ? "Details van de persoon" : "Person details"}>
+    <div><a class="fan-tip-name"></a><p class="fan-tip-detail muted"></p></div>
+    <button type="button" class="fan-centre-here">{nl ? "Zet centraal" : "Centre here"}</button>
+  </div>
+  <noscript><p>{nl ? "Zet JavaScript aan om de waaier te verkennen. Begin bij " : "Enable JavaScript to explore the fan. Start with "}{initial && <a href={personUrl(lang, initial.id)}>{initial.n}</a>}.</p></noscript>
+</div>
+
+<style is:global>
+  .fan { --fan-1: #2a78d6; --fan-2: #eb6834; --fan-3: #1baf7a; min-width: 0; font-family: system-ui, sans-serif; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .fan { --fan-1: #3987e5; --fan-2: #d95926; --fan-3: #199e70; } }
+  :root[data-theme="dark"] .fan { --fan-1: #3987e5; --fan-2: #d95926; --fan-3: #199e70; }
+  .fan-note, .fan-caption { font-size: 0.85rem; }
+  .fan-tools { display: flex; flex-wrap: wrap; gap: 12px; }
+  .fan-tools label { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; min-width: 0; max-width: 100%; }
+  .fan-tools label:first-child { flex: 1 1 240px; }
+  .fan-tools select { font: inherit; background: var(--card); color: var(--ink); border: 1px solid var(--line); padding: 8px; border-radius: 6px; width: 100%; min-width: 0; max-width: 100%; }
+  .fan-summary { font-size: 0.9rem; margin: 12px 0 6px; overflow-wrap: anywhere; }
+  .fan-figure { margin: 0; min-width: 0; }
+  .fan-svg { display: block; width: 100%; height: auto; background: var(--card); border: 1px solid var(--line); border-radius: 8px; }
+  .fan-segment { stroke: var(--card); stroke-width: 0.8; }
+  .fan-unknown { fill: var(--line); opacity: 0.45; }
+  .fan-node { outline: none; }
+  .fan-node:hover .fan-segment, .fan-node:focus-visible .fan-segment { stroke: var(--ink); stroke-width: 2; }
+  .fan-node:focus-visible .fan-name { text-decoration: underline; }
+  .fan-name { fill: var(--ink); font-size: 12px; paint-order: stroke; stroke: var(--card); stroke-width: 3px; stroke-linejoin: round; pointer-events: none; }
+  .fan-centre-disc { fill: var(--accent-soft); stroke: var(--line); stroke-width: 1; }
+  .fan-centre-label { fill: var(--ink); font-size: 17px; font-weight: 600; }
+  .fan-side { fill: var(--muted); font-size: 13px; }
+  .fan-caption { margin-top: 6px; }
+  .fan-legend-title { margin: 12px 0 4px; font-size: 0.85rem; font-weight: 600; }
+  .fan-legend { display: flex; flex-wrap: wrap; list-style: none; padding: 0; margin: 0 0 12px; gap: 6px 16px; font-size: 0.85rem; }
+  .fan-legend li { display: flex; align-items: center; gap: 6px; min-width: 0; overflow-wrap: anywhere; }
+  .fan-swatch { width: 16px; height: 16px; flex-shrink: 0; border: 1px solid var(--line); border-radius: 3px; }
+  .fan-tip { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); font-size: 0.9rem; }
+  .fan-tip > div { min-width: 0; overflow-wrap: anywhere; }
+  .fan-tip-name { color: var(--ink); }
+  .fan-tip-detail { margin: 3px 0 0; font-size: 0.8rem; }
+  .fan-centre-here { flex-shrink: 0; font: inherit; padding: 7px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); cursor: pointer; }
+  .fan-centre-here:disabled { opacity: 0.55; cursor: default; }
+  @media (max-width: 450px) { .fan-tip { align-items: flex-start; flex-direction: column; } }
+</style>
+
+<script>
+  type FanPerson = { id: string; n: string; g?: string; sn?: string; b?: string; d?: string; bp?: string; f?: string; m?: string };
+  type Slot = { person?: FanPerson; trail: Set<string> };
+  const host = document.querySelector<HTMLElement>(".fan");
+  const dataEl = document.getElementById("facts-data");
+  if (host && dataEl) {
+    const data = JSON.parse(dataEl.textContent!) as { root: string; lang: string; personPath: string; people: FanPerson[]; fan: { country: Record<string, string | null> } };
+    const nl = data.lang === "nl", byId = new Map(data.people.map((p) => [p.id, p]));
+    const picker = host.querySelector<HTMLSelectElement>(".fan-person")!;
+    const colour = host.querySelector<HTMLSelectElement>(".fan-colour")!;
+    const svg = host.querySelector<SVGSVGElement>(".fan-svg")!;
+    const legend = host.querySelector<HTMLElement>(".fan-legend")!;
+    const summary = host.querySelector<HTMLElement>(".fan-summary")!;
+    const tipName = host.querySelector<HTMLAnchorElement>(".fan-tip-name")!;
+    const tipDetail = host.querySelector<HTMLElement>(".fan-tip-detail")!;
+    const centreButton = host.querySelector<HTMLButtonElement>(".fan-centre-here")!;
+    const regions = new Intl.DisplayNames([data.lang], { type: "region" });
+    const unknown = nl ? "Onbekend" : "Unknown", other = nl ? "Overige" : "Other";
+    const country = (p: FanPerson) => p.bp ? data.fan.country[p.bp] || null : null;
+    const years = (p: FanPerson) => [p.b, p.d].map((d) => d ? d.replace(/^c/, nl ? "ca. " : "c. ") : "?").join(" – ");
+    const detail = (p: FanPerson) => `${years(p)} · ${p.bp || (nl ? "geboorteplaats onbekend" : "birthplace unknown")} · ${country(p) ? regions.of(country(p)!) : unknown}`;
+    const make = (tag: string, attrs: Record<string, string | number> = {}, text?: string): SVGElement => {
+      const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+      Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, String(v)));
+      if (text !== undefined) el.textContent = text;
+      return el;
+    };
+    const polar = (r: number, a: number) => [360 + r * Math.cos(a), 342 + r * Math.sin(a)];
+    const arc = (r: number, a: number, b: number) => `M${polar(r, a)} A${r},${r} 0 0 1 ${polar(r, b)}`;
+    const wedge = (r: number, R: number, a: number, b: number) => `${arc(R, a, b)} L${polar(r, b)} A${r},${r} 0 0 0 ${polar(r, a)} Z`;
+    const eligible = (p?: FanPerson) => !!p && (byId.has(p.f || "") || byId.has(p.m || ""));
+    let selected = byId.get(data.root) || byId.get(picker.value) || data.people[0], tipPerson = selected;
+    const showTip = (p: FanPerson) => {
+      tipPerson = p;
+      tipName.textContent = p.n; tipName.href = data.personPath + p.id + "/";
+      tipDetail.textContent = detail(p);
+      centreButton.disabled = !eligible(p) || p.id === selected.id;
+    };
+    // Only impossible parent ages supported by full, valid dates are excluded. No age claims use partial dates.
+    const date = (s?: string) => s && /^\d{4}-\d{2}-\d{2}$/.test(s) && Number.isFinite(Date.parse(s)) && new Date(s).toISOString().slice(0, 10) === s ? s : null;
+    const validParent = (child: FanPerson, parent: FanPerson) => {
+      const c = date(child.b), p = date(parent.b);
+      if (!c || !p) return true;
+      const age = +c.slice(0, 4) - +p.slice(0, 4) - (c.slice(5) < p.slice(5) ? 1 : 0);
+      return age >= 13;
+    };
+    function render() {
+      if (!selected) return;
+      // A direct URL may name a person without parents, who is absent from the normal picker.
+      if (![...picker.options].some((option) => option.value === selected.id)) {
+        picker.add(new Option(selected.n, selected.id));
+      }
+      picker.value = selected.id;
+      const levels: Slot[][] = [];
+      let current: Slot[] = [{ person: selected, trail: new Set([selected.id]) }];
+      for (let ring = 1; ring <= 8; ring++) {
+        const next = current.flatMap(({ person, trail }) => [person?.f, person?.m].map((id): Slot => {
+          const p = id ? byId.get(id) : undefined;
+          return p && !trail.has(p.id) && person && validParent(person, p)
+            ? { person: p, trail: new Set([...trail, p.id]) } : { trail };
+        }));
+        if (!next.some((s) => s.person)) break;
+        levels.push(next); current = next;
+      }
+      const ancestors = levels.flat().flatMap((s) => s.person ? [s.person] : []);
+      const counts = new Map<string, number>();
+      const key = (p: FanPerson) => colour.value === "country" ? country(p) : p.bp || null;
+      for (const p of ancestors) { const k = key(p); if (k) counts.set(k, (counts.get(k) || 0) + 1); }
+      const top = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 6).map(([k]) => k);
+      const label = (k: string) => colour.value === "country" ? regions.of(k) || k : k;
+      // Six categories use three validated colours, solid then striped; no extra colour slots.
+      const fill = (p: FanPerson) => { const k = key(p), i = k ? top.indexOf(k) : -1; return !k ? "var(--line)" : i < 0 ? "var(--muted)" : i < 3 ? `var(--fan-${i + 1})` : `url(#fan-pattern-${i - 2})`; };
+      svg.replaceChildren();
+      const defs = make("defs");
+      for (let i = 1; i <= 3; i++) {
+        const pattern = make("pattern", { id: `fan-pattern-${i}`, width: 7, height: 7, patternUnits: "userSpaceOnUse", patternTransform: "rotate(45)" });
+        pattern.append(make("rect", { width: 7, height: 7, fill: "var(--card)" }), make("rect", { width: 4, height: 7, fill: `var(--fan-${i})` })); defs.append(pattern);
+      }
+      svg.append(defs);
+      const width = (326 - 62) / Math.max(levels.length, 1);
+      levels.forEach((slots, level) => slots.forEach(({ person }, index) => {
+        const a = Math.PI + Math.PI * index / slots.length, b = Math.PI + Math.PI * (index + 1) / slots.length;
+        const r = 62 + width * level, R = r + width;
+        const path = make("path", { class: `fan-segment${person ? "" : " fan-unknown"}`, d: wedge(r, R, a, b), ...(person ? { fill: fill(person) } : {}) });
+        if (!person) { svg.append(path); return; }
+        const link = make("a", { class: "fan-node", href: data.personPath + person.id + "/", "data-id": person.id, "data-ring": level + 1, "aria-label": `${person.n} · ${detail(person)}` });
+        link.append(make("title", {}, `${person.n}\n${detail(person)}`), path);
+        const mid = (r + R) / 2, length = mid * (b - a);
+        if (level < 3 && length >= 80 && width >= 23) {
+          const id = `fan-text-${level}-${index}`;
+          defs.append(make("path", { id, d: arc(mid, a + 0.025, b - 0.025) }));
+          const text = make("text", { class: "fan-name", "text-anchor": "middle", dy: 4 });
+          const max = Math.floor((length - 14) / 7);
+          text.append(make("textPath", { href: `#${id}`, startOffset: "50%" }, person.n.length > max ? person.n.slice(0, max - 1) + "…" : person.n)); link.append(text);
+        }
+        svg.append(link);
+      }));
+      const centre = make("a", { class: "fan-node fan-centre", href: data.personPath + selected.id + "/", "data-id": selected.id, "data-ring": 0, "aria-label": selected.n });
+      centre.append(make("title", {}, `${selected.n}\n${detail(selected)}`), make("path", { class: "fan-segment fan-centre-disc", d: `M298,342 A62,62 0 0 1 422,342 Z` }));
+      const name = make("text", { class: "fan-centre-label", x: 360, y: 372, "text-anchor": "middle" }, selected.n);
+      if (selected.n.length > 40) { name.setAttribute("textLength", "620"); name.setAttribute("lengthAdjust", "spacingAndGlyphs"); }
+      centre.append(name); svg.append(centre);
+      svg.append(make("text", { class: "fan-side", x: 30, y: 395 }, nl ? "Vaderlijke lijn" : "Paternal line"), make("text", { class: "fan-side", x: 690, y: 395, "text-anchor": "end" }, nl ? "Moederlijke lijn" : "Maternal line"));
+      summary.textContent = `${selected.n} · ` + (ancestors.length ? (nl ? `${ancestors.length} bekende vooroudervakken (${new Set(ancestors.map((p) => p.id)).size} personen)` : `${ancestors.length} known ancestor segments (${new Set(ancestors.map((p) => p.id)).size} people)`) : (nl ? "Geen ouders bekend." : "No known parents."));
+      host!.querySelector(".fan-legend-title")!.textContent = colour.value === "country" ? (nl ? "Geboorteland · huidige grenzen" : "Birth country · present-day borders") : (nl ? "Geboorteplaats · zes meest voorkomende plaatsen" : "Birth town · six most common places");
+      legend.replaceChildren();
+      const addKey = (text: string, background: string) => { const li = document.createElement("li"), sw = document.createElement("i"); sw.className = "fan-swatch"; sw.style.background = background; sw.setAttribute("aria-hidden", "true"); li.append(sw, document.createTextNode(text)); legend.append(li); };
+      top.forEach((k, i) => addKey(label(k), i < 3 ? `var(--fan-${i + 1})` : `repeating-linear-gradient(135deg, var(--fan-${i - 2}) 0 4px, var(--card) 4px 7px)`));
+      if (counts.size > 6) addKey(other, "var(--muted)");
+      addKey(unknown, "var(--line)");
+      showTip(selected);
+    }
+    const recenter = (id: string, updateUrl = true) => {
+      const person = byId.get(id);
+      if (!person) return;
+      selected = person; render();
+      if (updateUrl) {
+        const url = new URL(location.href); url.searchParams.set("fan", id); history.replaceState(null, "", url);
+        (window as any).track?.("facts_fan", { action: "recentre" });
+      }
+    };
+    const tipFor = (event: Event) => {
+      const link = (event.target as Element).closest<SVGElement>(".fan-node");
+      const p = link && byId.get(link.dataset.id || ""); if (p) showTip(p);
+    };
+    svg.addEventListener("pointerover", tipFor); svg.addEventListener("focusin", tipFor);
+    picker.addEventListener("change", () => recenter(picker.value));
+    colour.addEventListener("change", () => { render(); (window as any).track?.("facts_fan", { action: "colour" }); });
+    centreButton.addEventListener("click", () => recenter(tipPerson.id));
+    const fromUrl = new URL(location.href).searchParams.get("fan");
+    if (fromUrl && byId.has(fromUrl)) selected = byId.get(fromUrl)!;
+    render();
+  }
+</script>

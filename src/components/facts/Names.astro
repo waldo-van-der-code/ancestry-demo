@@ -1,0 +1,163 @@
+---
+// Names / Namen. Part 1: top first names per century of birth (static HTML, from facts.names).
+// Part 2: follow one name through the family: who bears it, and where it passes from parent to child (client-rendered).
+import type { Lang } from "../../lib/site";
+interface Props { facts: any; lang: Lang }
+const { facts, lang } = Astro.props;
+const nl = lang === "nl";
+const names = facts.names;
+const ord = (c: number) => (nl ? `${c}e eeuw` : `${c}${c % 100 >= 11 && c % 100 <= 13 ? "th" : ({ 1: "st", 2: "nd", 3: "rd" } as any)[c % 10] || "th"} century`);
+const span = (c: number) => `${(c - 1) * 100 + 1}-${c * 100}`;
+const first = names.overall[0]?.[0] ?? "";
+---
+<div class="nm" data-lang={lang}>
+  <h3>{nl ? "Populairste voornamen per eeuw" : "Most popular first names per century"}</h3>
+  <p class="muted nm-note">{nl
+    ? "Eerste voornaam, per eeuw van geboorte, mannen en vrouwen apart. Klik op een naam om te volgen hoe die in de familie wordt doorgegeven."
+    : "First given name, by century of birth, men and women separately. Click a name to follow how it passes down in the family."}</p>
+  <div class="nm-cents">
+    {names.centuries.map((c: any) => (
+      <div class="nm-cent" data-century={c.c}>
+        <h4>{ord(c.c)} <span class="muted">({span(c.c)}, {nl ? `${c.n} mensen` : `${c.n} people`})</span></h4>
+        <div class="nm-cols">
+          {([["m", nl ? "Mannen" : "Men", c.m], ["f", nl ? "Vrouwen" : "Women", c.f]] as const).map(([sex, label, list]) => (
+            <ol class="nm-list" data-sex={sex} aria-label={label}>
+              <li class="nm-cap">{label}</li>
+              {list.map(([n, k]: [string, number]) => (
+                <li><a href="#nm-follow" class="nm-pick" data-name={n}>{n}</a><span class="nm-k">{k}</span></li>
+              ))}
+            </ol>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <h3 id="nm-follow">{nl ? "Volg de naam" : "Follow the name"}</h3>
+  <div class="nm-tools">
+    <label class="nm-lab">{nl ? "Voornaam" : "First name"}
+      <select class="nm-sel" aria-label={nl ? "Kies een voornaam" : "Pick a first name"}>
+        {names.overall.map(([n, k]: [string, number]) => <option value={n} selected={n === first}>{n} ({k})</option>)}
+      </select>
+    </label>
+  </div>
+  <p class="nm-sum" aria-live="polite"></p>
+  <div class="nm-chains"></div>
+  <details class="nm-single"><summary></summary><p class="nm-singles"></p></details>
+  <p class="nm-legend muted">
+    <span class="nm-key"><i class="nm-swatch"></i>{nl ? "↳ van ouder op kind (zelfde voornaam)" : "↳ parent to child (same first name)"}</span>
+    <span class="nm-key"><i class="nm-swatch nm-dash"></i>{nl ? "⇢ gestippeld: van grootouder op kleinkind, via een ouder met een andere naam" : "⇢ dashed: grandparent to grandchild, through a parent with a different name"}</span>
+  </p>
+</div>
+<style is:global>
+  .nm { font-family: system-ui, sans-serif; min-width: 0; }
+  .nm h3 { margin: 1em 0 0.3em; }
+  .nm-note { margin: 0 0 8px; font-size: 0.9rem; }
+  .nm-cents { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .nm-cent { border: 1px solid var(--line); border-radius: 8px; background: var(--card); padding: 8px 12px 10px; min-width: 0; }
+  .nm-cent h4 { margin: 0 0 6px; font-size: 0.95rem; }
+  .nm-cent h4 .muted { font-weight: 400; font-size: 0.8rem; }
+  .nm-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .nm-list { list-style: none; margin: 0; padding: 0; font-size: 0.9rem; }
+  .nm-list li { display: flex; justify-content: space-between; gap: 6px; padding: 2px 0; border-top: 1px solid var(--line); }
+  .nm-list li.nm-cap { border-top: 0; color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .nm-k { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .nm-pick { color: var(--ink); text-decoration: none; border-bottom: 1px dotted var(--accent); }
+  .nm-pick:hover, .nm-pick:focus-visible { color: var(--accent); }
+  .nm-tools { display: flex; gap: 10px; align-items: center; }
+  .nm-lab { font-size: 0.85rem; color: var(--muted); display: inline-flex; gap: 8px; align-items: center; }
+  .nm-lab select { font: inherit; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); color: var(--ink); max-width: 60vw; }
+  .nm-sum { margin: 8px 0; }
+  .nm-chains { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  .nm-chain { border: 1px solid var(--line); border-radius: 8px; background: var(--card); padding: 8px 10px; list-style: none; margin: 0; min-width: 0; }
+  .nm-chain li { padding: 3px 0 3px 8px; font-size: 0.9rem; overflow-wrap: anywhere; border-left: 2px solid var(--accent); margin-left: calc(var(--d, 0) * 14px); }
+  .nm-chain li[data-kind="dashed"] { border-left-style: dashed; }
+  .nm-chain li[data-d="0"] { border-left-color: transparent; }
+  .nm-chain a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); }
+  .nm-chain a:hover, .nm-chain a:focus-visible { border-bottom-color: var(--accent); color: var(--accent); }
+  .nm-via { display: block; font-size: 0.75rem; color: var(--muted); }
+  .nm-single { margin: 10px 0; font-size: 0.9rem; }
+  .nm-singles a { color: var(--ink); white-space: nowrap; margin-right: 10px; text-decoration: none; border-bottom: 1px solid var(--line); display: inline-block; }
+  .nm-legend { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; margin: 8px 0 0; }
+  .nm-swatch { display: inline-block; width: 18px; height: 0; border-top: 2px solid var(--accent); vertical-align: middle; margin-right: 6px; }
+  .nm-swatch.nm-dash { border-top-style: dashed; }
+  @media (max-width: 700px) { .nm-cols { gap: 8px; } }
+</style>
+<script>
+  const data = JSON.parse(document.getElementById("facts-data")!.textContent!);
+  const root = document.querySelector<HTMLElement>(".nm")!;
+  const nl = data.lang === "nl";
+  const $ = <T extends HTMLElement>(s: string) => root.querySelector<T>(s)!;
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]!));
+  const byId = new Map<string, any>(data.people.map((p: any) => [p.id, p]));
+  const personPath: string = data.personPath;
+  const label = (p: any) => `${esc(p.n)} (${p.by ?? "?"})`;
+  const link = (id: string) => `<a href="${personPath}${id}/">${label(byId.get(id))}</a>`;
+  const sel = $<HTMLSelectElement>(".nm-sel");
+
+  function show(name: string, fromUser: boolean) {
+    const f = data.names.follow[name];
+    if (![...sel.options].some((o) => o.value === name)) sel.add(new Option(name, name));
+    sel.value = name;
+    root.dataset.name = name;
+    if (!f) return;
+    // Groups of connected bearers.
+    const parent = new Map<string, string>();
+    const find = (x: string): string => (parent.get(x) === x ? x : (parent.set(x, find(parent.get(x)!)), parent.get(x)!));
+    f.ids.forEach((i: string) => parent.set(i, i));
+    for (const [a, b] of f.links) parent.set(find(a), find(b));
+    const inc = new Map<string, any[]>();
+    for (const l of f.links) (inc.get(l[1]) || inc.set(l[1], []).get(l[1])!).push(l);
+    const out = new Map<string, string[]>();
+    for (const l of f.links) (out.get(l[0]) || out.set(l[0], []).get(l[0])!).push(l[1]);
+    const by = (id: string) => byId.get(id).by ?? 9999;
+    const groups = new Map<string, string[]>();
+    for (const id of f.ids) (groups.get(find(id)) || groups.set(find(id), []).get(find(id))!).push(id);
+    // Order each group by the links: an ancestor above its descendants, depth-first; birth year only orders siblings.
+    const depth = new Map<string, number>();
+    for (const [k, g] of groups) {
+      const left = new Map<string, number>(g.map((id) => [id, new Set((inc.get(id) || []).map((l) => l[0])).size]));
+      const done = new Set<string>(), order: string[] = [];
+      const visit = (id: string, d: number) => {
+        if (done.has(id)) return;
+        done.add(id); order.push(id);
+        depth.set(id, Math.max(depth.get(id) ?? 0, d));
+        for (const c of [...new Set(out.get(id) || [])].sort((a, b) => by(a) - by(b) || a.localeCompare(b))) {
+          left.set(c, left.get(c)! - 1);
+          depth.set(c, Math.max(depth.get(c) ?? 0, d + 1));
+          if (left.get(c)! <= 0) visit(c, depth.get(c)!);
+        }
+      };
+      for (const id of [...g].filter((i) => !(inc.get(i) || []).length).sort((a, b) => by(a) - by(b) || a.localeCompare(b))) visit(id, 0);
+      for (const id of g) if (!done.has(id)) visit(id, depth.get(id) ?? 0); // cycles (data errors): keep them visible
+      groups.set(k, order);
+    }
+    const chains = [...groups.values()].filter((g) => g.length > 1);
+    const singles = [...groups.values()].filter((g) => g.length === 1).map((g) => g[0]);
+    $(".nm-chains").innerHTML = chains.map((g) => `<ul class="nm-chain" data-size="${g.length}">` + g.map((id) => {
+      const ins = inc.get(id) || [];
+      const kind = ins.length && ins.every((l) => l[2]) ? "dashed" : ins.length ? "solid" : "root";
+      const via = ins.map((l) => (l[2]
+        ? `<span class="nm-via nm-link" data-kind="dashed" data-from="${l[0]}">⇢ ${nl ? "van" : "from"} ${esc(byId.get(l[0]).n)} (${byId.get(l[0]).by ?? "?"}) ${nl ? "via" : "via"} ${esc(byId.get(l[3]).n)}</span>`
+        : `<span class="nm-via nm-link" data-kind="solid" data-from="${l[0]}">↳ ${nl ? "van" : "from"} ${esc(byId.get(l[0]).n)} (${byId.get(l[0]).by ?? "?"})</span>`)).join("");
+      return `<li data-id="${id}" data-d="${depth.get(id)}" data-kind="${kind}" style="--d:${depth.get(id)}">${link(id)}${via}</li>`;
+    }).join("") + `</ul>`).join("");
+    const n = f.count, c = f.links.length;
+    $(".nm-sum").textContent = nl
+      ? `${name}: ${n} ${n === 1 ? "mens" : "mensen"}, ${c} ${c === 1 ? "keer" : "keer"} doorgegeven aan een kind of kleinkind. ${f.chain > 1 ? `Langste reeks: ${f.chain} op een rij.` : "Geen reeks: niemand erft de naam van een voorouder."}`
+      : `${name}: ${n} ${n === 1 ? "person" : "people"}, passed down ${c} ${c === 1 ? "time" : "times"} to a child or grandchild. ${f.chain > 1 ? `Longest chain: ${f.chain} in a row.` : "No chain: nobody has the name from an ancestor."}`;
+    const det = $<HTMLDetailsElement>(".nm-single");
+    det.hidden = !singles.length;
+    det.querySelector("summary")!.textContent = nl ? `${singles.length} ${singles.length === 1 ? "naamgenoot" : "naamgenoten"} zonder voorouder of nakomeling met dezelfde naam in de lijn` : `${singles.length} with the name but no ancestor or descendant of the same name in the line`;
+    $(".nm-singles").innerHTML = singles.map(link).join(" ");
+    root.dataset.chains = String(chains.length);
+    if (fromUser) (window as any).track?.("facts_names", { name });
+  }
+  sel.addEventListener("change", () => show(sel.value, true));
+  root.querySelectorAll<HTMLAnchorElement>(".nm-pick").forEach((a) => a.addEventListener("click", (e) => {
+    e.preventDefault();
+    show(a.dataset.name!, true);
+    document.getElementById("nm-follow")!.scrollIntoView({ block: "start" });
+  }));
+  show(sel.value, false);
+</script>

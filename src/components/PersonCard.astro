@@ -1,0 +1,24 @@
+---
+import Name from "./Name.astro";
+import { lifespan, personUrl, type Lang, type Person } from "../lib/site";
+interface Props { p: Person | undefined; lang: Lang; small?: boolean; }
+const { p, lang, small } = Astro.props;
+---
+{p ? (
+  <a class={`pc ${small ? "sm" : ""} ${p.living ? "alive" : ""}`} href={personUrl(lang, p.id)}>
+    <span class="n"><Name p={p} lang={lang} /></span>
+    <span class="y">{lifespan(p, lang)}</span>
+  </a>
+) : (
+  <span class={`pc empty ${small ? "sm" : ""}`}><span class="n">?</span></span>
+)}
+<style>
+  .pc { display: flex; flex-direction: column; gap: 2px; padding: 8px 12px; border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 4px; background: var(--card); text-decoration: none; color: var(--ink); min-width: 0; }
+  .pc:hover { border-color: var(--accent); }
+  .pc.alive { border-left-color: var(--line); }
+  .pc.empty { border-style: dashed; color: var(--muted); border-left-width: 1px; }
+  .n { font-weight: 600; line-height: 1.25; overflow-wrap: anywhere; }
+  .y { font-size: 0.85rem; color: var(--muted); }
+  .sm { padding: 5px 8px; font-size: 0.9rem; }
+  .sm .y { font-size: 0.78rem; }
+</style>

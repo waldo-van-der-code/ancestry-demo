@@ -1,0 +1,195 @@
+---
+// Professions / Beroepen. Part 1: most common jobs over all time (static; each bar opens its people).
+// Part 2: animated bar race of job groups per 50-year window of birth (facts.jobs.frames), play/pause + slider.
+// Mapping raw occupation -> job -> group: data/occupations.json (scripts/facts.mjs jobsFacts).
+import type { Lang } from "../../lib/site";
+interface Props { facts: any; lang: Lang; personPath: string }
+const { facts, lang, personPath } = Astro.props;
+const nl = lang === "nl";
+const J = facts.jobs;
+const byId = new Map(facts.people.map((p: any) => [p.id, p]));
+const jobName = (j: string) => J.jobs[j][lang];
+const groupName = (g: string) => J.groups[g][lang];
+const top = J.top;
+const tMax = top[0]?.n || 1;
+const lead = top[0];
+const title = !lead ? "" : nl
+  ? `Het vaakst genoemde beroep: ${jobName(lead.j)} (${lead.n} mensen)`
+  : `The most common job: ${jobName(lead.j)} (${lead.n} people)`;
+const frames = J.frames;
+const groups = Object.keys(J.groups);
+// One scale for every frame, so a bar only grows when the share really grows.
+const pct = (f: any, g: string) => (f.g[g] || 0) / f.n * 100;
+const sMax = Math.max(1, ...frames.flatMap((f: any) => groups.map((g) => pct(f, g))));
+const scale = Math.ceil(sMax / 10) * 10;
+const span = (f: any) => `${f.from}-${f.to}`;
+const life = (p: any) => (p.by || p.dy ? ` (${p.by ?? "?"}${p.dy ? `-${p.dy}` : ""})` : "");
+const raceData = {
+  frames: frames.map((f: any) => ({ from: f.from, to: f.to, n: f.n, g: f.g, top: f.top })),
+  groups: Object.fromEntries(groups.map((g) => [g, groupName(g)])),
+  jobs: Object.fromEntries(Object.keys(J.jobs).map((j) => [j, jobName(j)])),
+  scale,
+};
+const f0 = frames[0];
+const rank0 = f0 ? [...groups].sort((a, b) => (f0.g[b] || 0) - (f0.g[a] || 0) || a.localeCompare(b)) : groups;
+---
+<div class="jb" data-lang={lang}>
+  {!J.n ? <p class="muted">{nl ? "Nog geen beroepen bekend." : "No jobs known yet."}</p> : (
+  <>
+  <h3>{title}</h3>
+  <p class="muted jb-sub">{nl
+    ? `Van ${J.n} van de ${facts.people.length} mensen kennen we een beroep, uit akten, kranten en het familieboek. Wie meerdere beroepen had, telt bij elk mee. Klik op een beroep voor de mensen.`
+    : `We know a job for ${J.n} of the ${facts.people.length} people, from civil records, newspapers and the family book. Someone with several jobs counts for each. Click a job to see the people.`}</p>
+  <div class="jb-top">
+    {top.map((t: any) => (
+      <details class="jb-job" data-job={t.j}>
+        <summary>
+          <span class="jb-lab">{jobName(t.j)}</span>
+          <span class="jb-track"><span class="jb-bar" style={`width:${(t.n / tMax) * 100}%`}></span></span>
+          <span class="jb-n">{t.n}</span>
+        </summary>
+        <ul class="jb-people">
+          {t.ids.map((id: string) => { const p: any = byId.get(id); return p && <li><a href={`${personPath}${id}/`}>{p.n}</a><span class="muted">{life(p)}</span></li>; })}
+        </ul>
+      </details>
+    ))}
+  </div>
+  <p class="muted jb-note">{nl ? `${J.nJobs} verschillende beroepen in totaal; hier de ${top.length} die het vaakst voorkomen.` : `${J.nJobs} different jobs in all; these are the ${top.length} most common.`}</p>
+
+  <h3>{nl ? "Hoe het veranderde" : "How it changed"}</h3>
+  {frames.length < 2 ? <p class="muted">{nl ? "Te weinig mensen met een beroep en een geboortejaar om de verandering te tonen." : "Too few people with a job and a birth year to show the change."}</p> : (
+  <>
+  <p class="muted jb-sub">{nl
+    ? "Beroepsgroepen per 50 jaar van geboorte, als aandeel van de mensen met een bekend beroep in die periode. Druk op afspelen of sleep de schuif."
+    : "Job groups per 50 years of birth, as a share of the people with a known job in that period. Press play or drag the slider."}</p>
+  <div class="jb-race" aria-describedby="jb-race-note">
+    <div class="jb-head">
+      <span class="jb-period" aria-live="polite">{nl ? "Geboren" : "Born"} <b class="jb-span">{span(f0)}</b></span>
+      <span class="jb-meta muted">{nl ? `${f0.n} mensen met een beroep · meest: ${jobName(f0.top[0])} (${f0.top[1]})` : `${f0.n} people with a job · most: ${jobName(f0.top[0])} (${f0.top[1]})`}</span>
+    </div>
+    <div class="jb-stage" style={`height:${groups.length * 30}px`}>
+      {groups.map((g) => {
+        const i = rank0.indexOf(g), v = f0 ? pct(f0, g) : 0;
+        return (
+          <div class="jb-row" data-group={g} style={`transform:translateY(${i * 30}px)`}>
+            <span class="jb-lab">{groupName(g)}</span>
+            <span class="jb-track"><span class="jb-bar" style={`width:${(v / scale) * 100}%`}></span></span>
+            <span class="jb-n">{Math.round(v)}%</span>
+          </div>
+        );
+      })}
+    </div>
+    <div class="jb-ctl">
+      <button type="button" class="jb-play" aria-label={nl ? "Afspelen" : "Play"} data-play={nl ? "Afspelen" : "Play"} data-pause={nl ? "Pauzeren" : "Pause"}><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path class="i-play" d="M4 2.5v11l9.5-5.5z" /><g class="i-pause"><rect x="3" y="2.5" width="3.5" height="11" rx="1" /><rect x="9.5" y="2.5" width="3.5" height="11" rx="1" /></g></svg></button>
+      <button type="button" class="jb-step" data-d="-1" aria-label={nl ? "Vorige periode" : "Previous period"}>‹</button>
+      <input class="jb-slider" type="range" min="0" max={frames.length - 1} value="0" step="1" aria-label={nl ? "Periode van geboorte" : "Period of birth"} />
+      <button type="button" class="jb-step" data-d="1" aria-label={nl ? "Volgende periode" : "Next period"}>›</button>
+    </div>
+    <div class="jb-ends muted"><span>{frames[0].from}</span><span>{frames[frames.length - 1].to}</span></div>
+  </div>
+  <p class="muted jb-note" id="jb-race-note">{nl
+    ? "De perioden overlappen (1800-1849, dan 1810-1859, ...), zodat de balken geleidelijk schuiven. Iemand met beroepen in twee groepen telt in beide, dus de percentages tellen niet op tot 100."
+    : "The periods overlap (1800-1849, then 1810-1859, ...), so the bars move gradually. Someone with jobs in two groups counts in both, so the shares don't add up to 100."}</p>
+  <details class="ch-table"><summary>{nl ? "Toon als tabel" : "Show as table"}</summary>
+    <table data-chart="jobs"><thead><tr><th>{nl ? "Geboren" : "Born"}</th><th>{nl ? "Mensen" : "People"}</th>{groups.map((g) => <th>{groupName(g)}</th>)}</tr></thead>
+      <tbody>{frames.map((f: any) => <tr><th>{span(f)}</th><td>{f.n}</td>{groups.map((g) => <td>{f.g[g] || 0}</td>)}</tr>)}</tbody></table>
+  </details>
+  <script type="application/json" class="jb-data" set:html={JSON.stringify(raceData).replace(/</g, "\\u003c")} />
+  </>
+  )}
+  </>
+  )}
+</div>
+<style is:global>
+  .jb { --jb-bar: #2a78d6; --jb-lead: #eb6834; font-family: system-ui, sans-serif; min-width: 0; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .jb { --jb-bar: #3987e5; --jb-lead: #d95926; } }
+  :root[data-theme="dark"] .jb { --jb-bar: #3987e5; --jb-lead: #d95926; }
+  .jb h3 { margin: 0.8em 0 0.2em; }
+  .jb-sub { margin: 0 0 10px; font-size: 0.88rem; }
+  .jb-note { margin: 6px 0 14px; font-size: 0.85rem; }
+  .jb-top { border: 1px solid var(--line); border-radius: 8px; background: var(--card); padding: 6px 10px; }
+  .jb-job summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: minmax(0, 13em) 1fr 3em; gap: 10px; align-items: center; padding: 4px 0; border-radius: 4px; }
+  .jb-job summary::-webkit-details-marker { display: none; }
+  .jb-job summary:hover .jb-bar, .jb-job[open] .jb-bar { background: var(--jb-lead); }
+  .jb-job summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .jb-lab { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.92rem; }
+  .jb-track { position: relative; height: 18px; min-width: 0; }
+  .jb-bar { position: absolute; left: 0; top: 0; bottom: 0; background: var(--jb-bar); border-radius: 0 4px 4px 0; min-width: 2px; }
+  .jb-n { font-variant-numeric: tabular-nums; font-size: 0.9rem; text-align: right; }
+  .jb-people { list-style: none; margin: 4px 0 10px; padding: 0 0 0 4px; display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 0.88rem; }
+  .jb-race { border: 1px solid var(--line); border-radius: 8px; background: var(--card); padding: 10px 12px 8px; }
+  .jb-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; margin-bottom: 10px; }
+  .jb-period { font-size: 1.05rem; }
+  .jb-span { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+  .jb-meta { font-size: 0.85rem; }
+  .jb-stage { position: relative; }
+  .jb-row { position: absolute; left: 0; right: 0; top: 0; height: 26px; display: grid; grid-template-columns: minmax(0, 13em) 1fr 3em; gap: 10px; align-items: center; transition: transform 0.6s ease; }
+  .jb-row .jb-bar { transition: width 0.6s ease; }
+  .jb-row.lead .jb-bar { background: var(--jb-lead); }
+  .jb-row.lead .jb-lab { font-weight: 600; }
+  .jb-row.zero { opacity: 0.45; }
+  .jb-ctl { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+  .jb-ctl button { min-width: 40px; height: 36px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); font-size: 1rem; cursor: pointer; }
+  .jb-ctl svg { fill: currentColor; display: block; margin: auto; }
+  .jb-play .i-pause, .jb-play.on .i-play { display: none; }
+  .jb-play.on .i-pause { display: inline; }
+  .jb-ctl button:hover { border-color: var(--accent); }
+  .jb-slider { flex: 1; min-width: 0; accent-color: var(--jb-bar); }
+  .jb-ends { display: flex; justify-content: space-between; font-size: 0.8rem; padding: 0 52px 0 100px; }
+  @media (prefers-reduced-motion: reduce) { .jb-row, .jb-row .jb-bar { transition: none; } }
+  @media (max-width: 700px) {
+    .jb-job summary, .jb-row { grid-template-columns: minmax(0, 9.5em) 1fr 2.6em; gap: 6px; }
+    .jb-lab { font-size: 0.82rem; }
+    .jb-ends { padding: 0 48px 0 96px; }
+  }
+</style>
+<script>
+  const root = document.querySelector<HTMLElement>(".jb");
+  const dataEl = root?.querySelector(".jb-data");
+  if (root && dataEl) {
+    const D = JSON.parse(dataEl.textContent!);
+    const nl = root.dataset.lang === "nl";
+    const rows = new Map([...root.querySelectorAll<HTMLElement>(".jb-row")].map((r) => [r.dataset.group!, r]));
+    const slider = root.querySelector<HTMLInputElement>(".jb-slider")!;
+    const play = root.querySelector<HTMLButtonElement>(".jb-play")!;
+    const spanEl = root.querySelector(".jb-span")!, meta = root.querySelector(".jb-meta")!;
+    const RH = 30;
+    let i = 0, timer: number | undefined, touched = false; // any user input cancels the pending autoplay
+    const draw = (k: number) => {
+      i = k;
+      const f = D.frames[k];
+      slider.value = String(k);
+      spanEl.textContent = `${f.from}-${f.to}`;
+      meta.textContent = nl
+        ? `${f.n} mensen met een beroep · meest: ${D.jobs[f.top[0]]} (${f.top[1]})`
+        : `${f.n} people with a job · most: ${D.jobs[f.top[0]]} (${f.top[1]})`;
+      const order = Object.keys(D.groups).sort((a, b) => (f.g[b] || 0) - (f.g[a] || 0) || a.localeCompare(b));
+      order.forEach((g, r) => {
+        const row = rows.get(g)!, v = ((f.g[g] || 0) / f.n) * 100;
+        row.style.transform = `translateY(${r * RH}px)`;
+        row.querySelector<HTMLElement>(".jb-bar")!.style.width = `${(v / D.scale) * 100}%`;
+        row.querySelector(".jb-n")!.textContent = `${Math.round(v)}%`;
+        row.classList.toggle("lead", r === 0 && v > 0);
+        row.classList.toggle("zero", v === 0);
+        row.dataset.rank = String(r);
+      });
+    };
+    const stop = () => { if (timer) clearInterval(timer); timer = undefined; play.classList.remove("on"); play.setAttribute("aria-label", play.dataset.play!); };
+    const start = () => {
+      if (i >= D.frames.length - 1) draw(0);
+      play.classList.add("on"); play.setAttribute("aria-label", play.dataset.pause!);
+      timer = window.setInterval(() => { if (i >= D.frames.length - 1) stop(); else draw(i + 1); }, 1100);
+    };
+    play.addEventListener("click", () => { touched = true; (window as any).track?.("facts_jobs", { action: timer ? "pause" : "play" }); timer ? stop() : start(); });
+    slider.addEventListener("input", () => { touched = true; stop(); draw(Number(slider.value)); });
+    root.querySelectorAll<HTMLButtonElement>(".jb-step").forEach((b) => b.addEventListener("click", () => {
+      touched = true; stop(); draw(Math.min(D.frames.length - 1, Math.max(0, i + Number(b.dataset.d))));
+    }));
+    draw(0);
+    // Plays once by itself when it first scrolls into view (not with reduced motion).
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+      const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); if (!touched && !timer) start(); } }, { threshold: 0.6 });
+      io.observe(root.querySelector(".jb-stage")!);
+    }
+  }
+</script>

@@ -1,0 +1,15 @@
+---
+import { DEMO_BANNER, DEMO_REPO, url } from "../lib/site";
+// The root forwards to /nl/ or /en/ by browser language.
+---
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta http-equiv="refresh" content={`0; url=${url("nl")}`} />
+    <script is:inline define:vars={{ nl: url("nl"), en: url("en") }}>
+      location.replace((navigator.language || "nl").toLowerCase().startsWith("nl") ? nl : en);
+    </script>
+  </head>
+  <body><p><a href={DEMO_REPO}>{DEMO_BANNER}</a></p><a href={url("nl")}>Nederlands</a> · <a href={url("en")}>English</a></body>
+</html>

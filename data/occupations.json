@@ -1,0 +1,97 @@
+{
+  "terms": {
+    "werkman": "werkman",
+    "naaister": "naaister",
+    "sluiswachter": "sluiswachter",
+    "onderwijzer": "onderwijzer",
+    "wever": "wever",
+    "dienstbode": "dienstbode",
+    "onderwijzeres": "onderwijzer",
+    "landbouwer": "landbouwer",
+    "broodbakker": "brood",
+    "brouwer": "brouwer",
+    "brouwerijarbeider": "brouwerijarbeider"
+  },
+  "jobs": {
+    "werkman": {
+      "nl": "werkman / arbeider",
+      "en": "labourer",
+      "g": "arbeid"
+    },
+    "naaister": {
+      "nl": "naaister",
+      "en": "seamstress",
+      "g": "textiel"
+    },
+    "sluiswachter": {
+      "nl": "sluiswachter",
+      "en": "lock keeper",
+      "g": "vervoer"
+    },
+    "onderwijzer": {
+      "nl": "onderwijzer(es)",
+      "en": "teacher",
+      "g": "kantoor"
+    },
+    "wever": {
+      "nl": "wever",
+      "en": "weaver",
+      "g": "textiel"
+    },
+    "dienstbode": {
+      "nl": "dienstbode / dienstmeid",
+      "en": "domestic servant",
+      "g": "dienst"
+    },
+    "landbouwer": {
+      "nl": "landbouwer",
+      "en": "farmer",
+      "g": "land"
+    },
+    "brood": {
+      "nl": "dorpsbakker",
+      "en": "village baker",
+      "g": "voeding"
+    },
+    "brouwer": {
+      "nl": "brouwer",
+      "en": "brewer",
+      "g": "voeding"
+    },
+    "brouwerijarbeider": {
+      "nl": "brouwerijarbeider",
+      "en": "brewery worker",
+      "g": "voeding"
+    }
+  },
+  "groups": {
+    "arbeid": {
+      "nl": "Arbeiders",
+      "en": "Labourers"
+    },
+    "textiel": {
+      "nl": "Textiel en kleding",
+      "en": "Textiles and clothing"
+    },
+    "vervoer": {
+      "nl": "Vervoer en boodschappen",
+      "en": "Transport and errands"
+    },
+    "kantoor": {
+      "nl": "Kantoor, school en zorg",
+      "en": "Office, school and care"
+    },
+    "dienst": {
+      "nl": "Dienstpersoneel",
+      "en": "Domestic service"
+    },
+    "land": {
+      "nl": "Landbouw",
+      "en": "Farming"
+    },
+    "voeding": {
+      "nl": "Voeding en drank",
+      "en": "Food and drink"
+    }
+  }
+}

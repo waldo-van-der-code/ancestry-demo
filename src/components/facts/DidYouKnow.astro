@@ -1,0 +1,91 @@
+---
+// "Wist je dat… / Did you know…" cards: static HTML from facts.<site>.json `dyk` (scripts/facts.mjs didYouKnow).
+import { fmtDate, personUrl, type Lang } from "../../lib/site";
+interface Props { facts: any; lang: Lang }
+const { facts, lang } = Astro.props;
+const nl = lang === "nl";
+const dyk = facts?.dyk || {};
+const byId = new Map<string, any>((facts?.people || []).map((p: any) => [p.id, p]));
+const href = (id: string) => personUrl(lang, id);
+const name = (id: string) => byId.get(id)?.n || id;
+const list = (ids: string[]) => ids.map((id) => ({ id, name: name(id) }));
+const MAX = 6;
+const yrs = (n: number) => (nl ? `${n} jaar` : `${n} years`);
+const dm = (md: string) => fmtDate(`2000-${md}`, lang).replace(/ 2000$/, "");
+
+interface Card { key: string; big: string; head: string; people: { id: string; name: string }[]; note?: string; more?: number; extra?: { id: string; name: string; age: number }[] }
+const cards: Card[] = [];
+if (dyk.oldest) {
+  const o = dyk.oldest;
+  cards.push({ key: "oldest", big: `${o.approx ? (nl ? "ca. " : "c. ") : ""}${o.y}`, people: list([o.id]),
+    head: nl ? "De oudst bekende voorouder werd geboren in" : "The oldest known ancestor was born in" });
+}
+if (dyk.longest) {
+  const [first, ...rest] = dyk.longest.top;
+  cards.push({ key: "longest", big: yrs(first.age), people: list([first.id]), extra: rest.map((r: any) => ({ id: r.id, name: name(r.id), age: r.age })),
+    head: nl ? "De langste levensduur" : "The longest life",
+    note: nl ? `Op basis van ${dyk.longest.n} mensen met volledige geboorte- en sterfdatum.` : `Based on ${dyk.longest.n} people with a full birth and death date.` });
+}
+if (dyk.marriage) {
+  const m = dyk.marriage;
+  cards.push({ key: "marriage", big: yrs(m.years), people: list([m.a, m.b]),
+    head: nl ? "Het langste huwelijk" : "The longest marriage",
+    note: nl ? `Getrouwd op ${fmtDate(m.md, lang)}, tot het overlijden van de eerste van de twee.` : `Married on ${fmtDate(m.md, lang)}, until the first of the two died.` });
+}
+if (dyk.children) {
+  const c = dyk.children;
+  const [g, ...others] = c.groups;
+  cards.push({ key: "children", big: nl ? `${c.count} kinderen` : `${c.count} children`, people: list(g.ids),
+    head: nl ? "De meeste kinderen" : "The most children",
+    note: others.length ? (nl ? "Evenveel kinderen hadden ook: " : "The same number: ") + others.map((o: any) => o.ids.map(name).join(" & ")).join("; ") : undefined });
+}
+if (dyk.youngest) {
+  const y = dyk.youngest;
+  cards.push({ key: "youngest", big: yrs(y.age), people: list([y.parent, y.child]),
+    head: nl ? "De jongste ouder bij een geboorte" : "The youngest parent at a birth",
+    note: nl ? `${name(y.parent)} was ${y.age} toen ${name(y.child)} werd geboren.` : `${name(y.parent)} was ${y.age} when ${name(y.child)} was born.` });
+}
+if (dyk.twins) {
+  const t = dyk.twins;
+  const shown = t.groups.slice(0, MAX);
+  cards.push({ key: "twins", big: nl ? `${t.count} ${t.count === 1 ? "tweeling" : "tweelingen"}` : `${t.count} ${t.count === 1 ? "set" : "sets"}`, people: shown.flatMap((g: any) => list(g.ids)), more: t.count - shown.length,
+    head: nl ? "Tweelingen (of meer) met een volledige geboortedatum" : "Twins (or more) with a full birth date",
+    note: nl ? "Zelfde ouders, zelfde geboortedatum." : "Same parents, same birth date." });
+}
+if (dyk.birthday) {
+  const b = dyk.birthday;
+  const shown = b.ids.slice(0, MAX);
+  cards.push({ key: "birthday", big: dm(b.md), people: list(shown), more: b.ids.length - shown.length,
+    head: nl ? `De meest gedeelde verjaardag: ${b.ids.length} mensen` : `The most shared birthday: ${b.ids.length} people`,
+    note: nl ? `Op basis van ${b.n} mensen met volledige geboortedatum.` : `Based on ${b.n} people with a full birth date.` });
+}
+---
+<div class="dyk" data-dyk-count={cards.length}>
+  {cards.map((c) => (
+    <article class="dyk-card" data-card={c.key}>
+      <p class="head">{c.head}</p>
+      <p class="big">{c.big}</p>
+      <ul class="who">
+        {c.people.map((p) => <li><a href={href(p.id)}>{p.name}</a></li>)}
+        {c.more ? <li class="muted">{nl ? `en ${c.more} meer` : `and ${c.more} more`}</li> : null}
+      </ul>
+      {c.extra && c.extra.length > 0 && (
+        <p class="note">{nl ? "Gevolgd door " : "Followed by "}{c.extra.map((e, i) => (
+          <>{i > 0 && (i === c.extra!.length - 1 ? (nl ? " en " : " and ") : ", ")}<a href={href(e.id)}>{e.name}</a> ({e.age})</>
+        ))}.</p>
+      )}
+      {c.note && <p class="note">{c.note}</p>}
+    </article>
+  ))}
+</div>
+<style>
+  .dyk { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 14px; font-family: system-ui, sans-serif; }
+  .dyk-card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; min-width: 0; overflow-wrap: anywhere; }
+  .dyk-card p { margin: 0; }
+  .head { color: var(--muted); font-size: 0.9rem; }
+  .big { font-family: Georgia, serif; font-size: 2.2rem; line-height: 1.15; color: var(--accent); margin: 4px 0 8px !important; }
+  .who { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 2px 10px; }
+  .who a, .note a { color: var(--ink); text-decoration-color: var(--accent); }
+  .note { margin-top: 8px !important; font-size: 0.85rem; color: var(--muted); }
+  .muted { color: var(--muted); }
+</style>

@@ -1,0 +1,169 @@
+---
+import { DEMO_BANNER, DEMO_REPO, LANGS, T, fam, sitePath, url, type Lang, type Section } from "../lib/site";
+interface Props {
+  lang: Lang;
+  title: string;
+  alt?: string; // same page in the other language
+  active?: Section | "home";
+  wide?: boolean;
+  redirect?: string; // this page moved: forward to that URL
+}
+const { lang, title, alt, active, wide, redirect } = Astro.props;
+const t = T[lang];
+// Menu: tree (home), people, story, map, fun facts, sources.
+const f = fam();
+const other = lang === "nl" ? "en" : "nl";
+const secs = f.sections as readonly Section[];
+const menu: { key: Section | "home"; href: string; label: string }[] = [
+  { key: "home", href: url(lang), label: t.tree },
+  ...secs.filter((s) => s !== "sources").map((s) => ({ key: s, href: url(lang, s), label: t[s] })),
+  { key: "map", href: url(lang, "map"), label: t.map },
+  { key: "facts", href: url(lang, "facts"), label: t.facts },
+  ...secs.filter((s) => s === "sources").map((s) => ({ key: s, href: url(lang, s), label: t[s] })),
+];
+// The switch always shows; without a known twin page it goes to the other language's home.
+const altHref = sitePath(alt || `/${other}/`);
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    {redirect && <meta http-equiv="refresh" content={`0; url=${redirect}`} />}
+    <title>{title === f.name[lang] ? title : `${title} · ${f.name[lang]}`}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='9' r='5' fill='%238a3b2e'/><circle cx='8' cy='24' r='4' fill='%238a3b2e'/><circle cx='24' cy='24' r='4' fill='%238a3b2e'/><path d='M16 14v4M8 20v-2h16v2' stroke='%238a3b2e' stroke-width='2' fill='none'/></svg>" />
+    <link href={sitePath("/vendor/fonts/fonts.css")} rel="stylesheet" />
+  </head>
+  <body>
+    <a class="skip" href="#main">{lang === "nl" ? "Naar inhoud" : "Skip to content"}</a>
+    <header class="top">
+      <div class="bar">
+        <a class="brand" href={url(lang)}>{f.name[lang]}</a>
+        <nav aria-label={lang === "nl" ? "Hoofdmenu" : "Main menu"}>
+          {menu.map((m) => <a href={m.href} aria-current={active === m.key ? "page" : undefined}>{m.label}</a>)}
+        </nav>
+        <div class="meta">
+          <div class="langs" role="group" aria-label={lang === "nl" ? "Taal" : "Language"}>
+            {LANGS.map((l) => l === lang
+              ? <span class="on" aria-current="true" lang={l} title={l === "nl" ? "Nederlands" : "English"}>{l.toUpperCase()}</span>
+              : <a href={altHref} hreflang={l} lang={l} title={l === "nl" ? "Nederlands" : "English"}>{l.toUpperCase()}</a>)}
+          </div>
+        </div>
+      </div>
+    </header>
+    <p class="demo-banner" role="note"><a href={DEMO_REPO}>{DEMO_BANNER}</a></p>
+    <main id="main" class={wide ? "wide" : ""}>
+      <slot />
+    </main>
+    <footer class="foot">
+      <p>{lang === "nl" ? "Alle personen, akten en verhalen op deze site zijn verzonnen." : "All people, records and stories on this site are invented."}</p>
+    </footer>
+    <script>
+      // Phones: the menu is one swipeable row; bring the current page into view.
+      const cur = document.querySelector<HTMLElement>("header nav a[aria-current]");
+      const nav = cur?.parentElement;
+      if (cur && nav && nav.scrollWidth > nav.clientWidth) nav.scrollLeft += cur.getBoundingClientRect().left - nav.getBoundingClientRect().left - 16;
+    </script>
+  </body>
+</html>
+<style is:global>
+  :root {
+    --paper: #f6f1e7;
+    --card: #fbf8f2;
+    --ink: #2a241d;
+    --muted: #6c6357;
+    --line: #ddd3c3;
+    --accent: #8a3b2e;
+    --accent-soft: #efe0d6;
+    --mark: #fff1b8;
+    --serif: "Source Serif 4", "Iowan Old Style", Georgia, serif;
+    --display: "Fraunces", "Iowan Old Style", Georgia, serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #1b1815;
+      --card: #24201c;
+      --ink: #ece4d6;
+      --muted: #a89d8d;
+      --line: #3a342d;
+      --accent: #e0927f;
+      --accent-soft: #3a2a24;
+      --mark: #5a4b1c;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1b1815; --card: #24201c; --ink: #ece4d6; --muted: #a89d8d; --line: #3a342d;
+    --accent: #e0927f; --accent-soft: #3a2a24; --mark: #5a4b1c;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 18px/1.6 var(--serif);
+    overflow-x: hidden;
+  }
+  a { color: var(--accent); text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; line-height: 1.2; letter-spacing: -0.01em; }
+  h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0.2em 0 0.3em; }
+  h2 { font-size: 1.6rem; margin: 2em 0 0.6em; }
+  h3 { font-size: 1.25rem; margin: 1.6em 0 0.4em; }
+  .skip { position: absolute; left: -999px; }
+  .skip:focus { left: 16px; top: 8px; background: var(--card); padding: 8px; z-index: 10; }
+  .top { border-bottom: 1px solid var(--line); background: var(--card); position: sticky; top: 0; z-index: 5; }
+  .bar { max-width: 1100px; margin: 0 auto; padding: 10px 16px; display: flex; gap: 12px 24px; align-items: center; flex-wrap: wrap; }
+  .brand { font-family: var(--display); font-weight: 600; font-size: 1.15rem; color: var(--ink); text-decoration: none; }
+  nav { display: flex; gap: 4px 18px; flex-wrap: wrap; font-size: 0.95rem; }
+  nav a { color: var(--muted); text-decoration: none; padding: 4px 0; border-bottom: 2px solid transparent; }
+  nav a[aria-current="page"], nav a:hover { color: var(--ink); border-color: var(--accent); }
+  .meta { margin-left: auto; font-size: 0.9rem; }
+  .langs { display: inline-flex; border: 1px solid var(--line); border-radius: 99px; overflow: hidden; font-family: system-ui, sans-serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.04em; }
+  .langs > * { padding: 5px 12px; min-width: 44px; text-align: center; text-decoration: none; }
+  .langs a { color: var(--muted); }
+  .langs a:hover { color: var(--ink); background: var(--accent-soft); }
+  .langs .on { background: var(--accent); color: var(--card); }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+  main.wide { max-width: 1100px; }
+  .demo-banner { margin: 0; padding: 10px 16px; text-align: center; background: var(--accent-soft); font-size: 0.9rem; }
+  .foot { border-top: 1px solid var(--line); color: var(--muted); font-size: 0.85rem; }
+  .foot div { max-width: 1100px; margin: 0 auto; padding: 16px 16px 0; display: flex; gap: 16px; flex-wrap: wrap; }
+  .foot p { max-width: 1100px; margin: 0 auto; padding: 8px 16px 24px; }
+  .lede { font-size: 1.2rem; color: var(--muted); }
+  .muted { color: var(--muted); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 16px 20px; }
+  .unc { background: var(--mark); border-radius: 2px; padding: 0 2px; font-size: 0.85em; }
+  sup.ins { font-size: 0.75em; color: var(--muted); }
+  del { color: var(--muted); }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 2em 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-weight: 600; color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .chip { display: inline-block; font-size: 0.75rem; padding: 1px 8px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); vertical-align: middle; font-family: system-ui, sans-serif; }
+  img { max-width: 100%; height: auto; }
+  input[type="search"] { font: inherit; width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); color: var(--ink); }
+  /* Phones: the header used to wrap to ~180 px and stay sticky, a quarter of the screen.
+     Now brand and language share one row, the menu is one swipeable row, and the header scrolls away. */
+  :root { --head: 56px; } /* desktop sticky header height: sticky bars below it start here */
+  @media (max-width: 700px) {
+    :root { --head: 0px; }
+    .top { position: static; }
+    .bar { padding: 8px 16px 0; gap: 0 12px; flex-wrap: nowrap; display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+    .brand { grid-column: 1; grid-row: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 1.05rem; }
+    .meta { grid-column: 2; grid-row: 1; }
+    .langs > * { padding: 4px 10px; min-width: 40px; }
+    .top nav { grid-column: 1 / -1; grid-row: 2; flex-wrap: nowrap; gap: 0 18px; overflow-x: auto; scrollbar-width: none; margin: 4px -16px 0; padding: 0 16px;
+      mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent); }
+    .top nav a:last-child { margin-right: 16px; }
+    .top nav::-webkit-scrollbar { display: none; }
+    .top nav a { white-space: nowrap; padding: 10px 0 8px; }
+    main { padding-top: 16px; }
+    .lede { font-size: 1.08rem; }
+    .foot div a { padding: 6px 0; }
+  }
+</style>

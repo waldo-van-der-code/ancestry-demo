@@ -1,0 +1,178 @@
+---
+// "How are we related?" Two searchable pickers; everything is computed in the browser from #facts-data.
+import { personUrl, type Lang } from "../../lib/site";
+interface Props { facts: any; lang: Lang }
+const { facts, lang } = Astro.props;
+const nl = lang === "nl";
+const root = facts.people.find((p: any) => p.id === facts.root) || facts.people[0];
+---
+<div class="rel">
+  <p class="muted rel-note">{nl
+    ? "Kies twee personen en zie hoe ze met elkaar verwant zijn: via bloed, via een huwelijk, of via de kortste weg door de stamboom. Typ een naam om te zoeken."
+    : "Pick two people and see how they are related: by blood, by marriage, or by the shortest route through the tree. Type a name to search."}</p>
+  <div class="rel-tools">
+    <label>{nl ? "Persoon A" : "Person A"}
+      <input type="text" class="rel-a" list="rel-names" autocomplete="off" spellcheck="false" placeholder={nl ? "Typ een naam…" : "Type a name…"} />
+    </label>
+    <label>{nl ? "Persoon B" : "Person B"}
+      <input type="text" class="rel-b" list="rel-names" autocomplete="off" spellcheck="false" placeholder={nl ? "Typ een naam…" : "Type a name…"} />
+    </label>
+    <button type="button" class="rel-swap">{nl ? "Wissel om" : "Swap"}</button>
+  </div>
+  <datalist id="rel-names"></datalist>
+  <p class="rel-sentence" aria-live="polite"></p>
+  <p class="rel-sub muted"></p>
+  <ol class="rel-chain" aria-label={nl ? "Het pad tussen de twee personen" : "The path between the two people"}></ol>
+  <noscript><p>{nl ? "Zet JavaScript aan om verwantschap te zoeken. Begin bij " : "Enable JavaScript to look up relationships. Start with "}{root && <a href={personUrl(lang, root.id)}>{root.n}</a>}.</p></noscript>
+</div>
+
+<style is:global>
+  .rel { min-width: 0; font-family: system-ui, sans-serif; --rel-hl: var(--accent-soft); }
+  .rel-note { font-size: 0.85rem; }
+  .rel-tools { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+  .rel-tools label { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; flex: 1 1 240px; min-width: 0; max-width: 100%; }
+  .rel-tools input { font: inherit; background: var(--card); color: var(--ink); border: 1px solid var(--line); padding: 8px; border-radius: 6px; width: 100%; min-width: 0; box-sizing: border-box; }
+  .rel-tools input.rel-bad { border-color: #c0392b; }
+  .rel-swap { font: inherit; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); cursor: pointer; }
+  .rel-sentence { font-size: 1.1rem; margin: 16px 0 4px; overflow-wrap: anywhere; line-height: 1.4; }
+  .rel-sentence b { font-weight: 700; }
+  .rel-sub { font-size: 0.85rem; margin: 0 0 8px; overflow-wrap: anywhere; }
+  .rel-chain { list-style: none; margin: 8px 0 0; padding: 0; max-width: 460px; }
+  .rel-chain li { min-width: 0; overflow-wrap: anywhere; }
+  .rel-person { display: block; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); }
+  .rel-person a { color: var(--ink); }
+  .rel-person .rel-years { display: block; font-size: 0.8rem; color: var(--muted); }
+  .rel-person.rel-anc { background: var(--rel-hl); border-color: var(--accent); }
+  .rel-person .rel-role { display: block; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .rel-edge { padding: 3px 0 3px 18px; font-size: 0.8rem; color: var(--muted); border-left: 2px solid var(--line); margin-left: 18px; }
+</style>
+
+<script>
+  import { relate, upMap } from "../../lib/kinship.mjs";
+  type P = { id: string; n: string; s?: string; b?: string; by?: number; dy?: number; l?: number; f?: string; m?: string };
+  const host = document.querySelector<HTMLElement>(".rel");
+  const dataEl = document.getElementById("facts-data");
+  if (host && dataEl) {
+    const data = JSON.parse(dataEl.textContent!) as { root: string; lang: "nl" | "en"; personPath: string; people: P[] };
+    const nl = data.lang === "nl", byId = new Map(data.people.map((p) => [p.id, p]));
+    const inA = host.querySelector<HTMLInputElement>(".rel-a")!, inB = host.querySelector<HTMLInputElement>(".rel-b")!;
+    const list = host.querySelector<HTMLDataListElement>("#rel-names")!;
+    const sentence = host.querySelector<HTMLElement>(".rel-sentence")!, sub = host.querySelector<HTMLElement>(".rel-sub")!;
+    const chain = host.querySelector<HTMLElement>(".rel-chain")!;
+    const years = (p: P) => {
+      const b = p.by ? `${p.b?.startsWith("c") ? (nl ? "ca. " : "c. ") : ""}${p.by}` : "?";
+      return p.l ? `${b}–` : `${b}–${p.dy ?? "?"}`;
+    };
+    // Picker text -> id. The text is the name and birth year; an id is added only when two rows would read the same.
+    const sorted = [...data.people].sort((a, b) => a.n.localeCompare(b.n, data.lang));
+    const label = new Map<string, string>(), toId = new Map<string, string>();
+    const seen = new Map<string, number>();
+    for (const p of sorted) seen.set(`${p.n} (${p.by ?? "?"})`, (seen.get(`${p.n} (${p.by ?? "?"})`) || 0) + 1);
+    for (const p of sorted) {
+      const base = `${p.n} (${p.by ?? "?"})`;
+      const text = seen.get(base)! > 1 ? `${base} · ${p.id}` : base;
+      label.set(p.id, text); toId.set(text.toLowerCase(), p.id);
+      list.appendChild(new Option(text));
+    }
+    const resolve = (input: HTMLInputElement): string | null => {
+      const q = input.value.trim().toLowerCase();
+      if (!q) return null;
+      const exact = toId.get(q);
+      if (exact) return exact;
+      const cands = [...toId].filter(([t]) => t.startsWith(q));
+      return cands.length === 1 ? cands[0][1] : null;
+    };
+    const link = (p: P) => { const a = document.createElement("a"); a.href = data.personPath + p.id + "/"; a.textContent = p.n; return a; };
+    const text = (s: string) => document.createTextNode(s);
+    // Oldest ancestor of the root along parent links: the default for B.
+    const defaultB = (id: string) => {
+      let best: P | undefined, depth = -1;
+      for (const [aid, x] of upMap(byId, id)) {
+        const p = byId.get(aid)!;
+        if (aid === id || !p.by) continue;
+        if (!best || p.by < best.by! || (p.by === best.by && x.d > depth)) { best = p; depth = x.d; }
+      }
+      return best?.id ?? data.people.find((p) => p.id !== id)?.id ?? id;
+    };
+    const personBox = (p: P, cls = "", role = "") => {
+      const li = document.createElement("li");
+      const box = document.createElement("span"); box.className = `rel-person ${cls}`;
+      if (role) { const r = document.createElement("span"); r.className = "rel-role"; r.textContent = role; box.append(r); }
+      box.append(link(p));
+      const y = document.createElement("span"); y.className = "rel-years"; y.textContent = years(p); box.append(y);
+      li.append(box); return li;
+    };
+    const edge = (t: string) => { const li = document.createElement("li"); li.className = "rel-edge"; li.textContent = t; return li; };
+    const E = {
+      up: nl ? "↑ kind van" : "↑ child of", down: nl ? "↓ ouder van" : "↓ parent of", sp: nl ? "⇄ partner van" : "⇄ partner of",
+    };
+    function render(a: string, b: string, user: boolean) {
+      const A = byId.get(a)!, B = byId.get(b)!;
+      chain.replaceChildren(); sub.textContent = "";
+      const r = relate(byId, a, b, data.lang) as any;
+      sentence.replaceChildren();
+      if (r.kind === "same") { sentence.append(text(nl ? "Dit is dezelfde persoon." : "This is the same person.")); }
+      else if (r.kind === "none") {
+        sentence.append(link(A), text(nl ? " en " : " and "), link(B), text(nl ? " zijn niet met elkaar verbonden in deze stamboom." : " are not connected in this tree."));
+      } else if (r.kind === "path") {
+        sentence.append(link(A), text(nl ? " en " : " and "), link(B), text(nl ? ` zijn geen bloedverwanten en niet aangetrouwd, maar wel verbonden via ${r.steps} stappen.` : ` are not related by blood or marriage, but are connected through ${r.steps} steps.`));
+      } else {
+        const w = document.createElement("b"); w.textContent = r.word;
+        if (nl) sentence.append(link(A), text(" is de "), w, text(" van "), link(B), text("."));
+        else sentence.append(link(A), text(" is "), link(B), text("’s "), w, text("."));
+        sub.textContent = r.kind === "blood" && (r.stepsA === 0 || r.stepsB === 0) ? (nl ? `Rechtstreekse lijn, ${r.steps} ${r.steps === 1 ? "stap" : "stappen"}.` : `Direct line, ${r.steps} ${r.steps === 1 ? "step" : "steps"}.`)
+          : r.kind === "blood" ? (nl ? `Bloedverwanten, ${r.steps} stappen via ${r.ancestors.length > 1 ? "een gemeenschappelijk voorouderpaar" : "een gemeenschappelijke voorouder"}.` : `Related by blood, ${r.steps} steps via ${r.ancestors.length > 1 ? "a shared pair of ancestors" : "a shared ancestor"}.`)
+          : r.kind === "marriage" ? (nl ? "Aangetrouwd, geen bloedverwanten." : "Related by marriage, not by blood.") : "";
+      }
+      if (r.kind === "blood") {
+        const anc = r.ancestors.map((id: string) => byId.get(id)!);
+        const up = r.up.slice(0, -1), down = r.down.slice(1);
+        const role = (id: string) => id === a ? "A" : id === b ? "B" : "";
+        up.forEach((id: string) => { chain.append(personBox(byId.get(id)!, "", role(id))); chain.append(edge(E.up)); });
+        const li = personBox(anc[0], "rel-anc", nl ? (r.stepsA && r.stepsB ? "Gemeenschappelijke voorouder" : "Voorouder") : (r.stepsA && r.stepsB ? "Common ancestor" : "Ancestor"));
+        if (anc[1]) li.firstElementChild!.append(text(nl ? " en " : " and "), link(anc[1]), (() => { const y = document.createElement("span"); y.className = "rel-years"; y.textContent = years(anc[1]); return y; })());
+        if (r.stepsA === 0) li.querySelector(".rel-role")!.textContent = nl ? "A · voorouder" : "A · ancestor";
+        if (r.stepsB === 0) li.querySelector(".rel-role")!.textContent = nl ? "B · voorouder" : "B · ancestor";
+        chain.append(li);
+        down.forEach((id: string) => { chain.append(edge(E.down)); chain.append(personBox(byId.get(id)!, "", role(id))); });
+      } else if (r.path) {
+        r.path.forEach((n: { id: string; edge: string | null }, i: number) => {
+          if (i) chain.append(edge(n.edge === "parent" ? E.up : n.edge === "child" ? E.down : E.sp));
+          chain.append(personBox(byId.get(n.id)!, "", n.id === a ? "A" : n.id === b ? "B" : ""));
+        });
+      }
+      if (user) {
+        window.track?.("facts_related", { steps: r.steps ?? 0, kind: r.kind });
+        const u = new URL(location.href); u.searchParams.set("a", a); u.searchParams.set("b", b);
+        history.replaceState(null, "", u);
+      }
+    }
+    let curA = "", curB = "";
+    const set = (a: string, b: string, user: boolean) => {
+      curA = a; curB = b; inA.value = label.get(a) || ""; inB.value = label.get(b) || "";
+      inA.classList.remove("rel-bad"); inB.classList.remove("rel-bad");
+      render(a, b, user);
+    };
+    const onInput = (which: "a" | "b") => {
+      const input = which === "a" ? inA : inB, id = resolve(input);
+      if (!id) return;
+      input.classList.remove("rel-bad");
+      const nA = which === "a" ? id : curA, nB = which === "b" ? id : curB;
+      if (nA === curA && nB === curB) return;
+      curA = nA; curB = nB;
+      render(curA, curB, true);
+    };
+    for (const [input, which] of [[inA, "a"], [inB, "b"]] as const) {
+      input.addEventListener("input", () => { if (toId.has(input.value.trim().toLowerCase())) onInput(which); });
+      input.addEventListener("change", () => {
+        if (resolve(input)) { onInput(which); input.value = label.get(which === "a" ? curA : curB) || input.value; }
+        else { input.classList.add("rel-bad"); }
+      });
+    }
+    host.querySelector(".rel-swap")!.addEventListener("click", () => set(curB, curA, true));
+    const q = new URLSearchParams(location.search);
+    const qa = q.get("a") && byId.has(q.get("a")!) ? q.get("a")! : data.root;
+    const qb = q.get("b") && byId.has(q.get("b")!) ? q.get("b")! : defaultB(qa);
+    set(qa, qb, false);
+  }
+</script>
