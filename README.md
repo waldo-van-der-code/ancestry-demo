@@ -13,6 +13,9 @@ a static site with
   "how are we related?" tool,
 - Dutch and English (the Dutch is the original; every page has an English twin).
 
+How the real family site behind it was researched and built, with the prompt to start your own:
+[The agentic Christmas gift: a family tree](https://waldo.vanderlore.de/blog/find-the-people-you-come-from/).
+
 Everything on the demo is invented. The towns are real, the people, records and stories are not. Source links use
 the reserved `example.org` domain.
 
