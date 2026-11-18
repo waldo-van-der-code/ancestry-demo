@@ -1,8 +1,10 @@
-// Builds src/generated/demo.json (people, story), tree.demo.json, map.demo.json and facts.demo.json
+// Builds src/generated/demo.json (people, story), tree.demo.json, map.demo.json and facts.demo.json,
+// then the chat index in api/_chat/.
 // from data/demo/. Living people are reduced to their name.
 import fs from "node:fs";
 import path from "node:path";
 import { writeFacts } from "./facts.mjs";
+import { writeChatIndex } from "./chat-index.mjs";
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const OUT = path.join(ROOT, "src/generated");
@@ -251,3 +253,5 @@ console.log("tree.demo", tree ? `${Object.keys(tree.people).length} people` : "n
 fs.writeFileSync(path.join(OUT, "map.demo.json"), JSON.stringify(buildMap(result.people)));
 // Fun facts page: one facts file.
 writeFacts(["demo"], OUT);
+// Search index for the "Ask the family tree" chat (api/_chat/demo.json, committed).
+writeChatIndex({ generatedDir: OUT });

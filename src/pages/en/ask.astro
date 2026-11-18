@@ -1,0 +1,9 @@
+---
+import Base from "../../layouts/Base.astro";
+import AskPanel from "../../components/AskPanel.astro";
+import { T } from "../../lib/site";
+---
+<Base lang="en" title={T.en.ask} alt="/nl/vraag/" active="ask">
+  <h1>{T.en.ask}</h1>
+  <AskPanel lang="en" />
+</Base>

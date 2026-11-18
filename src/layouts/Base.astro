@@ -1,4 +1,5 @@
 ---
+import "../styles/boekje.css";
 import { DEMO_BANNER, DEMO_REPO, LANGS, T, fam, sitePath, url, type Lang, type Section } from "../lib/site";
 interface Props {
   lang: Lang;
@@ -16,6 +17,7 @@ const other = lang === "nl" ? "en" : "nl";
 const secs = f.sections as readonly Section[];
 const menu: { key: Section | "home"; href: string; label: string }[] = [
   { key: "home", href: url(lang), label: t.tree },
+  { key: "ask", href: url(lang, "ask"), label: lang === "nl" ? "Vraag" : "Ask" },
   ...secs.filter((s) => s !== "sources").map((s) => ({ key: s, href: url(lang, s), label: t[s] })),
   { key: "map", href: url(lang, "map"), label: t.map },
   { key: "facts", href: url(lang, "facts"), label: t.facts },
@@ -25,15 +27,16 @@ const menu: { key: Section | "home"; href: string; label: string }[] = [
 const altHref = sitePath(alt || `/${other}/`);
 ---
 <!doctype html>
-<html lang={lang}>
+<html lang={lang} class="boekje">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1f3b33" />
     <meta name="robots" content="noindex, nofollow" />
     {redirect && <meta http-equiv="refresh" content={`0; url=${redirect}`} />}
     <title>{title === f.name[lang] ? title : `${title} · ${f.name[lang]}`}</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='9' r='5' fill='%238a3b2e'/><circle cx='8' cy='24' r='4' fill='%238a3b2e'/><circle cx='24' cy='24' r='4' fill='%238a3b2e'/><path d='M16 14v4M8 20v-2h16v2' stroke='%238a3b2e' stroke-width='2' fill='none'/></svg>" />
-    <link href={sitePath("/vendor/fonts/fonts.css")} rel="stylesheet" />
+    <link href={sitePath("/fonts/fonts.css")} rel="stylesheet" />
   </head>
   <body>
     <a class="skip" href="#main">{lang === "nl" ? "Naar inhoud" : "Skip to content"}</a>
@@ -57,6 +60,9 @@ const altHref = sitePath(alt || `/${other}/`);
       <slot />
     </main>
     <footer class="foot">
+      <nav aria-label={lang === "nl" ? "Voettekst" : "Footer"}>
+        {menu.map((m) => <a href={m.href}>{m.label}</a>)}
+      </nav>
       <p>{lang === "nl" ? "Alle personen, akten en verhalen op deze site zijn verzonnen." : "All people, records and stories on this site are invented."}</p>
     </footer>
     <script>
@@ -64,6 +70,19 @@ const altHref = sitePath(alt || `/${other}/`);
       const cur = document.querySelector<HTMLElement>("header nav a[aria-current]");
       const nav = cur?.parentElement;
       if (cur && nav && nav.scrollWidth > nav.clientWidth) nav.scrollLeft += cur.getBoundingClientRect().left - nav.getBoundingClientRect().left - 16;
+      // The sticky strip's real height, so anchors and the tree tools land below it (--head, used by scroll-padding).
+      const top = document.querySelector<HTMLElement>("header.top");
+      if (top) {
+        const set = () => {
+          const phone = window.matchMedia("(max-width: 700px)").matches;
+          const brand = top.querySelector<HTMLElement>(".brand");
+          const mast = phone && brand ? brand.offsetHeight : 0;
+          document.documentElement.style.setProperty("--masthead-height", `${mast}px`);
+          document.documentElement.style.setProperty("--head", `${Math.round(top.offsetHeight - mast)}px`);
+        };
+        set();
+        new ResizeObserver(set).observe(top);
+      }
     </script>
   </body>
 </html>
@@ -77,8 +96,8 @@ const altHref = sitePath(alt || `/${other}/`);
     --accent: #8a3b2e;
     --accent-soft: #efe0d6;
     --mark: #fff1b8;
-    --serif: "Source Serif 4", "Iowan Old Style", Georgia, serif;
-    --display: "Fraunces", "Iowan Old Style", Georgia, serif;
+    --serif: "Libre Caslon Text", "Iowan Old Style", Georgia, serif;
+    --display: "Libre Caslon Text", "Iowan Old Style", Georgia, serif;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {

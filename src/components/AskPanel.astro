@@ -1,0 +1,162 @@
+---
+// "Ask the family tree": one POST per question to the ask endpoint (api/ask.js), no streaming.
+// The answer is put on the page as text only, and a link chip only when its address is a person page of this site
+// (under the site's base folder, if it has one). The conversation lives in localStorage, per language; only the last
+// four messages go along as history.
+import { data, fullName, type Lang } from "../lib/site";
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const nl = lang === "nl";
+
+// Build-time setting. The default points at the domain root on purpose: the function lives there, not under the demo's base folder.
+const endpoint = import.meta.env.PUBLIC_ASK_URL || "/api/ask/";
+const custom = Boolean(import.meta.env.PUBLIC_ASK_URL);
+const base = (import.meta.env.BASE_URL || "/").replace(/\/+$/, "");
+
+// Example questions about people who exist in the data.
+const known = new Set(data().people.map(fullName));
+const pair: [string, string] = ["Jade Van Aliquam", "Henri Van Aliquam"];
+const examples = [pair[0], pair[1]].every((n) => known.has(n))
+  ? nl
+    ? [`Hoe is ${pair[0]} verwant aan ${pair[1]}?`, `Wie waren de ouders van ${pair[1]}?`, "Hoeveel mensen werden in Sluis geboren?"]
+    : [`How is ${pair[0]} related to ${pair[1]}?`, `Who were the parents of ${pair[1]}?`, "How many people were born in Sluis?"]
+  : [];
+
+const L = nl
+  ? {
+      intro: "Stel een vraag over de mensen in deze stamboom, bijvoorbeeld over ouders, geboorteplaatsen of hoe twee mensen verwant zijn. Tik op een voorbeeld of typ zelf.",
+      tryLabel: "Probeer bijvoorbeeld", label: "Je vraag", placeholder: "Typ je vraag…", send: "Verstuur", fresh: "Nieuw gesprek",
+      note: "Vragen gaan naar Groq (VS) om beantwoord te worden; het gesprek blijft in deze browser.",
+      check: "Antwoorden komen uit de gegevens op deze site en kunnen fouten bevatten. Controleer ze op de persoonspagina.",
+    }
+  : {
+      intro: "Ask a question about the people in this family tree, for example about parents, birthplaces or how two people are related. Tap an example or type your own.",
+      tryLabel: "Try for example", label: "Your question", placeholder: "Type your question…", send: "Send", fresh: "New conversation",
+      note: "Questions go to Groq (US) to be answered; the conversation stays in this browser.",
+      check: "Answers come from the data on this site and may contain mistakes. Check them on the person page.",
+    };
+const M = nl
+  ? { wait: "Even zoeken…", busy: "Het is even druk. Probeer het over een minuut opnieuw.", error: "Er ging iets mis. Probeer het later nog eens.", demoLimit: "In deze demo kun je één vraag stellen. Kopieer de site van GitHub om er zelf meer te stellen.", notSetUp: "De chat is op deze kopie niet ingesteld. Zie de README (\"Ask the family tree\") om hem aan te zetten.", you: "Jij", go: "Naar" }
+  : { wait: "Looking…", busy: "It's busy right now. Try again in a minute.", error: "Something went wrong. Please try again later.", demoLimit: "This demo answers one question per visitor. Copy the site from GitHub to ask your own.", notSetUp: "The chat is not set up on this copy. See the README (\"Ask the family tree\") to turn it on.", you: "You", go: "Go to" };
+---
+<section class="ask" data-lang={lang} data-endpoint={endpoint} data-custom={custom ? "1" : "0"} data-base={base} data-msg={JSON.stringify(M)}>
+  <p class="lede">{L.intro}</p>
+  {examples.length > 0 && (
+    <div class="examples">
+      <p class="list-search-label">{L.tryLabel}</p>
+      <ul>{examples.map((e) => <li><button type="button" class="example">{e}</button></li>)}</ul>
+    </div>
+  )}
+  <ol class="log" aria-live="polite" aria-label={nl ? "Gesprek" : "Conversation"}></ol>
+  <form class="ask-form">
+    <label class="list-search-label" for="ask-input">{L.label}</label>
+    <div class="row">
+      <input type="text" id="ask-input" maxlength="500" placeholder={L.placeholder} autocomplete="off" />
+      <button type="submit">{L.send}</button>
+    </div>
+  </form>
+  <p class="muted small">{L.note}</p>
+  <p class="muted small">{L.check}</p>
+  <p><button type="button" class="fresh linkish">{L.fresh}</button></p>
+</section>
+<style>
+  /* Bubbles are built in JS (no scoped attribute), hence :global() inside .log. */
+  .examples ul { list-style: none; margin: 0 0 8px; padding: 0; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+  .example, .linkish { font: inherit; text-align: left; cursor: pointer; }
+  .example { padding: 10px 14px; min-height: 44px; border: 1px solid var(--rule); border-radius: 3px; background: var(--card); color: var(--accent); }
+  .example:hover { border-color: var(--accent); background: var(--accent-soft); }
+  .linkish { border: 0; background: none; color: var(--accent); text-decoration: underline; padding: 10px 0; min-height: 44px; font-size: 0.9rem; }
+  .log { list-style: none; margin: 16px 0; padding: 0; display: grid; gap: 12px; }
+  .log :global(li) { padding: 12px 14px; border-radius: 3px; border: 1px solid var(--line); background: var(--card); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .log :global(li.you) { background: var(--accent-soft); }
+  .log :global(.who) { display: block; font: 600 0.72rem var(--label, sans-serif); letter-spacing: 0.08em; text-transform: uppercase; color: var(--print, var(--muted)); margin-bottom: 4px; }
+  .log :global(.chips) { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; white-space: normal; }
+  .log :global(.chips a) { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border: 1px solid var(--rule); border-radius: 99px; text-decoration: none; background: var(--paper); }
+  .ask-form .row { display: flex; gap: 8px; }
+  .ask-form input { flex: 1; min-width: 0; }
+  .small { font-size: 0.85rem; margin: 6px 0; }
+</style>
+<script>
+  const root = document.querySelector<HTMLElement>(".ask");
+  if (root) {
+    const lang = root.dataset.lang!;
+    const M = JSON.parse(root.dataset.msg!);
+    const endpoint = root.dataset.endpoint!;
+    const custom = root.dataset.custom === "1";
+    const base = root.dataset.base!;
+    const storeKey = `family-ask-${lang}`;
+    const log = root.querySelector<HTMLOListElement>(".log")!;
+    const input = root.querySelector<HTMLInputElement>("#ask-input")!;
+    const form = root.querySelector<HTMLFormElement>(".ask-form")!;
+    // Only person pages of this site become chips (under the base folder, when the site has one).
+    const PERSON_URL = new RegExp(`^${base.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/(nl/persoon|en/person)/[a-z0-9-]+/$`);
+    type Msg = { role: "user" | "assistant"; content: string; links?: { name: string; url: string }[] };
+    let msgs: Msg[] = [];
+    try { msgs = JSON.parse(localStorage.getItem(storeKey) || "[]"); } catch { msgs = []; }
+    const save = () => { try { localStorage.setItem(storeKey, JSON.stringify(msgs.slice(-50))); } catch { /* private mode */ } };
+
+    const add = (m: Msg, cls = "") => {
+      const li = document.createElement("li");
+      li.className = m.role === "user" ? "you" : cls;
+      const who = document.createElement("span");
+      who.className = "who";
+      who.textContent = m.role === "user" ? M.you : "";
+      if (m.role === "user") li.append(who);
+      li.append(document.createTextNode(m.content)); // text only, never HTML
+      const links = (m.links || []).filter((l) => typeof l.url === "string" && PERSON_URL.test(l.url));
+      if (links.length) {
+        const box = document.createElement("span");
+        box.className = "chips";
+        for (const l of links) {
+          const a = document.createElement("a");
+          a.href = l.url;
+          a.textContent = `${M.go} ${String(l.name).slice(0, 80)}`;
+          box.append(a);
+        }
+        li.append(box);
+      }
+      log.append(li);
+      return li;
+    };
+    for (const m of msgs) add(m);
+
+    let busy = false;
+    const ask = async (q: string) => {
+      if (busy || !q.trim()) return;
+      busy = true;
+      const history = msgs.slice(-4).map((m) => ({ role: m.role, content: m.content.slice(0, 800) }));
+      msgs.push({ role: "user", content: q });
+      add({ role: "user", content: q });
+      const wait = add({ role: "assistant", content: M.wait }, "wait");
+      let reply: Msg = { role: "assistant", content: M.error };
+      let keep = false;
+      try {
+        const res = await fetch(endpoint, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ q, lang, history }) });
+        if (res.status === 503 || (res.status === 404 && !custom)) reply = { role: "assistant", content: M.notSetUp };
+        else if (res.status === 429) {
+          const out = await res.json().catch(() => null);
+          reply = { role: "assistant", content: out?.error === "demo limit" ? M.demoLimit : M.busy };
+        } else if (res.ok) {
+          const out = await res.json();
+          if (out?.busy) reply = { role: "assistant", content: M.busy };
+          else if (out && typeof out.answer === "string") { reply = { role: "assistant", content: out.answer, links: Array.isArray(out.links) ? out.links : [] }; keep = true; }
+        }
+      } catch { /* network: the plain error text stays */ }
+      wait.remove();
+      add(reply);
+      if (keep) msgs.push({ role: "assistant", content: reply.content, links: reply.links }); else msgs.pop();
+      save();
+      busy = false;
+    };
+
+    form.addEventListener("submit", (e) => { e.preventDefault(); const q = input.value; input.value = ""; ask(q); });
+    root.querySelectorAll<HTMLButtonElement>(".example").forEach((b) => b.addEventListener("click", () => ask(b.textContent || "")));
+    root.querySelector(".fresh")?.addEventListener("click", () => { msgs = []; log.replaceChildren(); save(); });
+    // A question typed on the home page waits in sessionStorage.
+    try {
+      const pending = sessionStorage.getItem("family-ask-pending");
+      if (pending) { sessionStorage.removeItem("family-ask-pending"); ask(pending); }
+    } catch { /* no storage */ }
+  }
+</script>

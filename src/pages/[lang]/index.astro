@@ -3,7 +3,7 @@
 import Base from "../../layouts/Base.astro";
 import PersonCard from "../../components/PersonCard.astro";
 import Tree from "../../components/Tree.astro";
-import { LANGS, T, data, fam, isAncestor, md, person, relation, url, type Lang, type Section } from "../../lib/site";
+import { LANGS, T, data, fam, isAncestor, md, person, relation, sitePath, url, type Lang, type Section } from "../../lib/site";
 
 export function getStaticPaths() {
   return LANGS.map((lang) => ({ params: { lang } }));
@@ -24,21 +24,38 @@ const blurbs: Record<string, { nl: string; en: string }> = {
   sources: { nl: "Waar elk gegeven vandaan komt, en wat nog onzeker is.", en: "Where every fact comes from, and what is still uncertain." },
 };
 const parts = [...(f.sections as readonly Section[]).filter((s) => s !== "sources"), "map", "sources"] as Section[];
+const ui = lang === "nl"
+  ? { find: "Zoek iemand in de stamboom", findHint: "Begin met een naam…", ask: "Of stel een vraag", askHint: "Bijvoorbeeld: hoe is Jade van Aliquam verwant aan Henri van Aliquam?", send: "Vraag", treeBlurb: "Jades voorouders, met lijnen die je open kunt klikken.", askBlurb: "Stel een vraag in gewone woorden; het antwoord komt uit deze site.", none: "Niemand gevonden" }
+  : { find: "Find someone in the tree", findHint: "Start with a name…", ask: "Or ask a question", askHint: "For example: how is Jade van Aliquam related to Henri van Aliquam?", send: "Ask", treeBlurb: "Jade's ancestors, with lines you can open up.", askBlurb: "Ask in plain words; the answer comes from this site.", none: "Nobody found" };
+const rows = [
+  { href: "#tree", label: t.tree, blurb: ui.treeBlurb },
+  { href: url(lang, "ask"), label: t.ask, blurb: ui.askBlurb },
+  ...parts.map((s) => ({ href: url(lang, s), label: t[s], blurb: blurbs[s][lang] })),
+];
 ---
 <Base lang={lang} title={f.name[lang]} alt={url(lang === "nl" ? "en" : "nl")} active="home" wide>
   <h1>{f.name[lang]}</h1>
   <p class="lede">{f.tagline[lang]}</p>
-  {d.intro[lang] && <div class="intro" set:html={md(d.intro[lang])} />}
-  <p class="muted">{t.stats(d.stats)}</p>
-  <Tree lang={lang} />
-  <div class="grid">
-    {parts.map((s) => (
-      <a class="card sec" href={url(lang, s)}>
-        <strong>{t[s]}</strong>
-        <span>{blurbs[s][lang]}</span>
-      </a>
-    ))}
+  <div class="narrow">
+    <div class="finder" data-names={sitePath(`/${lang}/names.json`)} data-person={url(lang, "person")} data-none={ui.none}>
+      <label for="finder-q">{ui.find}</label>
+      <input type="search" id="finder-q" placeholder={ui.findHint} autocomplete="off" role="combobox" aria-expanded="false" aria-controls="finder-list" />
+      <ul class="finder-list" id="finder-list" role="listbox" aria-live="polite"></ul>
+    </div>
+    <form class="askbox" action={url(lang, "ask")} data-key="family-ask-pending">
+      <label for="ask-q">{ui.ask}</label>
+      <div class="row">
+        <input type="text" id="ask-q" maxlength="500" placeholder={ui.askHint} autocomplete="off" />
+        <button type="submit">{ui.send}</button>
+      </div>
+    </form>
+    {d.intro[lang] && <div class="intro" set:html={md(d.intro[lang])} />}
+    <ul class="contents">
+      {rows.map((r) => <li><a href={r.href}><strong>{r.label}</strong><span>{r.blurb}</span></a></li>)}
+    </ul>
+    <p class="muted">{t.stats(d.stats)}</p>
   </div>
+  <section id="tree" aria-labelledby="tree-h"><h2 id="tree-h">{t.tree}</h2><Tree lang={lang} /></section>
   {starts.length > 0 && (
     <>
       <h2>{lang === "nl" ? "Begin hier" : "Start here"}</h2>
@@ -52,11 +69,72 @@ const parts = [...(f.sections as readonly Section[]).filter((s) => s !== "source
   )}
 </Base>
 <style>
-  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin: 24px 0 32px; }
-  .sec { display: flex; flex-direction: column; gap: 6px; text-decoration: none; color: var(--ink); }
-  .sec strong { font-family: var(--display); font-size: 1.25rem; color: var(--accent); }
-  .intro { max-width: 720px; }
+  .narrow { max-width: 760px; }
+  .intro { margin: 8px 0 20px; }
   .start { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
   .pick { display: flex; flex-direction: column; gap: 4px; }
   .rel { font-size: 0.85rem; font-style: italic; }
 </style>
+<script>
+  // Find someone: the name list loads on first use. Ask box: the question travels in sessionStorage, never in the URL.
+  const finder = document.querySelector<HTMLElement>(".finder");
+  if (finder) {
+    const input = finder.querySelector<HTMLInputElement>("input")!;
+    const list = finder.querySelector<HTMLUListElement>(".finder-list")!;
+    let rows: [string, string, string][] | null = null;
+    let sel = -1;
+    const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const render = () => {
+      const terms = norm(input.value).split(/\s+/).filter(Boolean);
+      list.replaceChildren();
+      sel = -1;
+      input.setAttribute("aria-expanded", "false");
+      if (!terms.length || !rows) return;
+      const hits = rows.filter((r) => terms.every((w) => norm(r[1]).includes(w))).slice(0, 8);
+      if (!hits.length) {
+        const li = document.createElement("li");
+        li.className = "muted";
+        li.style.padding = "12px 14px";
+        li.textContent = finder.dataset.none!;
+        list.append(li);
+      }
+      for (const [id, name, years] of hits) {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = `${finder.dataset.person}${id}/`;
+        a.append(Object.assign(document.createElement("span"), { textContent: name }), Object.assign(document.createElement("span"), { className: "y", textContent: years }));
+        li.append(a);
+        list.append(li);
+      }
+      input.setAttribute("aria-expanded", "true");
+    };
+    const load = async () => {
+      if (rows) return;
+      try { rows = await (await fetch(finder.dataset.names!)).json(); } catch { rows = null; }
+      render();
+    };
+    input.addEventListener("focus", load);
+    input.addEventListener("input", () => { load(); render(); });
+    input.addEventListener("keydown", (e) => {
+      const links = [...list.querySelectorAll<HTMLAnchorElement>("a")];
+      if (!links.length) return;
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        links.forEach((l) => l.removeAttribute("aria-selected"));
+        sel = (sel + (e.key === "ArrowDown" ? 1 : -1) + links.length) % links.length;
+        links[sel].setAttribute("aria-selected", "true");
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        (links[sel] || links[0]).click();
+      }
+    });
+  }
+  const box = document.querySelector<HTMLFormElement>(".askbox");
+  box?.addEventListener("submit", (e) => {
+    const q = box.querySelector<HTMLInputElement>("input")!.value.trim();
+    e.preventDefault(); // go there ourselves: a plain form submit would add a "?" to the address
+    if (!q) return;
+    try { sessionStorage.setItem(box.dataset.key!, q); } catch { /* the chat page still opens, empty */ }
+    location.assign(box.action);
+  });
+</script>

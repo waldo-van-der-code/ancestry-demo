@@ -37,6 +37,7 @@ const DIFF_FIELD = {
 const fmtVal = (v: string | null) => (v && /^\d{4}(-\d{2}){0,2}$/.test(v) ? fmtDate(v, lang) : v);
 ---
 <Base lang={lang} title={fullName(p)} alt={personUrl(other, p.id)} active="people">
+  <header class="phead">
   <p class="crumb"><a href={url(lang, "people")}>{t.people}</a></p>
   <h1><Name p={p} lang={lang} /></h1>
   {rel && <p class="rel">{rel}</p>}
@@ -48,6 +49,7 @@ const fmtVal = (v: string | null) => (v && /^\d{4}(-\d{2}){0,2}$/.test(v) ? fmtD
   {p.aka && p.aka.filter((a) => !a.startsWith("nr ")).length > 0 && (
     <p class="muted aka">{p.aka.filter((a) => !a.startsWith("nr ")).join(" · ")}</p>
   )}
+  </header>
 
   {(
     <dl class="facts">

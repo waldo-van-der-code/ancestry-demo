@@ -54,8 +54,8 @@ test('strict CSP permits local fonts and map without third-party dependencies', 
     }
   }
   expect(fontRequests.size, 'Actual self-hosted font requests').toBeGreaterThan(0);
-  expect([...fontRequests].every(path => path.startsWith(at('/vendor/fonts/')))).toBe(true);
-  for (const name of ['fraunces-', 'source-serif-4-']) expect([...fontRequests].some(path => path.includes(name))).toBe(true);
+  expect([...fontRequests].every(path => path.startsWith(at('/fonts/')))).toBe(true);
+  for (const name of ['libre-caslon-text-', 'libre-franklin-']) expect([...fontRequests].some(path => path.includes(name))).toBe(true);
   expect(foreign).toEqual([]);
   expect(missing).toEqual([]);
   expect(errors).toEqual([]);
@@ -109,7 +109,7 @@ test('demo routes, links and requests stay inside the mount and every page is no
 
 test('tree expands, opens a person, and switches language', async ({ page }, info) => {
   const forbidden: string[] = [];
-  page.on('request', r => { if (/\/api\/|analytics/i.test(r.url())) forbidden.push(r.url()); });
+  page.on('request', r => { if (/\/api\/(?!ask\/)|analytics/i.test(r.url())) forbidden.push(r.url()); });
   await page.goto(at('/en/'));
   await expect(page.getByText(banner)).toBeVisible();
   await expect(repoLink(page, 'en')).toHaveAttribute('href', REPO);
@@ -182,9 +182,98 @@ test('fun facts render all views and story and sources are reachable', async ({ 
 });
 
 test('all main pages fit a narrow viewport', async ({ page }) => {
-  for (const url of ['/en/', '/en/person/jan-van-aliquam/', '/en/people/', '/en/story/', '/en/map/', '/en/fun-facts/', '/en/sources/']) {
+  for (const url of ['/en/', '/en/person/jan-van-aliquam/', '/en/people/', '/en/story/', '/en/map/', '/en/fun-facts/', '/en/sources/', '/en/ask/', '/nl/vraag/']) {
     await page.goto(at(url));
-    await expect(repoLink(page, 'en')).toBeVisible();
+    await expect(repoLink(page, url.startsWith('/nl/') ? 'nl' : 'en')).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), url).toBe(true);
   }
+});
+
+// Chat: the endpoint is mocked, so no key and no network are needed.
+const ASK = '**/api/ask/';
+test('ask page answers through the endpoint and links stay under the base', async ({ page }) => {
+  let body: any = null;
+  await page.route(ASK, async route => {
+    body = route.request().postDataJSON();
+    await route.fulfill({ json: { answer: 'Henri Van Aliquam was a brewer in Sluis.', links: [
+      { id: 'henri-van-aliquam', name: 'Henri Van Aliquam', url: at('/en/person/henri-van-aliquam/') },
+      { id: 'x', name: 'Evil', url: 'https://evil.example/' },
+    ] } });
+  });
+  await page.goto(at('/en/ask/'));
+  await expect(page.getByText('Questions go to Groq (US) to be answered; the conversation stays in this browser.')).toBeVisible();
+  await page.locator('#ask-input').fill('Who was Henri Van Aliquam?');
+  await page.getByRole('button', { name: 'Send' }).click();
+  await expect(page.locator('.log')).toContainText('was a brewer in Sluis');
+  expect(body).toMatchObject({ q: 'Who was Henri Van Aliquam?', lang: 'en' });
+  const chip = page.locator('.log .chips a');
+  await expect(chip).toHaveCount(1); // the foreign address is not turned into a link
+  await expect(chip).toHaveAttribute('href', at('/en/person/henri-van-aliquam/'));
+  // Regression: bubbles are built in JS, so scoped CSS missed them ("YouWho was ...", bare chips).
+  expect(await page.locator('.log .who').first().evaluate(e => getComputedStyle(e).display)).toBe('block');
+  expect(await chip.evaluate(e => parseFloat(getComputedStyle(e).minHeight))).toBeGreaterThanOrEqual(44);
+  await chip.click();
+  await expect(page.locator('h1')).toContainText('Henri Van Aliquam');
+  // the conversation is still there after a reload
+  await page.goto(at('/en/ask/'));
+  await expect(page.locator('.log')).toContainText('was a brewer in Sluis');
+});
+
+test('the home ask box hands the question over without putting it in the URL', async ({ page }) => {
+  await page.route(ASK, route => route.fulfill({ json: { answer: 'Fine.', links: [] } }));
+  await page.goto(at('/en/'));
+  const question = 'How is Jade Van Aliquam related to Henri Van Aliquam?';
+  await page.locator('#ask-q').fill(question);
+  await page.locator('.askbox button').click();
+  await expect(page).toHaveURL(new RegExp(`${base}/en/ask/$`));
+  expect(page.url()).not.toContain('Jade');
+  expect(page.url()).not.toContain('?');
+  await expect(page.locator('.log')).toContainText(question);
+  await expect(page.locator('.log')).toContainText('Fine.');
+});
+
+test('a busy answer with status 200 says it is busy, not that something went wrong', async ({ page }) => {
+  await page.route(ASK, route => route.fulfill({ json: { busy: true } }));
+  await page.goto(at('/en/ask/'));
+  await page.locator('#ask-input').fill('Who was Henri Van Aliquam?');
+  await page.getByRole('button', { name: 'Send' }).click();
+  await expect(page.locator('.log')).toContainText("It's busy right now");
+});
+
+test('a 429 "demo limit" says the demo answers one question per visitor', async ({ page }) => {
+  await page.route(ASK, route => route.fulfill({ status: 429, json: { error: 'demo limit' } }));
+  await page.goto(at('/nl/vraag/'));
+  await page.locator('#ask-input').fill('Wie was Henri Van Aliquam?');
+  await page.getByRole('button', { name: 'Verstuur' }).click();
+  await expect(page.locator('.log')).toContainText('In deze demo kun je één vraag stellen');
+});
+
+test('a 503 says the chat is not set up on this copy', async ({ page }) => {
+  await page.route(ASK, route => route.fulfill({ status: 503, json: { error: 'not configured' } }));
+  await page.goto(at('/nl/vraag/'));
+  await page.locator('#ask-input').fill('Wie was Henri Van Aliquam?');
+  await page.getByRole('button', { name: 'Verstuur' }).click();
+  await expect(page.locator('.log')).toContainText('niet ingesteld');
+  await page.goto(at('/en/ask/'));
+  await page.locator('#ask-input').fill('Who?');
+  await page.getByRole('button', { name: 'Send' }).click();
+  await expect(page.locator('.log')).toContainText('not set up');
+});
+
+test('static hosting without the function (404) says the same, other errors say try again later', async ({ page }) => {
+  await page.goto(at('/en/ask/')); // the preview server has no /api/ask/ at all: 404
+  await page.locator('#ask-input').fill('Who?');
+  await page.getByRole('button', { name: 'Send' }).click();
+  await expect(page.locator('.log')).toContainText('not set up');
+  await page.route(ASK, route => route.fulfill({ status: 500, json: {} }));
+  await page.locator('#ask-input').fill('Again?');
+  await page.getByRole('button', { name: 'Send' }).click();
+  await expect(page.locator('.log')).toContainText('try again later');
+});
+
+test('the finder on the home page opens a person', async ({ page }) => {
+  await page.goto(at('/en/'));
+  await page.locator('#finder-q').fill('henri van');
+  await page.locator('.finder-list a').first().click();
+  await expect(page.locator('h1')).toContainText('Henri Van Aliquam');
 });

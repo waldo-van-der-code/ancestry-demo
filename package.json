@@ -9,7 +9,7 @@
     "build": "node scripts/build-data.mjs && astro build --outDir dist --silent",
     "serve": "node scripts/serve-demo.mjs",
     "test": "node --test evals/*.test.mjs",
-    "test:browser": "playwright test --config playwright.demo.config.ts"
+    "test:browser": "DEMO_BASE=/demos/family-tree npm run build && DEMO_BASE=/demos/family-tree playwright test --config playwright.demo.config.ts"
   },
   "dependencies": {
     "astro": "^7.3.5"

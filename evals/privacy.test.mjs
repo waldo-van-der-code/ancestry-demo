@@ -79,8 +79,29 @@ test("no words from the private hint list in the repo or the built site", { skip
   assert.deepEqual(hits, []);
 });
 
-test("the demo build output has no third-party tracking, password forms or /api/ calls", { skip: fs.existsSync(path.join(ROOT, "dist")) ? false : "dist/ not built" }, () => {
-  const bad = new RegExp([["post", "hog"].join(""), "googletagmanager", "google-analytics", "type=[\"']?password", "/api/"].join("|"), "i");
-  const hits = walk(path.join(ROOT, "dist")).filter((f) => !BINARY.test(f) && bad.test(fs.readFileSync(f, "utf8")));
+// The one /api/ address a build may contain is the configured ask endpoint (PUBLIC_ASK_URL, default /api/ask/).
+const ASK_URL = process.env.PUBLIC_ASK_URL || "/api/ask/";
+export function foreignApiPath(text, askUrl = ASK_URL) {
+  const allowed = new RegExp(`${esc(askUrl)}(?![A-Za-z0-9_.~/-])`, "g");
+  return text.replace(allowed, "").includes("/api/");
+}
+
+test("the API-path matcher allows only the ask endpoint and catches anything else", () => {
+  assert.equal(foreignApiPath('fetch("/api/ask/")', "/api/ask/"), false);
+  assert.equal(foreignApiPath('data-endpoint="/api/family-tree-demo/ask/"', "/api/family-tree-demo/ask/"), false);
+  assert.equal(foreignApiPath('fetch("/api/contrib/")', "/api/ask/"), true);
+  assert.equal(foreignApiPath('fetch("/api/ask/")  fetch("/api/contrib/")', "/api/ask/"), true);
+  assert.equal(foreignApiPath('fetch("/api/ask/upload-url/")', "/api/ask/"), true);
+  assert.equal(foreignApiPath('fetch("/api/asking/")', "/api/ask/"), true);
+  assert.equal(foreignApiPath('fetch("/api/family-tree-demo/ask/")', "/api/ask/"), true);
+});
+
+test("the demo build output has no third-party tracking, password forms or /api/ calls except the ask endpoint", { skip: fs.existsSync(path.join(ROOT, "dist")) ? false : "dist/ not built" }, () => {
+  const bad = new RegExp([["post", "hog"].join(""), "googletagmanager", "google-analytics", "type=[\"']?password"].join("|"), "i");
+  const hits = walk(path.join(ROOT, "dist")).filter((f) => {
+    if (BINARY.test(f)) return false;
+    const text = fs.readFileSync(f, "utf8");
+    return bad.test(text) || foreignApiPath(text);
+  });
   assert.deepEqual(hits.map((f) => path.relative(ROOT, f)), []);
 });

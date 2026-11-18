@@ -71,6 +71,7 @@ export const SEG = {
   map: { nl: "kaart", en: "map" },
   facts: { nl: "weetjes", en: "fun-facts" },
   sources: { nl: "bronnen", en: "sources" },
+  ask: { nl: "vraag", en: "ask" },
 } as const;
 export type Section = keyof typeof SEG;
 
@@ -82,6 +83,7 @@ export const T = {
     map: "Kaart",
     facts: "Weetjes",
     tree: "Stamboom",
+    ask: "Vraag het de stamboom",
     sources: "Bronnen",
     born: "Geboren",
     died: "Overleden",
@@ -125,6 +127,7 @@ export const T = {
     map: "Map",
     facts: "Fun facts",
     tree: "Family tree",
+    ask: "Ask the family tree",
     sources: "Sources",
     born: "Born",
     died: "Died",

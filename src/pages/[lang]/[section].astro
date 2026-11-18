@@ -29,19 +29,21 @@ const chapters = lang === "en" ? d.chapters.en || d.chapters.nl : d.chapters.nl;
 const chaptersIsNl = lang === "en" && !d.chapters.en;
 const toc = headings(chapters);
 
-const titles: Record<Section, string> = { people: t.people, story: t.story, map: t.map, facts: t.facts, sources: t.sources, person: "" };
+const titles: Record<Section, string> = { people: t.people, story: t.story, map: t.map, facts: t.facts, sources: t.sources, person: "", ask: t.ask };
 ---
 <Base lang={lang} title={titles[key]} alt={alt} active={key} wide={key === "story"}>
   {key === "people" && (
     <>
       <h1>{t.people}</h1>
       <p class="muted">{t.stats(d.stats)}</p>
-      <input type="search" id="q" placeholder={t.search} aria-label={t.search} autocomplete="off" />
+      <label class="list-search-label" for="q">{t.search.replace("…", "")}</label>
+      <input type="search" id="q" placeholder={t.search} autocomplete="off" />
+      <nav class="alphabet" aria-label="A-Z">{[...groups.keys()].map((g) => <a href={`#g-${g}`}>{g}</a>)}</nav>
       <p class="muted small" id="count" aria-live="polite"></p>
       <div id="list">
         {[...groups].map(([g, ps]) => (
           <section class="grp" data-grp>
-            <h2>{g}</h2>
+            <h2 id={`g-${g}`}>{g} <a class="back-az" href="#q">A-Z</a></h2>
             <ul class="plist">
               {ps.map((p) => (
                 <li data-n={`${fullName(p)} ${(p.aka || []).join(" ")}`.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")}>
@@ -100,6 +102,7 @@ const titles: Record<Section, string> = { people: t.people, story: t.story, map:
             if (ok) n++;
           }
           for (const g of groups) g.hidden = !g.querySelector("li:not([hidden])");
+          for (const a of document.querySelectorAll(".alphabet a")) a.hidden = document.getElementById(a.getAttribute("href").slice(1))?.closest("[data-grp]")?.hidden ?? false;
           count.textContent = terms.length ? `${n} ${shown}` : "";
         });
   </script>
@@ -114,7 +117,7 @@ const titles: Record<Section, string> = { people: t.people, story: t.story, map:
   .grp h2 { border-bottom: 1px solid var(--line); padding-bottom: 4px; margin-top: 1.4em; }
   .dot { font-size: 0.8em; color: var(--muted); margin-left: 4px; }
   .doc { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 40px; }
-  .toc { position: sticky; top: 72px; align-self: start; max-height: calc(100vh - 90px); overflow: auto; font-size: 0.85rem; }
+  .toc { position: sticky; top: calc(var(--head, 56px) + 16px); align-self: start; max-height: calc(100vh - 90px); overflow: auto; font-size: 0.85rem; }
   .toc ul { list-style: none; padding: 0; margin: 0; }
   .toc li { margin: 4px 0; }
   .toc .l1 { font-weight: 600; margin-top: 12px; }
